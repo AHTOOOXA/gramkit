@@ -100,7 +100,7 @@ export function SuspenseDemo() {
           <ErrorBoundary
             onReset={reset}
             fallbackRender={({ error, resetErrorBoundary }) => (
-              <ErrorFallback error={error as Error} resetErrorBoundary={resetErrorBoundary} />
+              <ErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
             )}
           >
             <Suspense key={key} fallback={<LoadingFallback />}>
