@@ -164,7 +164,7 @@ export default function HomePage() {
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className={btnSecondary}>
-            <a href="https://vue.gramkit.dev" target="_blank" rel="noopener noreferrer">
+            <a href="https://vue.antonchaynik.ru" target="_blank" rel="noopener noreferrer">
               <SiVuedotjs className="w-4 h-4 mr-2" />
               Try Vue Version
             </a>
@@ -894,7 +894,7 @@ export default function HomePage() {
       <footer className="text-center py-6 text-sm text-muted-foreground">
         React Template •{' '}
         <a
-          href="https://vue.gramkit.dev"
+          href="https://vue.antonchaynik.ru"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"

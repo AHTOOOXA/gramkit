@@ -4,7 +4,7 @@ Production-ready monorepo for Telegram Mini Apps and web applications.
 
 Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 
-**[Live Demo (React)](https://react.gramkit.dev)** · [Live Demo (Vue)](https://vue.gramkit.dev)
+**[Live Demo (React)](https://react.antonchaynik.ru)** · [Live Demo (Vue)](https://vue.antonchaynik.ru)
 
 ## Features
 
@@ -27,8 +27,8 @@ Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 
 | Template | Stack | Best For | Demo |
 |----------|-------|----------|------|
-| **React** | Next.js 16 + Turbopack + Zustand | SSR, React 19, larger ecosystem | [react.gramkit.dev](https://react.gramkit.dev) |
-| **Vue** | Vue.js 3 + Vite + Pinia | Lighter bundle, simpler state | [vue.gramkit.dev](https://vue.gramkit.dev) |
+| **React** | Next.js 16 + Turbopack + Zustand | SSR, React 19, larger ecosystem | [react.antonchaynik.ru](https://react.antonchaynik.ru) |
+| **Vue** | Vue.js 3 + Vite + Pinia | Lighter bundle, simpler state | [vue.antonchaynik.ru](https://vue.antonchaynik.ru) |
 
 Both include:
 - **5 production pages** — Home, demos, profile, admin, auth flows

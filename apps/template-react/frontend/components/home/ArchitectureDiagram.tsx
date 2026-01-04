@@ -57,7 +57,7 @@ const TREE_DATA: TreeNode = {
           name: 'template-vue/',
           description: 'Vue starter template',
           icon: '💚',
-          link: 'https://vue.gramkit.dev',
+          link: 'https://vue.antonchaynik.ru',
         },
         {
           name: 'your-new-app/',
