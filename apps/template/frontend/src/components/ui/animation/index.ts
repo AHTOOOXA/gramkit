@@ -1,0 +1,5 @@
+export { default as Animate } from './Animate.vue'
+export { default as Stagger } from './Stagger.vue'
+export { default as ScrollReveal } from './ScrollReveal.vue'
+export type { AnimationVariant } from '@/lib/animations'
+export { animationVariants } from '@/lib/animations'

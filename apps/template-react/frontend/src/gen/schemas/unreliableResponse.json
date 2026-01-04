@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message"},"timestamp":{"type":"string","title":"Timestamp"},"attempt_succeeded":{"type":"boolean","title":"Attempt Succeeded"}},"type":"object","required":["message","timestamp","attempt_succeeded"],"title":"UnreliableResponse","x-readme-ref-name":"UnreliableResponse"}

@@ -1,0 +1,27 @@
+---
+description: Details of the Vue.js frontend architecture, key directories, and configuration files for understanding and navigating the frontend codebase.
+globs:
+alwaysApply: false
+---
+# Frontend Structure
+
+The frontend is a Vue.js application with TypeScript and Tailwind CSS.
+
+## Key Files and Directories
+
+- [frontend/src/main.ts](mdc:frontend/src/main.ts) - Entry point
+- [frontend/src/App.vue](mdc:frontend/src/App.vue) - Root component
+- [frontend/src/router/](mdc:frontend/src/router) - Vue Router configuration
+- [frontend/src/store/](mdc:frontend/src/store) - State management
+- [frontend/src/presentation/](mdc:frontend/src/presentation) - UI components and screens
+- [frontend/src/services/](mdc:frontend/src/services) - Service layer for API communication
+- [frontend/src/api/](mdc:frontend/src/api) - API client implementations
+- [frontend/src/utils/](mdc:frontend/src/utils) - Utility functions
+- [frontend/src/composables/](mdc:frontend/src/composables) - Vue composables (reusable logic)
+- [frontend/src/i18n/](mdc:frontend/src/i18n) - Internationalization
+
+## Configuration
+
+- [frontend/vite.config.ts](mdc:frontend/vite.config.ts) - Vite configuration
+- [frontend/tailwind.config.js](mdc:frontend/tailwind.config.js) - Tailwind CSS configuration
+- [frontend/tsconfig.json](mdc:frontend/tsconfig.json) - TypeScript configuration

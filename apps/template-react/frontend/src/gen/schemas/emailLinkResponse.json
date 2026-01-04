@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message","default":"Verification code sent"},"expires_in":{"type":"integer","title":"Expires In"}},"type":"object","required":["expires_in"],"title":"EmailLinkResponse","description":"Response for starting email link flow.","x-readme-ref-name":"EmailLinkResponse"}

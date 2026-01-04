@@ -1,0 +1,1 @@
+{"properties":{"signup_token":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Signup Token"}},"type":"object","title":"EmailResendRequest","description":"Request to resend verification code.","x-readme-ref-name":"EmailResendRequest"}

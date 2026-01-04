@@ -1,0 +1,34 @@
+---
+description: Explanation of Docker configuration, service setup, and commands for running the application in different environments (production, development, local).
+globs:
+alwaysApply: false
+---
+description: Explanation of Docker configuration, service setup, and commands for running the application in different environments (production, development, local).
+
+# Docker Configuration
+
+This project uses Docker Compose to manage multiple services.
+
+## Docker Compose Files
+
+- [docker-compose.yml](mdc:docker-compose.yml) - Production configuration
+- [docker-compose.dev.yml](mdc:docker-compose.dev.yml) - Development configuration
+- [docker-compose.local.yml](mdc:docker-compose.local.yml) - Local development configuration
+
+## Service Dockerfiles
+
+- [backend/web.Dockerfile](mdc:backend/web.Dockerfile) - Backend web service
+- [backend/bot.Dockerfile](mdc:backend/bot.Dockerfile) - Telegram bot service
+- [backend/worker.Dockerfile](mdc:backend/worker.Dockerfile) - Background worker service
+- [frontend/Dockerfile.prod](mdc:frontend/Dockerfile.prod) - Frontend production build
+- [frontend/Dockerfile.local](mdc:frontend/Dockerfile.local) - Frontend local development
+
+## Nginx Configuration
+
+- [nginx.conf](mdc:nginx.conf) - Nginx configuration for routing requests
+
+## Running Services
+
+- Production: `docker-compose up`
+- Development: `docker-compose -f docker-compose.dev.yml up`
+- Local development: `docker-compose -f docker-compose.local.yml up`

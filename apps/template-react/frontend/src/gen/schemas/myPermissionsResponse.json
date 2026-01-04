@@ -1,0 +1,1 @@
+{"properties":{"role":{"type":"string","title":"Role"},"is_owner_in_config":{"type":"boolean","title":"Is Owner In Config"},"permissions":{"items":{"type":"string"},"type":"array","title":"Permissions"}},"type":"object","required":["role","is_owner_in_config","permissions"],"title":"MyPermissionsResponse","x-readme-ref-name":"MyPermissionsResponse"}

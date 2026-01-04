@@ -1,0 +1,27 @@
+{
+  "name": "@tma-platform/workspace-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TMA Platform monorepo workspace root",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "clean": "pnpm -r clean"
+  },
+  "workspaces": [
+    "core/frontend",
+    "core/frontend-react",
+    "apps/*/frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.22.0",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

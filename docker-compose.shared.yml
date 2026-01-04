@@ -1,0 +1,103 @@
+# SHARED INFRASTRUCTURE
+# This file contains services shared across all apps (nginx gateway, cloudflare tunnel)
+#
+# Usage:
+#   make -f Makefile.shared up    # Start shared infrastructure
+#   make up APP=tarot             # Start individual apps (from root)
+#   make up APP=bible
+#
+# Apps can be started/stopped independently. Nginx handles missing apps gracefully.
+
+name: shared
+
+services:
+  # Shared Nginx Gateway (routes all apps)
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/landing.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      - shared_gateway
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  # Shared Cloudflare Tunnel (exposes nginx to internet)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: shared-cloudflared
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARED_TOKEN}
+    networks:
+      - shared_gateway
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  # Gateway API (Docker management and log viewing)
+  gateway-api:
+    build:
+      context: ./nginx/gateway-api
+      dockerfile: Dockerfile
+    container_name: gateway-api
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - shared_gateway
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --app-dir /app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/gateway/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Shared Playwright Server (for AI-driven interactive testing)
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.48.0-jammy
+    container_name: shared-playwright
+    working_dir: /app
+    command: bash -c "npm install && node server.js"
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./tools/playwright:/app
+      - /dev/shm:/dev/shm  # Shared memory for Chrome
+    environment:
+      - PORT=9876
+      - DISPLAY=:99
+    networks:
+      - shared_gateway
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9876/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Single shared network for all apps and infrastructure
+networks:
+  shared_gateway:
+    name: shared_gateway
+    driver: bridge

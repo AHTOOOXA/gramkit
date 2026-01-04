@@ -1,0 +1,31 @@
+---
+description: Guidelines for frontend component organization, development principles, and state management practices for maintaining a consistent UI architecture.
+globs:
+alwaysApply: false
+---
+description: Guidelines for frontend component organization, development principles, and state management practices for maintaining a consistent UI architecture.
+
+# Frontend Components Structure
+
+The frontend follows a structured approach to organization.
+
+## Presentation Layer
+
+- [frontend/src/presentation/components/](mdc:frontend/src/presentation/components) - Reusable UI components
+- [frontend/src/presentation/screens/](mdc:frontend/src/presentation/screens) - Page components
+- [frontend/src/presentation/layouts/](mdc:frontend/src/presentation/layouts) - Layout components
+- [frontend/src/presentation/assets/](mdc:frontend/src/presentation/assets) - Static assets
+
+## Component Guidelines
+
+1. Components should follow Single Responsibility Principle
+2. Use composition with Vue 3 Composition API
+3. Keep components small and focused
+4. Leverage TypeScript for type safety
+5. Use Tailwind CSS for styling
+
+## State Management
+
+- [frontend/src/store/](mdc:frontend/src/store) - Pinia stores for state management
+- Use composables for reusable logic
+- Keep UI and business logic separated

@@ -1,0 +1,1 @@
+{"properties":{"city":{"type":"string","title":"City"},"temperature":{"type":"integer","title":"Temperature"},"condition":{"type":"string","title":"Condition"},"fetched_at":{"type":"string","title":"Fetched At"}},"type":"object","required":["city","temperature","condition","fetched_at"],"title":"WeatherResponse","x-readme-ref-name":"WeatherResponse"}

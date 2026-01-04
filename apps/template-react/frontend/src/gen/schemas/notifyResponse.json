@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message"},"delay_seconds":{"type":"integer","title":"Delay Seconds"},"scheduled_at":{"type":"string","title":"Scheduled At"}},"type":"object","required":["message","delay_seconds","scheduled_at"],"title":"NotifyResponse","x-readme-ref-name":"NotifyResponse"}

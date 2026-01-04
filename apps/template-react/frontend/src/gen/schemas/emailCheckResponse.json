@@ -1,0 +1,1 @@
+{"properties":{"exists":{"type":"boolean","title":"Exists"}},"type":"object","required":["exists"],"title":"EmailCheckResponse","x-readme-ref-name":"EmailCheckResponse"}

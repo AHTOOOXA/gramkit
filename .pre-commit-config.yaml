@@ -1,0 +1,87 @@
+fail_fast: true
+repos:
+# Standard file checks (updated to v5.0.0)
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: check-json
+        exclude: tsconfig.*\.json$
+    -   id: end-of-file-fixer
+        exclude: ^apps/[^/]+/frontend/src/gen/
+    -   id: trailing-whitespace
+        exclude: ^apps/[^/]+/frontend/src/gen/
+    -   id: check-merge-conflict
+    -   id: check-added-large-files
+        args: ['--maxkb=1000']
+    -   id: check-ast
+    -   id: debug-statements
+
+# Ruff - replaces Black + isort + Flake8 (10-100x faster)
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.2
+    hooks:
+    -   id: ruff
+        name: Ruff linter
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^(core/backend|apps/[^/]+/backend)/.*\.py$
+        exclude: ^(backend/|apps/[^/]+/backend/migrations/)
+    -   id: ruff-format
+        name: Ruff formatter
+        files: ^(core/backend|apps/[^/]+/backend)/.*\.py$
+        exclude: ^(backend/|apps/[^/]+/backend/migrations/)
+
+-   repo: local
+    hooks:
+    -   id: frontend-checks
+        name: ESLint + TypeScript (parallel)
+        entry: >-
+            bash -c 'apps=$(git diff --cached --name-only | grep "^apps/[^/]*/frontend/" | grep -v "/src/gen/" | grep -v "/src/schema/" | grep -v "/components/ui/" | cut -d/ -f2 | sort -u);
+            exit_code=0;
+            for app in $apps; do
+              if [ -n "$app" ]; then
+                (echo "→ Checking $app..." && cd apps/$app/frontend && pnpm lint:fix && pnpm typecheck) &
+              fi;
+            done;
+            for job in $(jobs -p); do wait $job || exit_code=1; done;
+            exit $exit_code'
+        language: system
+        files: ^apps/[^/]+/frontend/.*\.(ts|tsx|vue|js)$
+        exclude: ^apps/[^/]+/frontend/(src/(schema/|gen/)|components/ui/|hooks/use-mobile\.ts)
+        pass_filenames: false
+        stages: [commit]
+
+    -   id: import-linter
+        name: Check import boundaries (parallel)
+        entry: >-
+            bash -c 'apps=$(git diff --cached --name-only | grep "^apps/[^/]*/backend/src/" | cut -d/ -f2 | sort -u);
+            exit_code=0;
+            for app in $apps; do
+              if [ -f "apps/$app/backend/.importlinter" ]; then
+                (echo "→ Checking imports: $app" && cd apps/$app/backend/src && ENV_FILE=../.env.test uv run lint-imports --config ../.importlinter) &
+              fi;
+            done;
+            for job in $(jobs -p); do wait $job || exit_code=1; done;
+            exit $exit_code'
+        language: system
+        pass_filenames: false
+        files: ^apps/[^/]+/backend/src/.*\.py$
+        stages: [commit]
+
+    -   id: backend-tests
+        name: Run backend tests (testmon + parallel, push only)
+        entry: >-
+            bash -c 'apps=$(git diff --cached --name-only | grep "^apps/[^/]*/backend/src/" | cut -d/ -f2 | sort -u);
+            exit_code=0;
+            for app in $apps; do
+              if [ -f "apps/$app/backend/.env.test" ] && [ -d "apps/$app/backend/src/app/tests" ]; then
+                (echo "→ Testing: $app" && cd apps/$app/backend && ENV_FILE=.env.test uv run pytest --testmon -n 2 -x --tb=short --ignore=src/app/tests/_archived) &
+              fi;
+            done;
+            for job in $(jobs -p); do wait $job || exit_code=1; done;
+            exit $exit_code'
+        language: system
+        pass_filenames: false
+        files: ^apps/[^/]+/backend/src/(app|tests)/.*\.py$
+        stages: [push]

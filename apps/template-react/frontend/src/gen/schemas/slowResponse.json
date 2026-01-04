@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message"},"timestamp":{"type":"string","title":"Timestamp"},"delay_ms":{"type":"integer","title":"Delay Ms"}},"type":"object","required":["message","timestamp","delay_ms"],"title":"SlowResponse","x-readme-ref-name":"SlowResponse"}

@@ -1,0 +1,38 @@
+{
+  "core": {
+    "user": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "welcome": "Welcome!"
+    },
+    "payment": {
+      "success": "Payment successful",
+      "failed": "Payment failed",
+      "processing": "Processing payment..."
+    },
+    "subscription": {
+      "active": "Subscription active",
+      "expired": "Subscription expired",
+      "cancelled": "Subscription cancelled"
+    },
+    "errors": {
+      "network": "Connection failed. Please try again.",
+      "invalid_input": "Invalid input",
+      "unauthorized": "Unauthorized access",
+      "not_found": "Not found",
+      "internal_error": "Internal server error"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Next",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "loading": "Loading...",
+      "success": "Success!",
+      "failed": "Failed"
+    }
+  }
+}

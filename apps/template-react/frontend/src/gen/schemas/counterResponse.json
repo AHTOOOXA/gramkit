@@ -1,0 +1,1 @@
+{"properties":{"value":{"type":"integer","title":"Value"},"counter_id":{"type":"string","title":"Counter Id"},"timestamp":{"type":"string","title":"Timestamp"}},"type":"object","required":["value","counter_id","timestamp"],"title":"CounterResponse","x-readme-ref-name":"CounterResponse"}

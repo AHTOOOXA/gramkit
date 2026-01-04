@@ -1,0 +1,1 @@
+{"properties":{"success":{"type":"boolean","title":"Success"},"message":{"type":"string","title":"Message"},"your_role":{"type":"string","title":"Your Role"}},"type":"object","required":["success","message","your_role"],"title":"ProtectedActionResponse","description":"Response from protected action.","x-readme-ref-name":"ProtectedActionResponse"}

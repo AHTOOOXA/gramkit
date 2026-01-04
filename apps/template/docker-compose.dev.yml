@@ -1,0 +1,130 @@
+# DEV COMPOSE FILE - Production-like environment with dev- prefix
+
+services:
+  app:
+    container_name: dev-template-app
+    build:
+      context: ../..
+      dockerfile: ./apps/template/frontend/Dockerfile.prod
+      args:
+        - VITE_WEB_HOST=${VITE_WEB_HOST}
+        - VITE_API_HOST=${VITE_API_HOST}
+        - VITE_BOT_URL=${VITE_BOT_URL}
+        - VITE_POSTHOG_KEY=${VITE_POSTHOG_KEY}
+        - VITE_POSTHOG_HOST=${VITE_POSTHOG_HOST}
+        - VITE_SENTRY_ORG=${VITE_SENTRY_ORG}
+        - VITE_SENTRY_PROJECT=${VITE_SENTRY_PROJECT}
+        - VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+        - VITE_SENTRY_AUTH_TOKEN=${VITE_SENTRY_AUTH_TOKEN}
+        - VITE_DEBUG=${VITE_DEBUG}
+    networks:
+      - dokploy-network
+    command: pnpm start
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+    environment:
+      - PORT=14175
+
+  bot:
+    container_name: dev-template-bot
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: ["python", "-u", "src/app/tgbot/bot.py"]
+
+  webhook:
+    container_name: dev-template-webhook
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    env_file:
+      - ".env"
+    depends_on:
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 18002 --workers 1 --timeout-graceful-shutdown 30
+      "
+
+  worker:
+    container_name: dev-template-worker
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: ["python", "src/worker_entry.py", "app.worker.worker.WorkerSettings"]
+
+  pg_database:
+    container_name: dev-template-postgres
+    image: postgres:13-alpine
+    networks:
+      - dokploy-network
+    restart: always
+    volumes:
+      - dev-template-pgdata:/var/lib/postgresql/data
+    command: "postgres -p 15454"
+    env_file:
+      - '.env'
+    ports:
+      - 15454:15454
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  redis_cache:
+    container_name: dev-template-redis
+    image: redis:6.2-alpine
+    restart: always
+    networks:
+      - dokploy-network
+    command: redis-server --port 16390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    env_file:
+      - ".env"
+    volumes:
+      - dev-template-cache:/data
+
+volumes:
+  dev-template-pgdata: { }
+  dev-template-cache: { }
+
+networks:
+  dokploy-network:
+    external: true

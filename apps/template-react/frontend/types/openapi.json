@@ -1,0 +1,1507 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Template API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/auth/logout": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Logout",
+        "description": "Logout endpoint that destroys the user's session.\n\nUses session manager from app.state.session_manager to handle\nsession destruction and cookie clearing.",
+        "operationId": "logout_auth_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/telegram/send-code": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Send Verification Code",
+        "description": "Send 6-digit verification code to user's Telegram DM.",
+        "operationId": "send_verification_code_auth_telegram_send_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/telegram/verify-code": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Verify Code And Login",
+        "description": "Verify 6-digit code and create authenticated session.\n\nUses session manager from app.state.session_manager to create\nsession and set cookie after successful verification.",
+        "operationId": "verify_code_and_login_auth_telegram_verify_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/products": {
+      "get": {
+        "tags": ["payments"],
+        "summary": "Get Products",
+        "description": "Get available products for purchase.\n\nReturns products excluding test products, suitable for profile/shop pages.",
+        "operationId": "get_products_payments_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSchema"
+                  },
+                  "type": "array",
+                  "title": "Response Get Products Payments Products Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/start_purchase": {
+      "post": {
+        "tags": ["payments"],
+        "summary": "Start Purchase",
+        "description": "Start a payment for a product.\n\nCreates a payment and returns a confirmation URL for the user to complete payment.\nSupports multiple payment providers (YooKassa, Telegram Stars, etc).",
+        "operationId": "start_purchase_payments_start_purchase_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartPurchaseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartPurchaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions/": {
+      "get": {
+        "tags": ["subscriptions"],
+        "summary": "Get Subscription",
+        "description": "Get current subscription with details for authenticated user.",
+        "operationId": "get_subscription_subscriptions__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionWithDetailsSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions/cancel": {
+      "post": {
+        "tags": ["subscriptions"],
+        "summary": "Cancel Subscription",
+        "description": "Cancel current subscription with optional reason and feedback.",
+        "operationId": "cancel_subscription_subscriptions_cancel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get Current User",
+        "description": "Get current authenticated user profile.",
+        "operationId": "get_current_user_users_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["users"],
+        "summary": "Update Current User",
+        "description": "Update current authenticated user profile.",
+        "operationId": "update_current_user_users_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get User By Id",
+        "description": "Get user profile by ID.",
+        "operationId": "get_user_by_id_users__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/yookassa/webhook": {
+      "post": {
+        "summary": "Yookassa Webhook",
+        "description": "Webhook endpoint for YooKassa payment confirmations.\n\nReturns:\n    - 200 OK: Webhook processed successfully\n    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors\n    - 500 Internal Error: Transient business errors, unknown errors\n    - 503 Service Unavailable: Infrastructure errors (DB, Redis)",
+        "operationId": "yookassa_webhook_yookassa_webhook_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/telegram-stars/webhook": {
+      "post": {
+        "summary": "Telegram Stars Webhook",
+        "description": "Webhook endpoint for Telegram Stars payment confirmations from web interface.\n\nThis endpoint receives payment notifications from Telegram when payments\nare made through the web interface and processes them through the unified\npayment system.\n\nReturns:\n    - 200 OK: Webhook processed successfully\n    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors\n    - 500 Internal Error: Transient business errors, unknown errors\n    - 503 Service Unavailable: Infrastructure errors (DB, Redis)",
+        "operationId": "telegram_stars_webhook_telegram_stars_webhook_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/friends": {
+      "get": {
+        "summary": "Get Friends",
+        "operationId": "get_friends_friends_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserSchema"
+                  },
+                  "type": "array",
+                  "title": "Response Get Friends Friends Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/add_friend": {
+      "post": {
+        "summary": "Add Friend",
+        "operationId": "add_friend_add_friend_post",
+        "parameters": [
+          {
+            "name": "friend_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Friend Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create_invite": {
+      "get": {
+        "summary": "Create Invite",
+        "operationId": "create_invite_create_invite_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Create Invite Create Invite Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/process_start": {
+      "post": {
+        "summary": "Process Start",
+        "operationId": "process_start_process_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartParamsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/is_admin": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Is Admin",
+        "operationId": "is_admin_admin_is_admin_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/trigger_backend_error": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Trigger Backend Error",
+        "operationId": "trigger_backend_error_admin_trigger_backend_error_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/trigger_worker_error": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Trigger Worker Error",
+        "operationId": "trigger_worker_error_admin_trigger_worker_error_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkerErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/reset_user": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Reset User",
+        "description": "Debug-only endpoint to hard delete a user and all their data.\nSimulates a brand new user registration for testing onboarding flows.\n\nIMPORTANT: This endpoint is ONLY available when DEBUG=true.\n\nDatabase CASCADE constraints automatically delete:\n- readings, chat_sessions, payments, subscriptions\n- friendships (both directions), group_invites, group_members, groups\n- balance, trainer_progress, user_question_answers, mastered_questions",
+        "operationId": "reset_user_admin_reset_user_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdminStatusResponse": {
+        "properties": {
+          "is_admin": {
+            "type": "boolean",
+            "title": "Is Admin"
+          }
+        },
+        "type": "object",
+        "required": ["is_admin"],
+        "title": "AdminStatusResponse"
+      },
+      "CancelSubscriptionRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Cancellation reason code"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback",
+            "description": "Optional user feedback"
+          }
+        },
+        "type": "object",
+        "title": "CancelSubscriptionRequest"
+      },
+      "GroupSchema": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/UserSchema"
+            },
+            "type": "array",
+            "title": "Users",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "GroupSchema"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LogoutResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["message"],
+        "title": "LogoutResponse"
+      },
+      "PaymentProvider": {
+        "type": "string",
+        "enum": ["YOOKASSA", "TELEGRAM_STARS", "GIFT"],
+        "title": "PaymentProvider"
+      },
+      "ProductSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "duration_days": {
+            "type": "integer",
+            "title": "Duration Days"
+          },
+          "is_recurring": {
+            "type": "boolean",
+            "title": "Is Recurring"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "duration_days",
+          "is_recurring"
+        ],
+        "title": "ProductSchema"
+      },
+      "ResetUserResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "User reset successfully",
+            "title": "Status"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": ["status", "user_id"],
+        "title": "ResetUserResponse"
+      },
+      "SendCodeRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          }
+        },
+        "type": "object",
+        "required": ["username"],
+        "title": "SendCodeRequest"
+      },
+      "SendCodeResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": ["message", "expires_in"],
+        "title": "SendCodeResponse"
+      },
+      "StartData": {
+        "properties": {
+          "current_user": {
+            "$ref": "#/components/schemas/UserSchema"
+          },
+          "inviter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GroupSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StartMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": ["current_user"],
+        "title": "StartData"
+      },
+      "StartMode": {
+        "type": "string",
+        "enum": ["draw", "keygo"],
+        "title": "StartMode"
+      },
+      "StartParamsRequest": {
+        "properties": {
+          "invite_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invite Code"
+          },
+          "referal_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referal Id"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StartMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "title": "StartParamsRequest"
+      },
+      "StartPurchaseRequest": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "RUB"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "default": "YOOKASSA"
+          },
+          "return_url": {
+            "type": "string",
+            "title": "Return Url"
+          }
+        },
+        "type": "object",
+        "required": ["product_id", "return_url"],
+        "title": "StartPurchaseRequest"
+      },
+      "StartPurchaseResponse": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "title": "Payment Id"
+          },
+          "confirmation_url": {
+            "type": "string",
+            "title": "Confirmation Url"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          }
+        },
+        "type": "object",
+        "required": ["payment_id", "confirmation_url", "amount", "currency"],
+        "title": "StartPurchaseResponse"
+      },
+      "SubscriptionSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriptionStatus"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Date"
+          },
+          "canceled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canceled At"
+          },
+          "cancellation_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellation Reason"
+          },
+          "cancellation_feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellation Feedback"
+          },
+          "has_access": {
+            "type": "boolean",
+            "title": "Has Access",
+            "description": "Determines if the subscription gives premium access.",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "product_id",
+          "status",
+          "start_date",
+          "end_date",
+          "has_access"
+        ],
+        "title": "SubscriptionSchema"
+      },
+      "SubscriptionStatus": {
+        "type": "string",
+        "enum": ["NONE", "PENDING", "ACTIVE", "CANCELED", "EXPIRED"],
+        "title": "SubscriptionStatus"
+      },
+      "SubscriptionWithDetailsSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriptionStatus"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Date"
+          },
+          "canceled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canceled At"
+          },
+          "cancellation_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellation Reason"
+          },
+          "cancellation_feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellation Feedback"
+          },
+          "provider_id": {
+            "$ref": "#/components/schemas/PaymentProvider"
+          },
+          "product_price": {
+            "type": "number",
+            "title": "Product Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "has_access": {
+            "type": "boolean",
+            "title": "Has Access",
+            "description": "Determines if the subscription gives premium access.",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "product_id",
+          "status",
+          "start_date",
+          "end_date",
+          "provider_id",
+          "product_price",
+          "currency",
+          "has_access"
+        ],
+        "title": "SubscriptionWithDetailsSchema"
+      },
+      "UpdateUserRequest": {
+        "properties": {
+          "app_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Username"
+          },
+          "app_language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Language Code"
+          },
+          "male": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Male"
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Date"
+          },
+          "is_onboarded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Onboarded"
+          },
+          "is_terms_accepted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Terms Accepted"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "title": "UpdateUserRequest"
+      },
+      "UserSchema": {
+        "properties": {
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "user_type": {
+            "$ref": "#/components/schemas/UserType",
+            "default": "REGISTERED"
+          },
+          "telegram_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Id"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "is_bot": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Bot"
+          },
+          "language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language Code"
+          },
+          "is_premium": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Premium"
+          },
+          "added_to_attachment_menu": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Added To Attachment Menu"
+          },
+          "allows_write_to_pm": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allows Write To Pm"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "app_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Username"
+          },
+          "app_language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Language Code"
+          },
+          "male": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Male"
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Date"
+          },
+          "is_onboarded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Onboarded"
+          },
+          "is_terms_accepted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Terms Accepted"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "referal_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referal Code"
+          },
+          "current_streak": {
+            "type": "integer",
+            "title": "Current Streak",
+            "default": 0
+          },
+          "best_streak": {
+            "type": "integer",
+            "title": "Best Streak",
+            "default": 0
+          },
+          "last_activity_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity Date"
+          },
+          "total_active_days": {
+            "type": "integer",
+            "title": "Total Active Days",
+            "default": 0
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "title": "UserSchema"
+      },
+      "UserType": {
+        "type": "string",
+        "enum": ["GUEST", "REGISTERED"],
+        "title": "UserType"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "VerifyCodeRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": ["username", "code"],
+        "title": "VerifyCodeRequest"
+      },
+      "VerifyCodeResponse": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserSchema"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["user", "message"],
+        "title": "VerifyCodeResponse"
+      },
+      "WorkerErrorResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "Worker task triggered",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "WorkerErrorResponse"
+      }
+    }
+  }
+}

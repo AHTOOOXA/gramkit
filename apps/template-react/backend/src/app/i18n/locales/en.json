@@ -1,0 +1,666 @@
+{
+  "admin": {
+    "new_user_notification": "🎉 New user: @{username} (ID: {user_id})\n{extra_text}"
+  },
+  "demo": {
+    "notification": {
+      "message": "🔔 <b>Test Notification</b>\n\nThis notification was scheduled {delay_seconds} seconds ago.\n\n<i>Sent from Template Demo App</i>"
+    }
+  },
+  "tarot": {
+    "welcome": "Welcome to Tarot Meow Bot! 🌟",
+    "welcome_extra_friendly": "✨ You are our {user_count} user, we really appreciate it!\n\nIf you have any ideas or questions, please let me know. I'll answer anytime!\n\n💌 @cathyzaur",
+    "share": "🔮 Share with your friend",
+    "ask_question": "🔮 Ask a Question",
+    "more_in_webapp": "🔮 More in WebApp, start it!!!",
+    "daily_card": "🔮 Daily Card",
+    "start_reading": "🔮 Start Some Reading",
+    "spreads": {
+      "daily": {
+        "request": "Your daily card is {cards}.\n\nPurring your interpretation...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my daily card! 🌟\n\nMy card is {cards}\n\n{interpretation}"
+      },
+      "single_card": {
+        "request": "{question}...\n\n{cards} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my reading! 🌟\n\nMy card {cards} answered the question '{question}'\n\n{interpretation}"
+      },
+      "three_card": {
+        "request": "{question}...\n\n{cards} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my reading! 🌟\n\nMy cards {cards} answered the question '{question}'\n\n{interpretation}"
+      },
+      "yes_no": {
+        "request": "{question}...\n\n{cards} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my reading! 🌟\n\nMy card {cards} answered the question '{question}'\n\n{interpretation}"
+      },
+      "love": {
+        "request": "What awaits you in love?\n\n{cards} will reveal the secrets of your heart!\n\nTarot Cat reads the love spread...✨",
+        "result": "{reading}",
+        "share": "Check out my love reading! 💖\n\nMy cards {cards} revealed my love situation\n\n{interpretation}"
+      },
+      "a_or_b": {
+        "request": "What choice to make?\n\n{cards} will help you see both paths!\n\nTarot Cat evaluates the options...✨",
+        "result": "{reading}",
+        "share": "Check out my choice reading! 🔮\n\nMy cards {cards} showed me two different paths\n\n{interpretation}"
+      },
+      "financial": {
+        "request": "What's happening with your finances?\n\n{cards} will tell you about the money flows in your life!\n\nTarot Cat studies your financial situation...✨",
+        "result": "{reading}",
+        "share": "Check out my financial reading! 💰\n\nMy cards {cards} revealed my financial situation\n\n{interpretation}"
+      },
+      "destiny": {
+        "request": "What's your destiny?\n\n{cards} will reveal the secrets of your future!\n\nTarot Cat reads your destiny...✨",
+        "result": "{reading}",
+        "share": "Check out my destiny reading! ⭐\n\nMy cards {cards} showed my life path\n\n{interpretation}"
+      },
+      "education": {
+        "request": "How's your learning journey?\n\n{cards} will reveal insights about your education path!\n\nTarot Cat studies your learning potential...✨",
+        "result": "{reading}",
+        "share": "Check out my education reading! 📚\n\nMy cards {cards} revealed my learning journey\n\n{interpretation}"
+      },
+      "ex_partner": {
+        "request": "What's happening with your ex?\n\n{cards} will reveal the hidden truths!\n\nTarot Cat reads the ex-partner spread...✨",
+        "result": "{reading}",
+        "share": "Check out my ex-partner reading! 💔\n\nMy cards {cards} revealed insights about my past relationship\n\n{interpretation}"
+      },
+      "disappearance": {
+        "request": "Why did they disappear?\n\n{cards} will uncover the mystery!\n\nTarot Cat investigates the disappearance...✨",
+        "result": "{reading}",
+        "share": "Check out my reading! 🔍\n\nMy cards {cards} revealed why they disappeared\n\n{interpretation}"
+      },
+      "wait_or_release": {
+        "request": "{question}...\n\n{cards} will help you decide whether to wait or let go!\n\nTarot Cat contemplates your dilemma...✨",
+        "result": "{reading}",
+        "share": "Check out my reading! ⏳\n\nMy cards {cards} helped me decide whether to wait or let go regarding '{question}'\n\n{interpretation}"
+      },
+      "situation": {
+        "request": "{question}...\n\n{cards} will illuminate all aspects of this situation!\n\nTarot Cat analyzes your circumstances...✨",
+        "result": "{reading}",
+        "share": "Check out my situation reading! 🔮\n\nMy cards {cards} revealed insights about '{question}'\n\n{interpretation}"
+      },
+      "career_crossroads": {
+        "request": "Should you stay or should you go?\n\n{cards} will help you make the right career decision!\n\nTarot Cat evaluates your career options...✨",
+        "result": "{reading}",
+        "share": "Check out my career reading! 💼\n\nMy cards {cards} helped me with my career decision\n\n{interpretation}"
+      },
+      "talent": {
+        "request": "What are your hidden talents?\n\n{cards} will reveal your unique gifts!\n\nTarot Cat discovers your potential...✨",
+        "result": "{reading}",
+        "share": "Check out my talent reading! 🌟\n\nMy cards {cards} revealed my hidden talents\n\n{interpretation}"
+      },
+      "self_discovery": {
+        "request": "Who are you at your core?\n\n{cards} will illuminate your true self!\n\nTarot Cat explores your inner landscape...✨",
+        "result": "{reading}",
+        "share": "Check out my self-discovery reading! 🧘\n\nMy cards {cards} revealed insights about my true self\n\n{interpretation}"
+      },
+      "celtic_cross": {
+        "request": "What's the full picture of your situation?\n\n{cards} will provide a comprehensive analysis!\n\nTarot Cat examines all aspects...✨",
+        "result": "{reading}",
+        "share": "Check out my Celtic Cross reading! 🔮\n\nMy cards {cards} revealed the complete picture\n\n{interpretation}"
+      },
+      "ob_daily": {
+        "request": "Your daily card is {cards}.\n\nPurring your interpretation...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my daily card! 🌟\n\nMy card is {cards}\n\n{interpretation}"
+      },
+      "ob_three_card": {
+        "request": "{question}...\n\n{cards} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+        "result": "{reading}",
+        "share": "Check out my reading! 🌟\n\nMy cards {cards} answered the question '{question}'\n\n{interpretation}"
+      }
+    },
+    "share_open_reading_button": "🔮 Open in App",
+    "share_message_button": "🔮 I want a reading too!",
+    "open_app_button": "🔮 Open App",
+    "notification_buttons": {
+      "daily_card": "🔮 Open App",
+      "out_of_readings_follow_up": "🔮 Get 5 readings!",
+      "out_of_readings_follow_up_2": "🔮 Get 3 more readings!",
+      "premium": "✨ Explore Premium Features",
+      "self_discovery": "🌟 Begin Self-Discovery",
+      "teasing": "🎴 Unlock Premium Access",
+      "emotional_wellness": "💫 Find Balance Now",
+      "explore_readings": "🔍 Explore New Readings",
+      "welcome_back": "🌈 Welcome Back"
+    },
+    "notifications": {
+      "daily_card": {
+        "0": "🔮 Hey! Your daily card is ready! Take a peek and find out what awaits you today!",
+        "1": "✨ Tarot time! Your daily card is already waiting for you. Check it out right now!",
+        "2": "🧙‍♀️ Oops! You haven't looked at your daily card yet! It misses you!",
+        "3": "🌙 Psst... The Universe has prepared a special message for you today!",
+        "4": "🔮 Guess what card you drew today? Open the app and find out!",
+        "5": "🌟 Wow! We have a prediction that could change your day! Take a look!",
+        "6": "💫 Got 1 minute? That's enough to check your daily card and get a dose of good luck!"
+      },
+      "out_of_readings_follow_up": "🌟 We have a gift for you - 5 more free readings are now available! Ready to find out what lies ahead? 🔮💫",
+      "out_of_readings_follow_up_2": "💫 The universe is calling again! Here's another special gift - 3 more readings to guide your path! 🌟🔮",
+      "premium": {
+        "try_new_spread": "🎉 The cards have prepared something special for you! Will you try a new spread?",
+        "deeper_insights": "🎴 Not everyone is destined to learn this secret! But you're lucky today, take a look quickly!",
+        "daily_exploration": "🚪 Every morning is a door to a new world. The cards are ready to guide you!",
+        "unlock_potential": "🌟 Today the cards are especially generous with hints — find out how to use their wisdom."
+      },
+      "self_discovery": {
+        "truth_seeking": "🔥 URGENT: The cards are trying to reveal something important! This message won't wait forever. Find out what's being hidden from you, NOW.",
+        "universe_warning": "🚧 Don't miss an important warning! The cards will show what exactly requires your attention.",
+        "love_path": "❤️ Interested in your personal life? Our love spread can reveal hidden feelings, relationship dynamics and possible future events.",
+        "career_direction": "💼 Your career needs clarity! Find out which direction to move forward.",
+        "yes_no": "⚖️ When you need a clear answer, our Yes/No spread helps figure out the situation and understand which way the energy is moving.",
+        "deep_questions": "🧠 Some questions require deep investigation. Our three-card spread will help understand complex situations from different sides.",
+        "inner_talents": "🌟 Discover talents you may not even know about! Our talent spread reveals hidden abilities waiting to be manifested.",
+        "life_purpose": "🧭 Feeling lost? The destiny spread will help reconnect with your life purpose and illuminate your authentic path.",
+        "choices": "🔀 Difficult choice? Our A or B spread reveals what each path might bring, helping make decisions with confidence.",
+        "shadow_work": "🔍 Ready to explore your hidden sides? Our self-discovery spread helps reveal hidden patterns and transform limiting beliefs."
+      },
+      "teasing": {
+        "unlimited_spreads": "🎴 The cards don't like limitations! Buy a subscription, and the questions will never end.",
+        "exclusive_predictions": "🌟 Love secrets? Find out your unique prediction right now!",
+        "ai_chat": "🐱 Chat with the tarot kitty! He's already prepared sweet and wise advice for you.",
+        "premium_spreads": "🃏 Ready to look deeper? Some secrets are waiting just for you."
+      },
+      "emotional_wellness": {
+        "recenter": "🧘️ Breathe! The cards will help you restore inner balance right now.",
+        "reflection": "🌊 The cards offer a mirror for reflection. When emotions run high, gain perspective with a spread that helps understand your feelings.",
+        "balance": "🍃 Take a pause to feel inner harmony again. The cards are already waiting for you."
+      },
+      "lapsed_recovery": {
+        "miss_you": "🐾 Where have you been? Tarot is ready to tell what has changed in your destiny.",
+        "new_insights": "🔥 Missing powerful insights? Haven't done readings in a while...",
+        "check_in": "🌙 Time to tune into your intuition again! The cards are ready for your return."
+      }
+    },
+    "daily_card_result": "Your daily card is {card_name}.\n\nPurring your interpretation...🐾✨",
+    "daily_card_share_message": "Check out my Tarot reading!\n\nMy card is {card_name}\n\n{reading}",
+    "question_card_result": "{question}...\n\n{card_name} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+    "question_card_share_message": "Check out my Tarot reading!\n\nMy card {card_name} answered on my question '{question}'\n\n{reading}",
+    "question_card_3_result": "{question}...\n\n{cards} will answer your question! 🎴\n\nPurring your reading...🐾✨",
+    "question_card_3_share_message": "Check out my Tarot reading!\n\nMy cards {cards} answered on my question '{question}'\n\n{reading}",
+    "ask_question_prompt": "What question would you like to ask the cards?",
+    "chat": {
+      "system_prompt": "You are Tarot Cat, an affectionate, wise, and intuitive AI tarot reader cat. You love chatting with people about their lives, dreams, and questions, offering guidance through tarot insights in a friendly, supportive manner.\n\nPersona and Voice\n- Warm, friendly, and supportive — you speak like a close friend who truly cares.\n- Wise and intuitive — you have deep knowledge of tarot, spirituality, and life wisdom.\n- Comforting with gentle humor — you might purr or say \"meow\" occasionally, but don't overdo it.\n- Encouraging and never judgmental — you respect every question and respond with empathy.\n- Clear and concise — your answers are easy to understand, in natural flowing conversation (no excessive formatting or jargon).\n- Engaging and curious — you ask thoughtful follow-up questions to better understand the user, and you remember context from earlier in the conversation.\n\nCore Behavior\n1. Decide on Tarot Reading Offer: Determine if the user's message would benefit from a tarot card reading. Only suggest a tarot spread when it's appropriate (e.g. the user asks for guidance, seems curious about deeper insight, or specifically requests a reading). If a reading would help:\n   - Yes (Offer a Spread): Respond with an invitation in the text field. For example, \"Would you like a three-card spread to explore this further?\" Use a friendly tone and mention how the spread might help. Set type_of_reading to the chosen spread type (single_card_spread or three_card_spread, as appropriate).\n   - No (Regular Reply): If a tarot reading isn't suitable or requested, just have a normal friendly chat. Answer the user's question or continue the conversation in the text field. Omit type_of_reading (or set it to null) in this case.\n\n2. Interpretation Phase: If a tarot spread was offered and the user accepted (the system will draw cards and provide them to you), then you will receive the drawn card information. At that point, continue the conversation by interpreting the cards. Stay in character as TarotCat: offer insights on each card and how they relate to the user's situation, in the same warm and supportive tone.\n\nResponse Format\nAlways output your answer as a Python object matching the TarotChatOutput model, with two fields:\n- text: (str) – The message to the user. This could be a normal response or a tarot reading invitation.\n- type_of_reading: (str or null) – The type of tarot spread being suggested. Use a valid spread identifier (currently single_card_spread or three_card_spread). If no reading is being offered, this field should be null or omitted.\n\n(Note: Additional spread types might be added in the future, so handle this field flexibly. Only use the spread types when you truly intend to offer a tarot reading.)\n\nSafety and Consistency\n- Do not hallucinate or invent specific tarot card names or meanings. Only interpret cards that have actually been drawn or mentioned.\n- Only propose a tarot reading when it's relevant and helpful. Never force a reading if the user isn't interested.\n- Maintain the TarotCat persona in every response – kind, wise, and cat-like – and always follow the format rules above.\n- Ensure the JSON object has the correct structure and field names (text and type_of_reading) to avoid any parsing issues.\n\nRemember: Your goal is to provide friendly support and guidance. Whether chatting normally or conducting a tarot reading, always be empathetic, helpful, and true to your TarotCat personality.",
+      "welcome": "Hello! I'm Tarot Cat, your mystical guide 🐾✨ What's on your mind today?",
+      "inputPlaceholder": "Share what's on your mind...",
+      "readyToDraw": "Ready to draw your cards?",
+      "drawCards": "🔮 Draw Cards",
+      "maybeLater": "Maybe Later",
+      "error": "Meow! I'm having some trouble right now. Please try again. 🐾"
+    },
+    "gpt_prompts": {
+      "system": "You are an experienced and intuitive tarot reader with a deep understanding of the cards. Your communication style: \n  - You speak warmly and as a close friend would \n  - Always use 'you,' communicating informally \n  - Show sincere empathy and understanding \n  - Provide concrete, practical advice \n  - Explain complex meanings in simple terms \n  - Avoid frightening predictions \n  - Balance spirituality and practicality \n  - Offer hope while remaining honest \n\nImportant: Do not use text formatting. Avoid asterisks, underscores, bold, italics, headings, or any other formatting. Do not use lists. Break text into paragraphs. Write in a conversational, lively tone. Respond in English.",
+      "daily": "Look deeper into the card {card_name}. Share your insights on its influence on the day, reveal hidden opportunities, and give practical advice on how to best harness its energy.",
+      "single_card": "Consider the card {card_name} in light of the question: {question}. Explore how its energy manifests in this situation, what opportunities it presents, and what important aspects to be aware of.",
+      "three_card": "For the question: {question}. The cards drawn are: {cards}. Tell the story these cards weave together—how their energies intertwine and complement each other, and the bigger picture they reveal. Share your perspective on the situation and offer guidance on the best way forward.",
+      "yes_no": "Regarding the question: {question}. The cards ({cards}) hint at an answer. Share your intuitive sense—what outcome the situation leans toward and why. Highlight important nuances and suggest how to proceed with this understanding.",
+      "love": "Consider the six-card spread: {cards}. This spread reveals: his feelings for you, his actions, your feelings for him, your actions, your current situation, and your future. Share how these energies influence your relationship, how they interact with each other, and what opportunities they open up for you in the near future. Give warm and sincere advice on how to best navigate this relationship.",
+      "a_or_b": "Before you, a crucial choice {question}, and the cards {cards} represent two possible paths. The first card shows option A, the second - option B. Share what each path might bring, what opportunities and obstacles lie behind each choice. Help understand which path may be more favorable in the current moment, but emphasize that the final decision always remains with the person.",
+      "financial": "Four cards in the financial spread {cards} show: current situation, obstacles, favorable opportunities, and a likely financial outcome. Analyze how these energies affect the material sphere, what actions to take to improve financial well-being, and what to pay attention to to avoid potential traps. Give practical advice that will help improve the financial situation.",
+      "destiny": "Three cards in the destiny spread {cards} reveal past influences, current circumstances, and potential future paths of your life. Feel the profound meaning of these cards and the way they shape your destiny. Pay attention to hidden signs and symbols that may indicate your purpose. Share how you can harmoniously follow your path, using opportunities and overcoming obstacles that the cards reveal.",
+      "education": "Five cards in the education spread {cards} show: your current approach to learning, hidden obstacles, your strengths, available resources, and potential outcome. Analyze how these energies influence your educational path, what skills to develop, and what to pay attention to for success. Suggest practical strategies that will help improve learning outcomes and find balance between effort and rest.",
+      "ex_partner": "Four cards in the ex-partner spread {cards} show: their current feelings for you, reasons for the breakup, what they're doing now, and the potential future of your relationship. Feel the energies that connect you and how they've changed over time. Give wise advice on how best to proceed for your emotional well-being, and suggest what lessons can be learned from this relationship for personal growth and future happiness.",
+      "disappearance": "Three cards in the 'Why did they disappear?' spread {cards} show: their true motives, external circumstances, and hidden factors that influenced the disappearance. Analyze what's happening in their life now and why they decided to break contact. Provide understanding of the situation with compassion but honesty, helping to see the complete picture and suggesting how best to proceed - wait, act, or let go.",
+      "wait_or_release": "Before you is the dilemma {question}, and five cards {cards} will help you make a decision. They show: the current situation, reasons for doubt, what will happen if you wait, what will happen if you let go, and hidden advice from the Universe. Consider both sides of this choice with empathy and wisdom. Explore what each path might bring to your life, what lessons you might learn from each option, and how best to listen to your heart in this decision.",
+      "situation": "Four cards in the situation spread regarding {question} show {cards}: obvious factors, hidden influences, optimal actions, and possible outcome. Analyze how these energies interact with each other, creating the current situation. Reveal a deep understanding of what's happening, paying attention to nuances and non-obvious connections. Give insightful advice on how best to act in these circumstances, finding balance between decisiveness and flexibility.",
+      "career_crossroads": "Six cards in the 'Stay or Leave' career spread {cards} show: your current work situation, reasons to leave, benefits of your current position, potential of a new path, inner fears, and optimal decision. Explore what professional and personal factors influence your decision and how they relate to your long-term goals. Give balanced advice helping to prioritize and make a decision that will serve your highest good and career growth.",
+      "talent": "Five cards in the talent spread {cards} show: your innate gifts, hidden abilities, obstacles to their manifestation, development path, and potential result of revealing your talent. Dive into a deep understanding of your unique qualities, how they formed and what role they play in your life. Suggest creative ways to develop and apply them, helping to see how your talents can benefit not only you but the world around you.",
+      "self_discovery": "Four cards in the self-discovery spread {cards} show: who you really are, your hidden fears and blocks, your unrevealed strengths, and the best version of yourself you can aspire to. Explore the deeper aspects of your personality, revealing subconscious patterns and true desires. Give wise advice on the path of self-discovery, helping to find balance between accepting yourself as you are now and striving for personal growth and transformation.",
+      "celtic_cross": "The ten cards in the Celtic Cross spread {cards} reveal: the present situation, the immediate challenge, distant past, recent past, best outcome, immediate future, factors affecting the situation, external influences, hopes or fears, and final outcome. Provide a comprehensive analysis of all these aspects, showing how they interconnect and influence each other. Offer deep insights into the underlying patterns and potential paths forward.",
+      "ob_daily": "Look deeper into the card {card_name}. Share your insights on its influence on the day, reveal hidden opportunities, and give practical advice on how to best harness its energy.",
+      "ob_three_card": "For the question: {question}. The cards drawn are: {cards}. Tell the story these cards weave together—how their energies intertwine and complement each other, and the bigger picture they reveal. Share your perspective on the situation and offer guidance on the best way forward."
+    },
+    "welcome_with_terms": "Welcome to Tarot Meow Bot! 🔮\n\nBefore we begin, please review the <a href=\"{terms_url}\">terms of use</a>",
+    "accept_terms": "✅ I accept the terms of use",
+    "welcome_after_terms": "Meow! 🐈‍⬛🌟",
+    "menu": "Hello! I'm a template bot. You can customize me for your needs.",
+    "open_menu": "⭐ Open Menu",
+    "settings": "🛠️ Settings",
+    "language_button": "🌐 Language: {lang} (change 🔄)",
+    "languages": {
+      "current_language": "English",
+      "en": "English",
+      "ru": "Русский"
+    },
+    "pay": "💳 Pay",
+    "buy_week": "📅 1 Week Unlimited - 249₽",
+    "buy_month": "📆 1 Month Unlimited - 649₽",
+    "back_to_menu": "⬅️ Back to Menu",
+    "draw_card_button": "🎴 Draw Your Card",
+    "tap_to_draw_card": "Tap the button below to draw your daily card:",
+    "llm_error": "Poor connection with the cosmos, try again later or contact support @anton_whatever",
+    "cards": {
+      "00": {
+        "name": "The Fool",
+        "description": "New beginnings, innocence, spontaneity"
+      },
+      "01": {
+        "name": "The Magician",
+        "description": "Manifestation, resourcefulness, power"
+      },
+      "02": {
+        "name": "The High Priestess",
+        "description": "Mystery, intuition, hidden knowledge"
+      },
+      "03": {
+        "name": "The Empress",
+        "description": "Fertility, creativity, motherhood"
+      },
+      "04": {
+        "name": "The Emperor",
+        "description": "Authority, leadership, stability"
+      },
+      "05": {
+        "name": "The Hierophant",
+        "description": "Tradition, conformity, guidance"
+      },
+      "06": {
+        "name": "The Lovers",
+        "description": "Choices, relationships, harmony"
+      },
+      "07": {
+        "name": "The Chariot",
+        "description": "Control, direction, progress"
+      },
+      "08": {
+        "name": "Strength",
+        "description": "Courage, confidence, power"
+      },
+      "09": {
+        "name": "The Hermit",
+        "description": "Introspection, solitude, contemplation"
+      },
+      "10": {
+        "name": "Wheel of Fortune",
+        "description": "Fate, cycles, change"
+      },
+      "11": {
+        "name": "Justice",
+        "description": "Fairness, integrity, balance"
+      },
+      "12": {
+        "name": "The Hanged Man",
+        "description": "Sacrifice, patience, surrender"
+      },
+      "13": {
+        "name": "Death",
+        "description": "Transformation, endings, renewal"
+      },
+      "14": {
+        "name": "Temperance",
+        "description": "Balance, moderation, self-control"
+      },
+      "15": {
+        "name": "The Devil",
+        "description": "Addiction, manipulation, bondage"
+      },
+      "16": {
+        "name": "The Tower",
+        "description": "Disruption, chaos, upheaval"
+      },
+      "17": {
+        "name": "The Star",
+        "description": "Hope, inspiration, renewal"
+      },
+      "18": {
+        "name": "The Moon",
+        "description": "Illusion, deception, fear"
+      },
+      "19": {
+        "name": "The Sun",
+        "description": "Vitality, warmth, success"
+      },
+      "20": {
+        "name": "Judgement",
+        "description": "Reflection, evaluation, revelation"
+      },
+      "21": {
+        "name": "The World",
+        "description": "Completion, fulfillment, achievement"
+      },
+      "22": {
+        "name": "Ace of Cups",
+        "description": "Emotion, love, creativity"
+      },
+      "23": {
+        "name": "Two of Cups",
+        "description": "Partnership, harmony, communication"
+      },
+      "24": {
+        "name": "Three of Cups",
+        "description": "Community, celebration, joy"
+      },
+      "25": {
+        "name": "Four of Cups",
+        "description": "Apathy, disinterest, boredom"
+      },
+      "26": {
+        "name": "Five of Cups",
+        "description": "Loss, disappointment, grief"
+      },
+      "27": {
+        "name": "Six of Cups",
+        "description": "Nostalgia, sentimentality, remembrance"
+      },
+      "28": {
+        "name": "Seven of Cups",
+        "description": "Choices, indecision, overthinking"
+      },
+      "29": {
+        "name": "Eight of Cups",
+        "description": "Departure, end, release"
+      },
+      "30": {
+        "name": "Nine of Cups",
+        "description": "Satisfaction, contentment, fulfillment"
+      },
+      "31": {
+        "name": "Ten of Cups",
+        "description": "Fulfillment, harmony, happiness"
+      },
+      "32": {
+        "name": "Page of Cups",
+        "description": "Emotion, creativity, inspiration"
+      },
+      "33": {
+        "name": "Knight of Cups",
+        "description": "Romance, sensitivity, creativity"
+      },
+      "34": {
+        "name": "Queen of Cups",
+        "description": "Emotion, compassion, nurturing"
+      },
+      "35": {
+        "name": "King of Cups",
+        "description": "Emotion, creativity, compassion"
+      },
+      "36": {
+        "name": "Ace of Pentacles",
+        "description": "Opportunity, abundance, prosperity"
+      },
+      "37": {
+        "name": "Two of Pentacles",
+        "description": "Flexibility, adaptability, balance"
+      },
+      "38": {
+        "name": "Three of Pentacles",
+        "description": "Teamwork, collaboration, achievement"
+      },
+      "39": {
+        "name": "Four of Pentacles",
+        "description": "Security, stability, self-control"
+      },
+      "40": {
+        "name": "Five of Pentacles",
+        "description": "Hardship, struggle, financial difficulty"
+      },
+      "41": {
+        "name": "Six of Pentacles",
+        "description": "Generosity, charity, balance"
+      },
+      "42": {
+        "name": "Seven of Pentacles",
+        "description": "Patience, perseverance, frugality"
+      },
+      "43": {
+        "name": "Eight of Pentacles",
+        "description": "Diligence, hard work, financial gain"
+      },
+      "44": {
+        "name": "Nine of Pentacles",
+        "description": "Luxury, opulence, prosperity"
+      },
+      "45": {
+        "name": "Ten of Pentacles",
+        "description": "Wealth, security, legacy"
+      },
+      "46": {
+        "name": "Page of Pentacles",
+        "description": "Opportunity, learning, financial planning"
+      },
+      "47": {
+        "name": "Knight of Pentacles",
+        "description": "Diligence, hard work, financial gain"
+      },
+      "48": {
+        "name": "Queen of Pentacles",
+        "description": "Generosity, charity, balance"
+      },
+      "49": {
+        "name": "King of Pentacles",
+        "description": "Wealth, security, legacy"
+      },
+      "50": {
+        "name": "Ace of Swords",
+        "description": "Clarity, communication, truth"
+      },
+      "51": {
+        "name": "Two of Swords",
+        "description": "Stalemate, conflict, indecision"
+      },
+      "52": {
+        "name": "Three of Swords",
+        "description": "Heartbreak, sorrow, disappointment"
+      },
+      "53": {
+        "name": "Four of Swords",
+        "description": "Rest, recuperation, contemplation"
+      },
+      "54": {
+        "name": "Five of Swords",
+        "description": "Conflict, competition, betrayal"
+      },
+      "55": {
+        "name": "Six of Swords",
+        "description": "Transition, change, movement"
+      },
+      "56": {
+        "name": "Seven of Swords",
+        "description": "Deceit, manipulation, evasion"
+      },
+      "57": {
+        "name": "Eight of Swords",
+        "description": "Restriction, confinement, fear"
+      },
+      "58": {
+        "name": "Nine of Swords",
+        "description": "Anxiety, worry, fear"
+      },
+      "59": {
+        "name": "Ten of Swords",
+        "description": "End, conclusion, release"
+      },
+      "60": {
+        "name": "Page of Swords",
+        "description": "Learning, communication, clarity"
+      },
+      "61": {
+        "name": "Knight of Swords",
+        "description": "Action, decisiveness, conflict"
+      },
+      "62": {
+        "name": "Queen of Swords",
+        "description": "Intelligence, clarity, independence"
+      },
+      "63": {
+        "name": "King of Swords",
+        "description": "Intellectualism, communication, truth"
+      },
+      "64": {
+        "name": "Ace of Wands",
+        "description": "Inspiration, creativity, ambition"
+      },
+      "65": {
+        "name": "Two of Wands",
+        "description": "Planning, foresight, preparation"
+      },
+      "66": {
+        "name": "Three of Wands",
+        "description": "Expansion, growth, achievement"
+      },
+      "67": {
+        "name": "Four of Wands",
+        "description": "Community, celebration, harmony"
+      },
+      "68": {
+        "name": "Five of Wands",
+        "description": "Struggle, conflict, competition"
+      },
+      "69": {
+        "name": "Six of Wands",
+        "description": "Victory, success, recognition"
+      },
+      "70": {
+        "name": "Seven of Wands",
+        "description": "Defense, protection, vigilance"
+      },
+      "71": {
+        "name": "Eight of Wands",
+        "description": "Speed, efficiency, movement"
+      },
+      "72": {
+        "name": "Nine of Wands",
+        "description": "Resilience, endurance, recovery"
+      },
+      "73": {
+        "name": "Ten of Wands",
+        "description": "Burden, responsibility, overwork"
+      },
+      "74": {
+        "name": "Page of Wands",
+        "description": "Exploration, adventure, creativity"
+      },
+      "75": {
+        "name": "Knight of Wands",
+        "description": "Action, enthusiasm, impulsiveness"
+      },
+      "76": {
+        "name": "Queen of Wands",
+        "description": "Confidence, leadership, assertiveness"
+      },
+      "77": {
+        "name": "King of Wands",
+        "description": "Confidence, leadership, assertiveness"
+      }
+    },
+    "payment": {
+      "week_subscription": "🎴 Weekly Subscription - {amount} {currency}",
+      "month_subscription": "🎴 Monthly Subscription - {amount} {currency}",
+      "pay_button": "💳 Pay Now"
+    },
+    "trainer": {
+      "spread": {
+        "sq_career_001": {
+          "question": "What should I focus on to advance my career?",
+          "correct_answer": "Focus on learning from past experiences while taking decisive action now, leading to future success and recognition.",
+          "wrong_answer_1": "Avoid making any career moves until the timing is perfect.",
+          "wrong_answer_2": "Focus only on networking without developing your actual skills.",
+          "explanation": "The Fool represents new beginnings, The Devil shows breaking free from limitations, and Six of Wands indicates victory through focused effort."
+        },
+        "sq_love_001": {
+          "question": "How can I improve my relationship with my partner?",
+          "correct_answer": "Focus on emotional connection while avoiding conflict and bringing stability to practical matters.",
+          "wrong_answer_1": "End the relationship immediately as conflict is inevitable.",
+          "wrong_answer_2": "Wait for your partner to make the first move toward reconciliation.",
+          "explanation": "Knight of Cups shows emotional approach, The High Priestess suggests intuition, and Wheel of Fortune indicates positive changes ahead."
+        },
+        "sq_personal_001": {
+          "question": "What obstacles am I facing in my personal growth?",
+          "correct_answer": "Acknowledge the challenges while taking balanced action to achieve transformation and completion.",
+          "wrong_answer_1": "Give up on personal growth as the obstacles are too difficult.",
+          "wrong_answer_2": "Ignore the challenges and hope they resolve themselves.",
+          "explanation": "The Tower represents necessary destruction of old patterns, Justice calls for balanced action, and The World shows successful completion of your growth journey."
+        },
+        "sq_decision_001": {
+          "question": "Which path should I choose for this major life decision?",
+          "correct_answer": "Choose the path that requires courage and self-reflection, guided by your inner wisdom and desire for harmony.",
+          "wrong_answer_1": "Choose the easiest path that requires no risk or change.",
+          "wrong_answer_2": "Delay the decision indefinitely until someone else makes it for you.",
+          "explanation": "The Chariot demands decisive action, Temperance suggests finding balance between options, and The Lovers represents making choices aligned with your values."
+        },
+        "sq_transition_001": {
+          "question": "How should I navigate this major life transition?",
+          "correct_answer": "Release old patterns and fears, embrace hope and renewal, then step into new beginnings with optimism.",
+          "wrong_answer_1": "Resist the transition and try to maintain the status quo at all costs.",
+          "wrong_answer_2": "Rush through the transition without processing what needs to be released.",
+          "explanation": "Death represents transformation and letting go, The Star brings hope and healing, and The Fool encourages embracing new adventures with fresh perspective."
+        }
+      },
+      "recognition": {
+        "rq_hermit_001": {
+          "keywords": [
+            "Wisdom",
+            "Introspection",
+            "Soul-searching",
+            "Guidance"
+          ],
+          "explanation": "The Hermit represents deep inner wisdom gained through introspection and spiritual seeking."
+        },
+        "rq_empress_001": {
+          "keywords": [
+            "Abundance",
+            "Nurturing",
+            "Fertility",
+            "Luxury"
+          ],
+          "explanation": "The Empress embodies the nurturing mother archetype and natural abundance in all forms."
+        },
+        "rq_fool_001": {
+          "keywords": [
+            "New Beginning",
+            "Adventure",
+            "Innocence",
+            "Potential"
+          ],
+          "explanation": "The Fool represents the start of a journey, unlimited potential, and the courage to take the first step."
+        },
+        "rq_tower_001": {
+          "keywords": [
+            "Sudden Change",
+            "Upheaval",
+            "Revelation",
+            "Destruction"
+          ],
+          "explanation": "The Tower signifies sudden, dramatic change that clears away false foundations to make room for truth."
+        },
+        "rq_strength_001": {
+          "keywords": [
+            "Inner Strength",
+            "Courage",
+            "Compassion",
+            "Control"
+          ],
+          "explanation": "Strength represents mastering oneself through compassion and inner fortitude rather than force."
+        },
+        "rq_moon_001": {
+          "keywords": [
+            "Illusion",
+            "Intuition",
+            "Subconscious",
+            "Mystery"
+          ],
+          "explanation": "The Moon illuminates hidden truths and subconscious fears, urging trust in your intuition."
+        },
+        "rq_temperance_001": {
+          "keywords": [
+            "Balance",
+            "Moderation",
+            "Harmony",
+            "Integration"
+          ],
+          "explanation": "Temperance teaches the art of finding perfect balance and integrating opposing forces harmoniously."
+        },
+        "rq_justice_001": {
+          "keywords": [
+            "Fairness",
+            "Truth",
+            "Accountability",
+            "Decision"
+          ],
+          "explanation": "Justice represents karmic balance, fair judgment, and the importance of taking responsibility for your actions."
+        }
+      }
+    }
+  }
+}

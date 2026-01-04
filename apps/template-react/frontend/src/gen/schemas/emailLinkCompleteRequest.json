@@ -1,0 +1,1 @@
+{"properties":{"code":{"type":"string","maxLength":6,"minLength":6,"pattern":"^\\d{6}$","title":"Code"},"password":{"type":"string","maxLength":128,"minLength":8,"title":"Password"}},"type":"object","required":["code","password"],"title":"EmailLinkCompleteRequest","description":"Request to complete email linking.","x-readme-ref-name":"EmailLinkCompleteRequest"}

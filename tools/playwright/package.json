@@ -1,0 +1,12 @@
+{
+  "name": "playwright-server",
+  "version": "1.0.0",
+  "description": "Playwright HTTP server for AI-driven testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@playwright/test": "1.48.0"
+  }
+}

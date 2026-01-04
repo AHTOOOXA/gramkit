@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+dist
+build
+.turbo
+pnpm-lock.yaml
+package-lock.json
+types/api.d.ts

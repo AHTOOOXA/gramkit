@@ -1,0 +1,626 @@
+{
+  "welcome": "Welcome",
+  "home": "Home",
+  "settings": "Settings",
+  "friends": "Friends",
+  "language": "Language",
+  "theme": "Theme",
+  "loading": "Loading...",
+  "error": "Error",
+  "save": "Save",
+  "cancel": "Cancel",
+  "logout": "Logout",
+  "nav": {
+    "home": "Home",
+    "demo": "Demo",
+    "profile": "Profile",
+    "admin": "Admin",
+    "features": "Features",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "navigation": "Navigation"
+  },
+  "app": {
+    "name": "Template App"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "demo": {
+    "title": "Tech Demo",
+    "subtitle": "See the stack in action",
+    "ctaText": "Want to see user features?",
+    "ctaLink": "Go to Profile",
+    "loading": {
+      "title": "Loading States",
+      "trigger": "Trigger Load",
+      "loading": "Loading...",
+      "clickToLoad": "Click button to load data",
+      "loadedAt": "Loaded at"
+    },
+    "error": {
+      "title": "Error Handling",
+      "trigger": "Test Request",
+      "failRate": "fail rate",
+      "trying": "Trying",
+      "failed": "Request failed",
+      "retry": "Retry",
+      "clickToTest": "Click to test error handling"
+    },
+    "httpStatus": {
+      "title": "HTTP Status Codes",
+      "description": "Click to trigger different HTTP errors and see how they're classified.",
+      "clickToTest": "Click a status code button above",
+      "clientErrors": "Client errors (4xx) - no retry",
+      "serverErrors": "Server errors (5xx) - will retry"
+    },
+    "retryComparison": {
+      "title": "Retry Behavior",
+      "description": "Compare how recoverable (5xx) vs non-recoverable (4xx) errors are handled.",
+      "serverError": "500 Server Error",
+      "notFound": "404 Not Found",
+      "willRetry": "Will Retry",
+      "noRetry": "No Retry",
+      "trigger": "Trigger Error",
+      "clickToStart": "Click trigger to start",
+      "attempt": "Attempt",
+      "failed": "Failed",
+      "success": "Success",
+      "waitingMs": "waiting {ms}ms",
+      "note": "Note",
+      "noteText": "500 errors retry up to 3 times with exponential backoff. 404 errors fail immediately because they're not recoverable."
+    },
+    "cache": {
+      "title": "Cache & Stale Time",
+      "refetch": "Refetch",
+      "invalidate": "Invalidate",
+      "fresh": "Fresh",
+      "stale": "Stale",
+      "fetchedAgo": "Fetched",
+      "staleTimeNote": "Data becomes stale after 10 seconds"
+    },
+    "optimistic": {
+      "title": "Optimistic Updates",
+      "optimistic": "(optimistic)",
+      "error": "Failed to increment counter",
+      "serverValue": "Server value",
+      "willFail": "will fail",
+      "reset": "Reset",
+      "note": "Click \"+1 (will fail)\" to see rollback behavior"
+    },
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "current": "Current theme"
+    },
+    "i18n": {
+      "title": "Internationalization",
+      "preview": "Preview",
+      "sampleText": "This text changes when you switch languages.",
+      "current": "Current language"
+    },
+    "infiniteScroll": {
+      "title": "Infinite Scroll",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
+      "empty": "No items yet",
+      "error": "Failed to load items",
+      "retry": "Retry",
+      "note": "Uses useInfiniteQuery with cursor-based pagination"
+    },
+    "prefetch": {
+      "title": "Prefetching",
+      "description": "Hover over buttons to prefetch data, then click to view instantly.",
+      "hoverHint": "Hover over an item to prefetch",
+      "fetchedAt": "Fetched at",
+      "prefetchedIndicator": "Green dot indicates prefetched data",
+      "note": "Prefetching on hover improves perceived performance"
+    },
+    "polling": {
+      "title": "Polling / Live Data",
+      "serverTime": "Server Time",
+      "lastUpdate": "Last update",
+      "note": "Uses refetchInterval for automatic polling"
+    },
+    "websocket": {
+      "title": "WebSocket Real-time",
+      "usersOnline": "users online",
+      "increment": "+ Increment",
+      "note": "Counter updates from simulated users every few seconds"
+    },
+    "network": {
+      "title": "Network Status",
+      "online": "Online",
+      "offline": "Offline",
+      "simulatedOffline": "Simulated Offline",
+      "fetching": "Fetching...",
+      "paused": "Query Paused",
+      "error": "Error",
+      "queryPaused": "Query is paused while offline",
+      "willRetryWhenOnline": "Will retry when back online",
+      "fetchFailed": "Failed to fetch data",
+      "serverTime": "Server Time",
+      "simulateOffline": "Simulate Offline",
+      "goOnline": "Go Online",
+      "refetch": "Refetch",
+      "note": "TanStack Query pauses queries when offline"
+    },
+    "suspense": {
+      "title": "React Suspense",
+      "description": "Uses useSuspenseQuery - component suspends while loading.",
+      "suspenseLoading": "Suspended...",
+      "errorOccurred": "An error occurred",
+      "retry": "Retry",
+      "howItWorks": "How it works",
+      "point1": "Component throws a promise while loading",
+      "point2": "Suspense boundary shows fallback UI",
+      "point3": "ErrorBoundary catches any errors",
+      "note": "Suspense provides cleaner loading state management"
+    },
+    "parallel": {
+      "title": "Parallel Queries",
+      "weather": "Weather",
+      "stock": "Stock",
+      "news": "News",
+      "loading": "loading...",
+      "refetchAll": "Refetch All",
+      "note": "Uses useQueries to fetch multiple data sources in parallel"
+    },
+    "mutationComparison": {
+      "title": "Mutation Comparison",
+      "description": "Compare standard vs optimistic mutations. Click both +1 buttons to see the difference.",
+      "standardMutation": "Standard Mutation",
+      "optimisticMutation": "Optimistic Mutation",
+      "waiting": "Saving...",
+      "standardNote": "Waits for server response",
+      "optimisticNote": "Instant UI update",
+      "resetBoth": "Reset Both",
+      "note": "Optimistic updates provide instant feedback while syncing with server"
+    },
+    "resetAll": {
+      "button": "Reset All Demos",
+      "cleared": "Cache Cleared!"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your account and features",
+    "authRequired": "Login required",
+    "ctaText": "Want to see tech demos?",
+    "ctaLink": "Go to Demo",
+    "loading": "Loading...",
+    "user": {
+      "title": "User Info",
+      "memberSince": "Member since {date}",
+      "sections": {
+        "activity": "Activity",
+        "preferences": "Preferences",
+        "authMethods": "Auth Methods"
+      },
+      "stats": {
+        "currentStreak": "Current",
+        "bestStreak": "Best",
+        "totalDays": "Total Days"
+      },
+      "prefs": {
+        "language": "Language",
+        "timezone": "Timezone",
+        "birthDate": "Birth Date",
+        "gender": "Gender"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "tg": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "languageCode": "Language",
+        "isPremium": "Premium",
+        "isBot": "Is Bot"
+      },
+      "email": {
+        "address": "Email",
+        "verified": "Verified",
+        "verifiedAt": "Verified At",
+        "lastLogin": "Last Login"
+      },
+      "linkTelegram": "Link Telegram",
+      "addEmail": "Add Email",
+      "logout": "Logout",
+      "loggingOut": "Logging out..."
+    },
+    "subscription": {
+      "title": "Subscription",
+      "premium": "Premium",
+      "free": "Free",
+      "todoNote": "Payment flows coming soon. This shows your current subscription status.",
+      "upgrade": "Upgrade",
+      "unlimitedAccess": "Unlimited access to all features",
+      "freeLimit": "5 free actions per day",
+      "expires": "Expires",
+      "daysLeft": "days left",
+      "premiumAction": "Premium Action",
+      "premiumRequired": "This action requires a premium subscription"
+    },
+    "friends": {
+      "title": "Friends",
+      "count": "{count} friends",
+      "noFriends": "No friends yet. Share your invite link!",
+      "andMore": "+{count} more",
+      "createInvite": "Create Invite Link"
+    },
+    "notification": {
+      "title": "Notification Demo",
+      "description": "Test the notification system. Click a button to receive a Telegram message.",
+      "seconds": "s",
+      "sent": "Sent! Check Telegram in {seconds} seconds.",
+      "note": "Demonstrates worker tasks and Telegram bot messaging."
+    },
+    "login": {
+      "title": "Login Required",
+      "description": "Sign in with your Telegram account to access your profile.",
+      "button": "Login with Telegram"
+    },
+    "telegram": {
+      "title": "Platform",
+      "platform": "Current Platform",
+      "telegramApp": "Running inside Telegram",
+      "webBrowser": "Running in web browser",
+      "client": "Client",
+      "colorScheme": "Color Scheme",
+      "actionsTitle": "Telegram-only Actions",
+      "vibrate": "Vibrate Device",
+      "showAlert": "Show Telegram Alert",
+      "alertMessage": "Hello from Telegram Mini App!",
+      "webOnlyMessage": "These actions are only available when running inside Telegram."
+    },
+    "details": {
+      "defaultName": "User",
+      "premium": "Premium",
+      "notPremium": "Not Premium",
+      "verified": "Verified",
+      "notSet": "Not set",
+      "male": "Male",
+      "female": "Female",
+      "days": "days",
+      "loggingOut": "Logging out...",
+      "telegramNotLinked": "Telegram account is not linked.",
+      "emailNotLinked": "Email is not linked to your account.",
+      "sections": {
+        "telegram": "Telegram Account",
+        "email": "Email Account",
+        "appProfile": "App Profile",
+        "activity": "Activity"
+      },
+      "fields": {
+        "telegramId": "Telegram ID",
+        "name": "Name",
+        "username": "Username",
+        "telegramLanguage": "Language",
+        "premiumStatus": "Premium Status",
+        "email": "Email",
+        "verifiedAt": "Verified on",
+        "lastLogin": "Last Login",
+        "appUsername": "App Username",
+        "language": "Language",
+        "timezone": "Timezone",
+        "gender": "Gender",
+        "birthday": "Birthday",
+        "referralCode": "Referral Code",
+        "currentStreak": "Current Streak",
+        "bestStreak": "Best Streak",
+        "totalDays": "Total Active Days",
+        "memberSince": "Member Since"
+      },
+      "actions": {
+        "linkTelegram": "Link Telegram",
+        "addEmail": "Add Email",
+        "editProfile": "Edit Profile",
+        "logout": "Logout"
+      }
+    },
+    "linkTelegram": {
+      "title": "Link Telegram Account",
+      "description": "Link your Telegram account to access this app from Telegram",
+      "scanQr": "Click below to open Telegram and link your account",
+      "openTelegram": "Open in Telegram",
+      "waiting": "Waiting for confirmation...",
+      "success": "Telegram account linked!",
+      "error": "Linking failed. Please try again.",
+      "expired": "Link expired. Please try again."
+    },
+    "addEmail": {
+      "title": "Add Email",
+      "description": "Add an email to login from web browser",
+      "step1": "Enter Email",
+      "step2": "Verify & Set Password",
+      "codeSent": "Code sent to {email}",
+      "linkEmail": "Link Email",
+      "success": "Email added! You can now login from web.",
+      "error": "Failed to add email. Please try again."
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "back": "Back"
+  },
+  "login": {
+    "title": "Sign In",
+    "description": "Choose how you'd like to sign in",
+    "or": "or",
+    "useTelegramCode": "Having trouble? Use code instead",
+    "email": {
+      "loginTab": "Login",
+      "signupTab": "Sign Up",
+      "loginDescription": "Enter your email and password to login.",
+      "signupDescription": "Create a new account with your email."
+    },
+    "telegram": {
+      "continueWith": "Continue with Telegram",
+      "openButton": "Continue with Telegram",
+      "waiting": "Waiting for confirmation...",
+      "hint": "Click \"Start\" in the Telegram bot",
+      "reopen": "Open Telegram",
+      "canRegister": "New users will be registered automatically"
+    },
+    "usernameStep": {
+      "description": "Enter your Telegram username to receive a verification code.",
+      "label": "Telegram Username",
+      "placeholder": "@username",
+      "hint": "We'll send a 6-digit code to your Telegram DM.",
+      "submit": "Send Code"
+    },
+    "codeStep": {
+      "description": "Enter the verification code sent to your Telegram.",
+      "label": "Verification Code",
+      "placeholder": "000000",
+      "hint": "Check your Telegram DM from @YourBotName for the code.",
+      "submit": "Verify",
+      "back": "Back",
+      "resend": "Resend code"
+    },
+    "errors": {
+      "sendFailed": "Failed to send code. Please try again.",
+      "verifyFailed": "Invalid code. Please try again.",
+      "networkError": "Network error. Please check your connection."
+    }
+  },
+  "payment": {
+    "redirecting": "Redirecting you to payment page...",
+    "redirected": "Payment page opened",
+    "redirectedMessage": "You should have been redirected to the payment page. If not, click the button below.",
+    "backToApp": "Back to App",
+    "error": "Payment failed. Please try again.",
+    "errorTitle": "Payment Failed",
+    "errorMessage": "We couldn't process your payment. Please try again later.",
+    "success": {
+      "title": "Payment Successful",
+      "message": "Your payment has been processed successfully. Thank you!",
+      "button": "Go to App!"
+    }
+  },
+  "paywall": {
+    "unlockPremiumAccess": "Unlock Premium Access",
+    "title": "Unlock All Secrets of Your Destiny!",
+    "caption": "Get answers to all your questions",
+    "skip": "Skip for now",
+    "slides": {
+      "all_in_one": {
+        "title": "Everything You Need in One Place",
+        "bullet1": "Unlimited spreads to find answers anytime",
+        "bullet2": "Exclusive predictions available only to subscribers",
+        "bullet3": "Personal chat with AI tarot reader (soon)",
+        "bullet4": "Access to wiki, quizzes, and lessons (soon)"
+      },
+      "uncertainty": {
+        "title": "Uncertainty Wearing You Down?",
+        "bullet1": "Hard to make decisions while anxiety keeps growing",
+        "bullet2": "While you wait, life passes you by",
+        "bullet3": "Thousands already find answers through Tarot"
+      },
+      "stuck": {
+        "title": "Don't Know What to Do Next?",
+        "bullet1": "Everything is confusing, and fear of mistakes holds you back",
+        "bullet2": "Tarot helps see the situation from a new angle",
+        "bullet3": "Users are already making decisions with confidence"
+      },
+      "lost": {
+        "title": "Feeling Lost?",
+        "bullet1": "Feels like no one understands you",
+        "bullet2": "Cards help you look inside and find peace",
+        "bullet3": "People find support and answers in Tarot"
+      },
+      "relationships": {
+        "title": "Relationships Became Unclear?",
+        "bullet1": "You don't know what your partner feels",
+        "bullet2": "Don't wait - learn how to act now",
+        "bullet3": "Many restored harmony by following the cards' advice"
+      },
+      "life": {
+        "title": "Life Feels Stuck?",
+        "bullet1": "Seems like everything is going wrong",
+        "bullet2": "Don't waste time - find your path",
+        "bullet3": "Tarot helps find clarity and motivation"
+      }
+    }
+  },
+  "subscription": {
+    "title": "Subscription",
+    "popular": "Most popular",
+    "subscribe": "Subscribe",
+    "WEEK_SUB": "1 week",
+    "MONTH_SUB": "1 month",
+    "YEAR_SUB": "1 year",
+    "WEEK_SUB_V2": "1 week",
+    "MONTH_SUB_V2": "1 month",
+    "YEAR_SUB_V2": "1 year",
+    "WEEK_SUB_V3": "1 week",
+    "MONTH_SUB_V3": "1 month",
+    "YEAR_SUB_V3": "1 year",
+    "save": "Save {percent}%",
+    "perWeek": "/week",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "saveValue": "{percent}% better value",
+    "bestValue": "Best Value",
+    "active": "Active",
+    "activeUntil": "Active until {date}",
+    "cancel": "Cancel Subscription",
+    "canceled": "Subscription Canceled, but we already miss you!",
+    "renew": "Renew Subscription",
+    "manage": "Manage Subscription",
+    "plan": "Plan",
+    "price": "Price",
+    "change": "Change Subscription",
+    "viewReceipts": "View Receipts",
+    "supportMessages": {
+      "changeRequest": "I would like to change my subscription plan.",
+      "receiptsRequest": "I would like to get my subscription receipts.",
+      "renewRequest": "I would like to renew my subscription."
+    }
+  },
+  "cancelConfirm": {
+    "title": "Are you sure?",
+    "message": "We'll miss you! Remember, you can keep using premium features until the end of your billing period.",
+    "keepButton": "Keep My Subscription",
+    "confirmButton": "Yes, Cancel"
+  },
+  "cancelReason": {
+    "title": "We're sad to see you go",
+    "caption": "What's the main reason for canceling?",
+    "options": {
+      "tooExpensive": {
+        "label": "Too expensive for me",
+        "emoji": "money"
+      },
+      "notUsing": {
+        "label": "Not using it enough",
+        "emoji": "clock"
+      },
+      "poorQuality": {
+        "label": "Quality doesn't meet expectations",
+        "emoji": "frown"
+      },
+      "foundAlternative": {
+        "label": "Found a better alternative",
+        "emoji": "refresh"
+      },
+      "technicalIssues": {
+        "label": "Technical issues",
+        "emoji": "wrench"
+      },
+      "other": {
+        "label": "Other reason",
+        "emoji": "note"
+      }
+    },
+    "continue": "Continue"
+  },
+  "cancelFeedback": {
+    "title": "Help us improve",
+    "caption": "What could we change to keep you as a subscriber?",
+    "placeholder": "Your feedback...",
+    "button": "Submit & Cancel",
+    "skip": "Skip"
+  },
+  "cancelSuccess": {
+    "title": "Subscription Cancelled",
+    "message": "Your subscription has been successfully cancelled. You can continue using premium features until the end of your billing period.",
+    "button": "Back to Profile"
+  },
+  "homePage": {
+    "welcomeTitle": "Welcome, {name}!",
+    "user": "User",
+    "subtitle": "This is your home screen",
+    "placeholder": "This is a placeholder home screen. Add your app-specific content here."
+  },
+  "profilePage": {
+    "noUsername": "No username",
+    "userInformation": "User Information",
+    "userId": "User ID",
+    "premium": "Premium",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "settingsPage": {
+    "preferences": "Preferences",
+    "preferencesDescription": "Manage your app preferences",
+    "selectLanguage": "Select language",
+    "themeDescription": "Choose your preferred theme",
+    "about": "About",
+    "version": "Version",
+    "framework": "Framework",
+    "uiLibrary": "UI Library"
+  },
+  "auth": {
+    "email": {
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "continue": "Continue",
+      "continueWithEmail": "Continue with Email",
+      "emailOrUsername": "Email or Username",
+      "emailOrUsernamePlaceholder": "email@example.com or username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "newPasswordPlaceholder": "Create a password",
+      "passwordRequirements": "At least 8 characters with uppercase, number, or symbol",
+      "code": "Verification Code",
+      "codePlaceholder": "000000",
+      "username": "Username",
+      "usernamePlaceholder": "your_username",
+      "usernameRequirements": "3-32 characters, letters, numbers, and underscores only",
+      "resendCode": "Resend code",
+      "login": {
+        "title": "Login with Email",
+        "description": "Enter your email and password to login.",
+        "submit": "Login",
+        "error": "Login failed. Please try again.",
+        "noAccount": "Don't have an account?",
+        "signupLink": "Sign up"
+      },
+      "signup": {
+        "title": "Create Account",
+        "description": "Create a new account with your email.",
+        "continue": "Continue",
+        "createAccount": "Create Account",
+        "codeSent": "We sent a code to {email}",
+        "confirmPassword": "Confirm Password",
+        "passwordMismatch": "Passwords don't match",
+        "error": "Signup failed. Please try again.",
+        "haveAccount": "Already have an account?",
+        "loginLink": "Log in"
+      },
+      "reset": {
+        "title": "Reset Password",
+        "description": "Enter your email to reset your password.",
+        "emailDescription": "We'll send you a verification code to reset your password.",
+        "sendCode": "Send Reset Code",
+        "codeSent": "We sent a code to {email}",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "resetPassword": "Reset Password",
+        "passwordMismatch": "Passwords don't match",
+        "forgotPassword": "Forgot password?",
+        "backToLogin": "Back to login",
+        "success": "Password reset successful! You can now log in with your new password.",
+        "error": "Password reset failed. Please try again."
+      },
+      "link": {
+        "title": "Link Email",
+        "description": "Add email login to your account. You'll be able to log in with either Telegram or email.",
+        "sendCode": "Send Verification Code",
+        "linkEmail": "Link Email",
+        "success": "Email Linked!",
+        "successDescription": "You can now log in with your email and password.",
+        "error": "Failed to link email. Please try again."
+      }
+    }
+  }
+}

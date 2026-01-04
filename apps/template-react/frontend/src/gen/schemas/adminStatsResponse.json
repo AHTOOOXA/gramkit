@@ -1,0 +1,1 @@
+{"properties":{"total_users":{"type":"integer","title":"Total Users"},"users_by_role":{"additionalProperties":{"type":"integer"},"type":"object","title":"Users By Role"}},"type":"object","required":["total_users","users_by_role"],"title":"AdminStatsResponse","x-readme-ref-name":"AdminStatsResponse"}

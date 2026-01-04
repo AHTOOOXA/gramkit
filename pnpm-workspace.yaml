@@ -1,0 +1,4 @@
+packages:
+  - 'core/frontend'
+  - 'core/frontend-react'
+  - 'apps/*/frontend'

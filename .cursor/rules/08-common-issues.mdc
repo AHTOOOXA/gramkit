@@ -1,0 +1,48 @@
+---
+description: Solutions for common problems encountered during development, including Docker setup issues, frontend/backend troubleshooting, testing problems, and environment configuration.
+globs:
+alwaysApply: false
+---
+description: Solutions for common problems encountered during development, including Docker setup issues, frontend/backend troubleshooting, testing problems, and environment configuration.
+
+# Common Issues and Solutions
+
+## Docker Issues
+
+- **Problem**: Docker containers failing to start
+  **Solution**: Check logs with `docker-compose logs` and ensure all required environment variables are set
+
+- **Problem**: Frontend hot reload not working
+  **Solution**: Ensure volumes are correctly mounted in docker-compose.local.yml
+
+- **Problem**: Backend database connection issues
+  **Solution**: Verify database container is running and credentials are correct
+
+## Frontend Development
+
+- **Problem**: TypeScript errors in the frontend
+  **Solution**: Run `cd frontend && yarn type-check` to identify and fix type issues
+
+- **Problem**: ESLint/Prettier conflicts
+  **Solution**: Use `cd frontend && yarn lint --fix` to apply automatic fixes
+
+## Backend Development
+
+- **Problem**: Database migrations failing
+  **Solution**: Check migration history and ensure proper sequencing
+
+- **Problem**: API endpoint returning 500 errors
+  **Solution**: Check backend logs for exceptions and verify input validation
+
+## Testing
+
+- **Problem**: Tests failing in CI/CD pipeline
+  **Solution**: Run tests locally with the same environment variables as CI to reproduce and fix
+
+## Environment Setup
+
+- **Problem**: Missing environment variables
+  **Solution**: Check example .env files in the repository and ensure all required variables are set
+
+- **Problem**: ngrok configuration issues
+  **Solution**: Verify [ngrok.yml](mdc:ngrok.yml) configuration matches the expected setup

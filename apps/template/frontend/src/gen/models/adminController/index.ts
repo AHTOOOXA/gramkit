@@ -1,0 +1,3 @@
+export type { DemoProtectedActionAdminDemoActionPost200, DemoProtectedActionAdminDemoActionPostMutationResponse, DemoProtectedActionAdminDemoActionPostMutation } from "./DemoProtectedActionAdminDemoActionPost.ts";
+export type { GetMyPermissionsAdminMeGet200, GetMyPermissionsAdminMeGetQueryResponse, GetMyPermissionsAdminMeGetQuery } from "./GetMyPermissionsAdminMeGet.ts";
+export type { GetStatsAdminStatsGet200, GetStatsAdminStatsGetQueryResponse, GetStatsAdminStatsGetQuery } from "./GetStatsAdminStatsGet.ts";

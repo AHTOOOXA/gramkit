@@ -1,0 +1,1 @@
+{"properties":{"id":{"type":"integer","title":"Id"},"title":{"type":"string","title":"Title"},"description":{"type":"string","title":"Description"}},"type":"object","required":["id","title","description"],"title":"PaginatedItem","x-readme-ref-name":"PaginatedItem"}

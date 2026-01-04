@@ -1,0 +1,1 @@
+{"properties":{"link_token":{"type":"string","title":"Link Token"},"bot_url":{"type":"string","title":"Bot Url"},"expires_in":{"type":"integer","title":"Expires In","default":300}},"type":"object","required":["link_token","bot_url"],"title":"TelegramLinkStartResponse","description":"Response for starting Telegram link flow.","x-readme-ref-name":"TelegramLinkStartResponse"}

@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message","default":"Email linked successfully"},"success":{"type":"boolean","title":"Success","default":true}},"type":"object","title":"EmailLinkCompleteResponse","description":"Response for successful email linking.","x-readme-ref-name":"EmailLinkCompleteResponse"}

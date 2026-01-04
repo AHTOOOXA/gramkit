@@ -1,0 +1,53 @@
+---
+description: Guidelines for using TypeScript with auto-generated OpenAPI schema types, including proper type imports, API client typing, and common mistakes to avoid when working with the schema.
+globs:
+alwaysApply: false
+---
+description: Guidelines for using TypeScript with auto-generated OpenAPI schema types, including proper type imports, API client typing, and common mistakes to avoid when working with the schema.
+
+# TypeScript and OpenAPI Schema Conventions
+
+## Auto-Generated Schema
+
+The TypeScript schema types are AUTOMATICALLY GENERATED from the OpenAPI specification:
+- Do NOT manually edit schema files
+- These types are regenerated during the build process
+- Always use the generated types instead of creating custom ones
+
+## Type Imports
+
+- Import types from the OpenAPI schema like this:
+  ```typescript
+  import type { components, paths } from '@/types/schema';
+  ```
+
+- Use specific schema component types:
+  ```typescript
+  type TarotCard = components['schemas']['TarotCardSchema'];
+  type SpreadType = components['schemas']['SpreadType'];
+  type Reading = components['schemas']['ReadingSchema'];
+  ```
+
+- For API endpoint parameters and responses:
+  ```typescript
+  type StreamParams = paths['/tarot/reading/stream']['get']['parameters']['query'];
+  type ResponseType = paths['/some/endpoint']['get']['responses']['200']['content']['application/json'];
+  ```
+
+## API Client Usage with Types
+
+- The API client uses the generated paths:
+  ```typescript
+  const apiClient = createClient<paths>({
+    baseUrl: API_HOST,
+    headers: { /* ... */ },
+  });
+  ```
+
+## Common Type Mistakes to Avoid
+
+1. ❌ DO NOT manually edit any schema files - they are auto-generated
+2. ❌ DO NOT use `any` types when schema types are available
+3. ❌ DO NOT create redundant interface definitions when schema already defines them
+4. ❌ DO NOT use string literals for API endpoints
+5. ✅ DO use the generated schema types for complete type safety

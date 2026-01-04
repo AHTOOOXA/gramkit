@@ -1,0 +1,1 @@
+{"properties":{"message":{"type":"string","title":"Message"},"signup_token":{"type":"string","title":"Signup Token"},"expires_in":{"type":"integer","title":"Expires In","default":600}},"type":"object","required":["message","signup_token"],"title":"EmailSignupResponse","description":"Response for signup initiation.","x-readme-ref-name":"EmailSignupResponse"}

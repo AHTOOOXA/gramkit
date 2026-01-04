@@ -1,0 +1,1 @@
+export { useStatic } from './useStatic';

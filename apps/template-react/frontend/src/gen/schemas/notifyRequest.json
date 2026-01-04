@@ -1,0 +1,1 @@
+{"properties":{"delay_seconds":{"type":"integer","title":"Delay Seconds","default":5}},"type":"object","title":"NotifyRequest","x-readme-ref-name":"NotifyRequest"}

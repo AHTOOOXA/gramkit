@@ -1,0 +1,1 @@
+{"properties":{"email":{"type":"string","format":"email","title":"Email"}},"type":"object","required":["email"],"title":"EmailLinkRequest","description":"Request to start email linking for Telegram users.","x-readme-ref-name":"EmailLinkRequest"}

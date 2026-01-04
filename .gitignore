@@ -1,0 +1,159 @@
+# ============================================================================
+# MONOREPO-SPECIFIC IGNORES
+# ============================================================================
+
+# App-specific ignores (each app has its own)
+apps/*/.env
+apps/*/.venv/
+apps/*/node_modules/
+apps/*/dist/
+apps/*/dist-ssr/
+apps/*/.vite/
+apps/*/backend/.venv/
+apps/*/frontend/node_modules/
+apps/*/frontend/dist/
+apps/*/frontend/.env.sentry-build-plugin
+
+# Core package ignores
+core/*/.venv/
+core/*/node_modules/
+core/*/dist/
+
+# ============================================================================
+# GENERAL PROJECT IGNORES
+# ============================================================================
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Root-level node_modules and dist (legacy)
+node_modules
+dist
+dist-ssr
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/*.example
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vite
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+
+# Exception: Frontend lib directories contain source code (not Python libs)
+!apps/template/frontend/src/lib/
+!apps/template-react/frontend/lib/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Translations
+*.mo
+*.pot
+
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pyre type checker
+.pyre/
+.idea/
+.env
+cache/
+ngrok.yml
+
+# ============================================================================
+# APP-SPECIFIC STATIC FILES
+# ============================================================================
+
+# Tarot app static files (keep placeholder only)
+
+# Legacy paths (will be removed eventually)
+backend/src/app/static/spreads/*
+!backend/src/app/static/spreads/placeholder_cat.jpg
+backend/src/app/static/images/moon_magic_tarot_orig/
+frontend-old/
+
+# ============================================================================
+# TEST & DEVELOPMENT ARTIFACTS
+# ============================================================================
+
+# LLM testing
+blackbox.json
+llm_test_results.txt
+llm_test_results/
+
+# Database backups
+db_backup/
+*.tar.gz
+
+# pytest-testmon cache (smart test selection)
+.testmondata
+.testmondata-shm
+.testmondata-wal
+
+# Playwright test artifacts
+.playwright/
+backups/
+.pnpm-store/
+.run/
+.next/standalone

@@ -1,0 +1,1 @@
+{"properties":{"code":{"type":"string","title":"Code"},"telegram_link":{"type":"string","title":"Telegram Link"}},"type":"object","required":["code","telegram_link"],"title":"InviteResponse","x-readme-ref-name":"InviteResponse"}

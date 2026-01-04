@@ -1,0 +1,96 @@
+# Production Dockerfile for Template-React Frontend (Next.js)
+#
+# Build context: monorepo root (../..)
+# Multi-stage build with standalone output for minimal production image
+#
+# Best practices applied:
+# - Separate dependency and source layers for optimal caching
+# - Only package.json files in deps stage (not source code)
+# - Source code copied in builder stage (after deps installed)
+# - outputFileTracingRoot configured in next.config.ts for monorepo
+
+# =============================================================================
+# Stage 1: Dependencies (cached unless package.json/lockfile changes)
+# =============================================================================
+FROM node:22-alpine AS deps
+
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
+
+WORKDIR /workspace
+
+# Copy ONLY package manifests and lockfile (not source code)
+# This layer is cached until package.json or lockfile changes
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY core/frontend-react/package.json ./core/frontend-react/
+COPY apps/template-react/frontend/package.json ./apps/template-react/frontend/
+
+# Install all dependencies (cached layer)
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# =============================================================================
+# Stage 2: Builder (rebuilds when source changes)
+# =============================================================================
+FROM deps AS builder
+
+# Copy source code AFTER deps installed (separate cache layer)
+# Changes to source won't invalidate the deps layer above
+COPY core/frontend-react/src ./core/frontend-react/src
+COPY core/frontend-react/tsconfig.json ./core/frontend-react/
+COPY apps/template-react/frontend ./apps/template-react/frontend
+
+# Build arguments for Next.js (baked into the build)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_NAME
+ARG NEXT_PUBLIC_BASE_PATH
+ARG NEXT_PUBLIC_BOT_USERNAME
+ARG NEXT_PUBLIC_WEB_APP_URL
+ARG NEXT_PUBLIC_DEBUG
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+
+# Set as environment variables for the build
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME \
+    NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH \
+    NEXT_PUBLIC_BOT_USERNAME=$NEXT_PUBLIC_BOT_USERNAME \
+    NEXT_PUBLIC_WEB_APP_URL=$NEXT_PUBLIC_WEB_APP_URL \
+    NEXT_PUBLIC_DEBUG=$NEXT_PUBLIC_DEBUG \
+    NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY \
+    NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST \
+    NEXT_TELEMETRY_DISABLED=1
+
+WORKDIR /workspace/apps/template-react/frontend
+
+# Build the app
+RUN pnpm build
+
+# =============================================================================
+# Stage 3: Production (minimal)
+# =============================================================================
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy standalone build artifacts
+# Note: standalone output includes the server and minimal node_modules
+COPY --from=builder /workspace/apps/template-react/frontend/public ./public
+COPY --from=builder --chown=nextjs:nodejs /workspace/apps/template-react/frontend/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /workspace/apps/template-react/frontend/.next/static ./apps/template-react/frontend/.next/static
+
+USER nextjs
+
+# Default port (can be overridden by PORT env var)
+EXPOSE 3000
+ENV PORT=3000 \
+    HOSTNAME="0.0.0.0"
+
+# Run the standalone server
+CMD ["node", "apps/template-react/frontend/server.js"]

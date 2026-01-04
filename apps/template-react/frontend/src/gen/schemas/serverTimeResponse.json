@@ -1,0 +1,1 @@
+{"properties":{"timestamp":{"type":"string","title":"Timestamp"},"unix_ms":{"type":"integer","title":"Unix Ms"},"formatted":{"type":"string","title":"Formatted"}},"type":"object","required":["timestamp","unix_ms","formatted"],"title":"ServerTimeResponse","x-readme-ref-name":"ServerTimeResponse"}

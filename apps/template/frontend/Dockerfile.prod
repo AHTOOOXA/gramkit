@@ -1,0 +1,93 @@
+# Production Dockerfile for Template Frontend (Vue.js)
+#
+# Build context: monorepo root (../..)
+# Multi-stage build for optimized production image
+
+# =============================================================================
+# Stage 1: Dependencies
+# =============================================================================
+FROM node:22-alpine AS deps
+
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
+
+WORKDIR /workspace
+
+# Copy workspace config files (cached layer)
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+
+# Copy workspace packages
+COPY core/frontend ./core/frontend
+COPY apps/template/frontend ./apps/template/frontend
+
+# Install all dependencies
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# =============================================================================
+# Stage 2: Builder
+# =============================================================================
+FROM deps AS builder
+
+# Build arguments for Vite (baked into the build)
+ARG VITE_WEB_HOST
+ARG VITE_API_HOST
+ARG VITE_BOT_URL
+ARG VITE_POSTHOG_KEY
+ARG VITE_POSTHOG_HOST
+ARG VITE_SENTRY_ORG
+ARG VITE_SENTRY_PROJECT
+ARG VITE_SENTRY_DSN
+ARG VITE_SENTRY_AUTH_TOKEN
+ARG VITE_DEBUG
+
+# Set as environment variables for the build
+ENV VITE_WEB_HOST=$VITE_WEB_HOST \
+    VITE_API_HOST=$VITE_API_HOST \
+    VITE_BOT_URL=$VITE_BOT_URL \
+    VITE_POSTHOG_KEY=$VITE_POSTHOG_KEY \
+    VITE_POSTHOG_HOST=$VITE_POSTHOG_HOST \
+    VITE_SENTRY_ORG=$VITE_SENTRY_ORG \
+    VITE_SENTRY_PROJECT=$VITE_SENTRY_PROJECT \
+    VITE_SENTRY_DSN=$VITE_SENTRY_DSN \
+    VITE_SENTRY_AUTH_TOKEN=$VITE_SENTRY_AUTH_TOKEN \
+    VITE_DEBUG=$VITE_DEBUG
+
+WORKDIR /workspace/apps/template/frontend
+
+# Build the app
+RUN pnpm build
+
+# =============================================================================
+# Stage 3: Production
+# =============================================================================
+FROM node:22-alpine AS production
+
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 appuser
+
+WORKDIR /workspace
+
+# Copy workspace files needed for runtime
+COPY --from=deps /workspace/package.json /workspace/pnpm-workspace.yaml /workspace/pnpm-lock.yaml ./
+COPY --from=deps /workspace/node_modules ./node_modules
+
+# Copy app package.json and built files
+COPY --from=builder /workspace/apps/template/frontend/package.json ./apps/template/frontend/
+COPY --from=builder /workspace/apps/template/frontend/dist ./apps/template/frontend/dist
+COPY --from=deps /workspace/apps/template/frontend/node_modules ./apps/template/frontend/node_modules
+
+# Set ownership
+RUN chown -R appuser:nodejs /workspace
+
+USER appuser
+
+WORKDIR /workspace/apps/template/frontend
+
+# Default port (can be overridden by PORT env var)
+EXPOSE 4173
+
+# Serve using vite preview
+CMD ["pnpm", "start"]

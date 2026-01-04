@@ -1,0 +1,124 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "tma-platform-core-backend"
+version = "0.1.0"
+description = "Core backend infrastructure for Telegram Mini Apps"
+requires-python = ">=3.14"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "sqlalchemy>=2.0.0",
+    "aiogram>=3.0.0",
+    "asyncpg",
+    "alembic",
+    "environs",
+    "betterlogging",
+    "redis",
+    "aio-pika",
+    "yookassa",
+    "arq",
+    "Pillow",
+    "posthog==5.4.0",
+    "pytz",
+    "pydantic-ai-slim[logfire,openai]>=1.7.0",
+    "pydantic[email]>=2.12.0",
+    "pydantic-settings>=2.0.0",
+    "httptools>=0.7.1",
+    "uvloop>=0.21.0; sys_platform != 'win32'",
+    "watchfiles>=0.22.0",
+    "passlib[argon2]>=1.7.4",
+    "resend",
+    "uuid6",
+    "python-socketio",
+]
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.21.0",
+    "greenlet>=3.2.3",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.13.2",
+    "testcontainers[postgres]>=4.0.0",
+    "httpx>=0.27.0",
+    "fastapi>=0.115.0",
+    "asgi-lifespan>=2.1.0",
+]
+
+# ============================================================================
+# PYRIGHT - Type checking (basic mode for gradual adoption)
+# ============================================================================
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "basic"
+exclude = ["src/core/migrations/"]
+
+# Ignore missing imports from untyped libraries
+reportMissingImports = false
+reportMissingTypeStubs = false
+
+# ENABLED rules (errors were fixed)
+# reportPrivateImportUsage - default enabled (import from correct modules)
+# reportGeneralTypeIssues - default enabled (use Callable not callable)
+# reportInvalidTypeForm - default enabled (AsyncGenerator fixture patterns fixed)
+# reportAssignmentType - default enabled (Protocol assignment fixed with assertion)
+
+# Permissive settings for gradual adoption (core has many legacy patterns)
+reportOptionalMemberAccess = false  # 78 errors - many in tests accessing optional members
+reportArgumentType = false          # 89 errors - arq/worker patterns
+reportReturnType = false            # 24 errors - async generator fixtures
+reportUndefinedVariable = false     # 10 errors - SQLAlchemy forward references (Mapped["User"])
+reportAttributeAccessIssue = false  # 25 errors - ORM dynamic attributes
+reportCallIssue = false             # 15 errors - generic factory patterns
+
+[tool.pytest.ini_options]
+# Async test support
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+# Test discovery
+testpaths = ["src/core/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Output configuration
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+
+# Custom markers
+markers = [
+    "contract: Public API contract tests",
+    "business_logic: Business logic and algorithm tests",
+    "regression: Bug fix verification tests",
+    "issue(id): Link test to GitHub issue number",
+]
+
+# Filter warnings from third-party libraries
+filterwarnings = [
+    # Ignore testcontainers internal deprecation warnings
+    "ignore::DeprecationWarning:testcontainers.*",
+
+    # Python 3.14: asyncio.iscoroutinefunction deprecated in favor of inspect.iscoroutinefunction
+    "ignore:'asyncio.iscoroutinefunction' is deprecated:DeprecationWarning",
+
+    # Passlib internal warning about handler naming convention (library issue)
+    "ignore:handler names should be lower-case:passlib.exc.PasslibWarning",
+
+    # Argon2 version access deprecated (passlib library issue)
+    "ignore:Accessing argon2.__version__ is deprecated:DeprecationWarning",
+]

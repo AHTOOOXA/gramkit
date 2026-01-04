@@ -1,0 +1,105 @@
+[tool.uv.workspace]
+members = [
+  "core/backend",
+  "apps/template/backend",
+  "apps/template-react/backend",
+]
+
+# ============================================================================
+# RUFF - Modern linter and formatter (monorepo-wide configuration)
+# ============================================================================
+# All backend packages inherit these settings. Override in package pyproject.toml only when needed.
+#
+# Quick commands:
+#   uv run ruff check --fix .                 # Lint + auto-fix entire monorepo
+#   uv run ruff format .                      # Format entire monorepo
+#   uv run ruff check --select B .            # Test specific rule group
+#   uv run ruff check --statistics .          # Show all issues grouped by rule
+#
+[tool.ruff]
+line-length = 120              # Match Black config
+target-version = "py314"
+fix = true                     # Auto-fix issues
+
+extend-exclude = [
+    "migrations",              # Exclude all migration directories
+    ".git",
+    ".mypy_cache",
+    ".venv",
+]
+
+[tool.ruff.lint]
+# Start with essentials: Errors, Pyflakes, import sorting
+select = [
+    "E",      # pycodestyle errors
+    "F",      # Pyflakes (undefined vars, unused imports)
+    "I",      # isort (import sorting)
+    "UP",     # pyupgrade (modernize Python syntax)
+
+    # 🔥 High priority additions (enable when ready):
+    # "B",      # flake8-bugbear - Catches real bugs (mutable defaults, getattr with constants, etc.)
+    # "ASYNC",  # flake8-async - Critical for async code (FastAPI, Aiogram, ARQ)
+    # "FAST",   # FastAPI-specific checks (response_model, Depends usage, etc.)
+
+    # 📈 Quality improvements (enable for cleaner code):
+    # "SIM",    # flake8-simplify - Simplification suggestions (x if x else y → x or y)
+    # "C4",     # flake8-comprehensions - Better list/dict comprehensions
+
+    # ⏸️ Consider later (valuable but can be noisy):
+    # "S",      # bandit - Security checks (SQL injection, hardcoded passwords, etc.)
+    # "PERF",   # Perflint - Performance anti-patterns
+    # "D",      # pydocstyle - Docstring conventions (good for libraries)
+    # "ANN",    # flake8-annotations - Enforce type annotations everywhere
+    # "PLC",    # Pylint convention
+    # "PLE",    # Pylint errors
+    # "PLW",    # Pylint warnings
+]
+
+ignore = [
+    "E501",   # Line too long (let formatter handle it)
+
+    # Common ignores when enabling additional rules:
+    # "B008",   # Do not perform function calls in argument defaults (FastAPI Depends is safe)
+    # "S101",   # Use of assert (needed for pytest)
+    # "D100",   # Missing docstring in public module
+    # "D101",   # Missing docstring in public class
+    # "D102",   # Missing docstring in public method
+    # "D103",   # Missing docstring in public function
+    # "ANN101", # Missing type annotation for self
+    # "ANN102", # Missing type annotation for cls
+]
+
+# FastAPI-specific settings (uncomment when enabling "B" or "FAST"):
+# [tool.ruff.lint.flake8-bugbear]
+# extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path", "fastapi.Body"]
+
+[tool.ruff.lint.isort]
+# Auto-detect known-first-party by package name
+known-first-party = ["core", "app"]
+
+[tool.ruff.lint.per-file-ignores]
+# Allow imports after code execution in entry points (needed for logging setup)
+# Applies to ALL apps in monorepo (apps/*/backend/...)
+"apps/*/backend/src/app/tgbot/bot.py" = ["E402"]
+"apps/*/backend/src/app/webhook/app.py" = ["E402"]
+"apps/*/backend/src/app/worker/worker.py" = ["E402"]
+"apps/*/backend/src/worker_entry.py" = ["E402"]
+# Allow undefined names in SQLAlchemy models (string forward references)
+# Applies to core and all apps
+"*/infrastructure/database/models/*.py" = ["F821"]
+# Allow unused variables in tests (demonstration/verification purposes)
+# Applies to all apps
+"apps/*/backend/src/app/tests/*.py" = ["F841"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ============================================================================
+# PYTEST - Shared test configuration
+# ============================================================================
+# Required when running tests that span core and app directories,
+# as pytest will use this config from the monorepo root.
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

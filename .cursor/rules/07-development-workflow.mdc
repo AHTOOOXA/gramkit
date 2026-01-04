@@ -1,0 +1,41 @@
+---
+description: Development workflow guidelines covering local setup, code standards, version control practices, and tarot app-specific conventions for maintaining code quality.
+globs:
+alwaysApply: false
+---
+description: Development workflow guidelines covering local setup, code standards, version control practices, and tarot app-specific conventions for maintaining code quality.
+
+# Development Workflow
+
+This project follows specific development practices to ensure code quality.
+
+## Local Development
+
+1. Use the local Docker setup with: `docker-compose -f docker-compose.local.yml up`
+2. Hot reload is enabled in development mode
+3. For frontend-only development, you can run: `cd frontend && yarn dev`
+4. For backend-only development:
+   - Set up Python virtual environment
+   - Install dependencies: `cd backend && pip install -e .`
+   - Run the development server
+
+## Code Standards
+
+- Frontend follows ESLint and Prettier configurations
+  - [frontend/.eslintrc.cjs](mdc:frontend/.eslintrc.cjs)
+  - [frontend/.prettierrc.json](mdc:frontend/.prettierrc.json)
+- Backend follows PEP 8 with additional project-specific rules
+- Pre-commit hooks enforce code standards
+  - [.pre-commit-config.yaml](mdc:.pre-commit-config.yaml)
+
+## Version Control
+
+- Use feature branches for new work
+- Create pull requests for code reviews
+- Version bumping is handled by the script: [bump_version.py](mdc:bump_version.py)
+
+## Tarot App-Specific Conventions
+
+- Keep tarot-specific logic isolated in dedicated services
+- Use consistent naming for tarot card entities
+- Follow the established data models for readings and interpretations

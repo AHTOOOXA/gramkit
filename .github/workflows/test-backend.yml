@@ -1,0 +1,169 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'core/backend/**'
+      - 'apps/template/backend/**'
+      - 'apps/template-react/backend/**'
+      - '.github/workflows/test-backend.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'core/backend/**'
+      - 'apps/template/backend/**'
+      - 'apps/template-react/backend/**'
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # No services needed - testcontainers handles postgres/redis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            core/backend/pyproject.toml
+            core/backend/uv.lock
+
+      - name: Install dependencies
+        working-directory: ./core/backend
+        run: uv sync --all-extras --dev
+
+      - name: Run tests
+        working-directory: ./core/backend
+        env:
+          ENV_FILE: .env.test
+        run: uv run pytest
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        app: [template, template-react]
+
+    # No services needed - testcontainers handles postgres, InMemoryRedis for redis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            apps/${{ matrix.app }}/backend/pyproject.toml
+            apps/${{ matrix.app }}/backend/uv.lock
+
+      - name: Install dependencies
+        working-directory: ./apps/${{ matrix.app }}/backend
+        run: uv sync --all-extras --dev
+
+      - name: Check import boundaries
+        working-directory: ./apps/${{ matrix.app }}/backend/src
+        env:
+          ENV_FILE: ../.env.test
+        run: uv run lint-imports --config ../.importlinter
+
+      - name: Run tests
+        working-directory: ./apps/${{ matrix.app }}/backend
+        env:
+          ENV_FILE: .env.test
+        run: uv run pytest
+
+  lint-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            core/backend/pyproject.toml
+            core/backend/uv.lock
+
+      - name: Install dependencies
+        working-directory: ./core/backend
+        run: uv sync --dev
+
+      - name: Run ruff
+        working-directory: ./core/backend
+        env:
+          ENV_FILE: .env.test
+        run: uv run ruff check src/
+
+      - name: Run pyright
+        working-directory: ./core/backend
+        env:
+          ENV_FILE: .env.test
+        run: uvx pyright src/
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        app: [template, template-react]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            apps/${{ matrix.app }}/backend/pyproject.toml
+            apps/${{ matrix.app }}/backend/uv.lock
+
+      - name: Install dependencies
+        working-directory: ./apps/${{ matrix.app }}/backend
+        run: uv sync --dev
+
+      - name: Run ruff
+        working-directory: ./apps/${{ matrix.app }}/backend
+        env:
+          ENV_FILE: .env.test
+        run: uv run ruff check src/
+
+      - name: Run pyright
+        working-directory: ./apps/${{ matrix.app }}/backend
+        env:
+          ENV_FILE: .env.test
+        run: uvx pyright src/

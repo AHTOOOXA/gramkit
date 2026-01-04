@@ -1,0 +1,154 @@
+# PRODUCTION COMPOSE FILE
+
+services:
+  app:
+    container_name: template-app
+    build:
+      context: ../..
+      dockerfile: ./apps/template/frontend/Dockerfile.prod
+      args:
+        - VITE_WEB_HOST=${VITE_WEB_HOST}
+        - VITE_API_HOST=${VITE_API_HOST}
+        - VITE_BOT_URL=${VITE_BOT_URL}
+        - VITE_POSTHOG_KEY=${VITE_POSTHOG_KEY}
+        - VITE_POSTHOG_HOST=${VITE_POSTHOG_HOST}
+        - VITE_SENTRY_ORG=${VITE_SENTRY_ORG}
+        - VITE_SENTRY_PROJECT=${VITE_SENTRY_PROJECT}
+        - VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
+        - VITE_SENTRY_AUTH_TOKEN=${VITE_SENTRY_AUTH_TOKEN}
+        - VITE_DEBUG=${VITE_DEBUG}
+    networks:
+      - dokploy-network
+    command: pnpm start
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+    environment:
+      - PORT=4175
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+
+  bot:
+    container_name: template-bot
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: ["python", "-u", "src/app/tgbot/bot.py"]
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+
+  webhook:
+    container_name: template-webhook
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    env_file:
+      - ".env"
+    depends_on:
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8002 --workers 1 --timeout-graceful-shutdown 30
+      "
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  worker:
+    container_name: template-worker
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    command: ["python", "src/worker_entry.py", "app.worker.worker.WorkerSettings"]
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+
+  pg_database:
+    container_name: template-postgres
+    image: postgres:13-alpine
+    networks:
+      - dokploy-network
+    restart: always
+    volumes:
+      - template-pgdata:/var/lib/postgresql/data
+    command: "postgres -p 5432"
+    env_file:
+      - '.env'
+    ports:
+      - 5454:5432
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  redis_cache:
+    container_name: template-redis
+    image: redis:6.2-alpine
+    restart: always
+    networks:
+      - dokploy-network
+    command: redis-server --port 6390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    env_file:
+      - ".env"
+    volumes:
+      - template-cache:/data
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+volumes:
+  template-pgdata: { }
+  template-cache: { }
+
+networks:
+  dokploy-network:
+    external: true

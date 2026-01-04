@@ -1,0 +1,106 @@
+.PHONY: up down status logs restart help shared-up shared-down all-up all-down
+
+# Default target
+help:
+	@echo "=========================================="
+	@echo "Shared Infrastructure Management"
+	@echo "=========================================="
+	@echo ""
+	@echo "Shared Infrastructure Commands:"
+	@echo "  make -f Makefile.shared up           - Start shared infrastructure (nginx + cloudflare)"
+	@echo "  make -f Makefile.shared down         - Stop shared infrastructure"
+	@echo "  make -f Makefile.shared status       - Show all container status"
+	@echo "  make -f Makefile.shared logs         - Show shared infrastructure logs"
+	@echo "  make -f Makefile.shared restart      - Restart shared infrastructure"
+	@echo ""
+	@echo "Combined Commands:"
+	@echo "  make -f Makefile.shared all-up       - Start everything (shared + tarot + bible)"
+	@echo "  make -f Makefile.shared all-down     - Stop everything"
+	@echo ""
+	@echo "Individual App Commands (use root Makefile):"
+	@echo "  make up APP=tarot        - Start Tarot app"
+	@echo "  make up APP=bible        - Start Bible app"
+	@echo "  make down APP=tarot      - Stop Tarot app"
+	@echo "  make down APP=bible      - Stop Bible app"
+	@echo ""
+	@echo "Gateway Access:"
+	@echo "  Shared Gateway:   http://localhost:8080/health"
+	@echo "  Tarot API:        http://localhost:8080/api/tarot"
+	@echo "  Bible API:        http://localhost:8080/api/bible"
+	@echo "  Tarot Frontend:   http://localhost:8080/"
+	@echo ""
+	@echo "Direct Access (development):"
+	@echo "  Tarot API:        http://localhost:3779"
+	@echo "  Bible API:        http://localhost:8001"
+	@echo "=========================================="
+
+# Shared infrastructure only
+up:
+	@echo "Starting shared infrastructure (nginx + cloudflare tunnel)..."
+	@docker compose -f docker-compose.shared.yml up -d
+	@echo ""
+	@echo "✓ Shared infrastructure started!"
+	@echo "  Gateway: http://localhost:8080/health"
+
+down:
+	@echo "Stopping shared infrastructure..."
+	@docker compose -f docker-compose.shared.yml down
+	@echo "✓ Shared infrastructure stopped"
+
+status:
+	@echo "=== Shared Infrastructure ==="
+	@docker compose -f docker-compose.shared.yml ps
+	@echo ""
+	@echo "=== Tarot App ==="
+	@echo ""
+	@echo "=== Bible App ==="
+	@cd apps/bible && docker compose -f docker-compose.local.yml ps || echo "  (not running)"
+
+logs:
+	@docker compose -f docker-compose.shared.yml logs -f
+
+restart: down up
+
+# Start everything in order
+all-up:
+	@echo "=========================================="
+	@echo "Starting ALL services..."
+	@echo "=========================================="
+	@echo ""
+	@echo "[1/3] Starting Tarot app..."
+	@echo ""
+	@echo "[2/3] Starting Bible app..."
+	@cd apps/bible && $(MAKE) up
+	@echo ""
+	@echo "[3/3] Starting shared infrastructure..."
+	@$(MAKE) -f Makefile.shared up
+	@echo ""
+	@echo "=========================================="
+	@echo "✓ All services started successfully!"
+	@echo "=========================================="
+	@echo ""
+	@echo "Access Points:"
+	@echo "  Shared Gateway:   http://localhost:8080/health"
+	@echo "  Tarot API:        http://localhost:8080/api/tarot"
+	@echo "  Bible API:        http://localhost:8080/api/bible"
+	@echo "  Tarot Frontend:   http://localhost:8080/"
+	@echo ""
+	@echo "Direct Access:"
+	@echo "  Tarot Direct:     http://localhost:3779"
+	@echo "  Bible Direct:     http://localhost:8001"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  API Docs (Tarot): http://localhost:8080/api/tarot/docs"
+	@echo "  API Docs (Bible): http://localhost:8080/api/bible/docs"
+	@echo "=========================================="
+
+# Stop everything
+all-down:
+	@echo "Stopping all services..."
+	@$(MAKE) -f Makefile.shared down
+	@cd apps/bible && $(MAKE) down || true
+	@echo "✓ All services stopped"
+
+# Aliases for convenience
+shared-up: up
+shared-down: down

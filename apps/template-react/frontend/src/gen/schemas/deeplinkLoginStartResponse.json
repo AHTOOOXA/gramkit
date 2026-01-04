@@ -1,0 +1,1 @@
+{"properties":{"token":{"type":"string","title":"Token"},"bot_url":{"type":"string","title":"Bot Url"},"expires_in":{"type":"integer","title":"Expires In","default":300}},"type":"object","required":["token","bot_url"],"title":"DeeplinkLoginStartResponse","description":"Response for starting deep link login.","x-readme-ref-name":"DeeplinkLoginStartResponse"}

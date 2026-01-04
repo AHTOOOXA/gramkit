@@ -1,0 +1,1 @@
+{"properties":{"role":{"type":"string","title":"Role"}},"type":"object","required":["role"],"title":"SetRoleRequest","description":"Request to change your role (demo only).","x-readme-ref-name":"SetRoleRequest"}

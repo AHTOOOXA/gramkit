@@ -1,0 +1,121 @@
+# LOCAL COMPOSE FILE
+# Frontend runs locally on macOS for Vite HMR performance
+# Start frontend: cd frontend && pnpm dev
+
+name: template
+
+services:
+  bot:
+    image: "template-bot"
+    container_name: "template-bot"
+    stop_signal: SIGINT
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template/backend/:cached
+    restart: always
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "app.tgbot.bot", "src/", "/workspace/core/backend/src/"]
+
+  pg_database:
+    image: postgres:13-alpine
+    container_name: "template-pg"
+    ports:
+      - "5454:5454"
+    restart: always
+    volumes:
+      - pgdata_template:/var/lib/postgresql/data
+    command: "postgres -p 5454"
+    env_file:
+      - '.env'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  webhook:
+    image: "template-webhook"
+    container_name: "template-webhook"
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    ports:
+      - "8002:8000"
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template/backend/:cached
+    restart: always
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    depends_on:
+      - pg_database
+      - redis_cache
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
+      "
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  worker:
+    image: "template-worker"
+    container_name: "template-worker"
+    stop_signal: SIGINT
+    build:
+      context: ../..
+      dockerfile: ./apps/template/backend/Dockerfile
+    working_dir: /workspace/apps/template/backend
+    restart: always
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+    depends_on:
+      - webhook
+      - pg_database
+      - redis_cache
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template/backend/:cached
+    command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "src/worker_entry.py", "src/", "/workspace/core/backend/src/", "--", "app.worker.worker.WorkerSettings"]
+
+  redis_cache:
+    image: redis:6.2-alpine
+    container_name: "template-redis"
+    restart: always
+    command: redis-server --port 6390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    env_file:
+      - ".env"
+    ports:
+      - "6390:6390"
+    volumes:
+      - cache_template:/data
+
+volumes:
+  pgdata_template: { }
+  cache_template: { }
+
+networks:
+  default:
+    name: shared_gateway
+    external: true

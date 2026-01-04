@@ -1,0 +1,1520 @@
+{
+  "logout": "Logout",
+  "nav": {
+    "home": "Home",
+    "demo": "Demo",
+    "profile": "Profile",
+    "admin": "Admin",
+    "getStarted": "Get Started",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "demo": {
+    "title": "Tech Demo",
+    "subtitle": "See the stack in action",
+    "ctaText": "Want to see user features?",
+    "ctaLink": "Go to Profile",
+    "loading": {
+      "title": "Loading States",
+      "trigger": "Trigger Load",
+      "loading": "Loading...",
+      "clickToLoad": "Click button to load data",
+      "loadedAt": "Loaded at"
+    },
+    "error": {
+      "title": "Error Handling",
+      "trigger": "Test Request",
+      "failRate": "fail rate",
+      "trying": "Trying",
+      "failed": "Request failed",
+      "retry": "Retry",
+      "clickToTest": "Click to test error handling"
+    },
+    "cache": {
+      "title": "Cache & Stale Time",
+      "refetch": "Refetch",
+      "invalidate": "Invalidate",
+      "fresh": "Fresh",
+      "stale": "Stale",
+      "fetchedAgo": "Fetched",
+      "staleTimeNote": "Data becomes stale after 10 seconds"
+    },
+    "optimistic": {
+      "title": "Optimistic Updates",
+      "optimistic": "(optimistic)",
+      "error": "Failed to increment counter",
+      "serverValue": "Server value",
+      "willFail": "will fail",
+      "reset": "Reset",
+      "note": "Click \"+1 (will fail)\" to see rollback behavior"
+    },
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "current": "Current theme"
+    },
+    "i18n": {
+      "title": "Internationalization",
+      "preview": "Preview",
+      "sampleText": "This text changes when you switch languages.",
+      "current": "Current language"
+    },
+    "infiniteScroll": {
+      "title": "Infinite Scroll",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
+      "empty": "No items yet",
+      "error": "Failed to load items",
+      "retry": "Retry",
+      "note": "Uses useInfiniteQuery with cursor-based pagination"
+    },
+    "prefetch": {
+      "title": "Prefetching",
+      "description": "Hover over buttons to prefetch data, then click to view instantly.",
+      "hoverHint": "Hover over an item to prefetch",
+      "fetchedAt": "Fetched at",
+      "prefetchedIndicator": "Green dot indicates prefetched data",
+      "note": "Prefetching on hover improves perceived performance"
+    },
+    "polling": {
+      "title": "Polling / Live Data",
+      "serverTime": "Server Time",
+      "lastUpdate": "Last update",
+      "note": "Uses refetchInterval for automatic polling"
+    },
+    "network": {
+      "title": "Network Status",
+      "online": "Online",
+      "offline": "Offline",
+      "simulatedOffline": "Simulated Offline",
+      "fetching": "Fetching...",
+      "paused": "Query Paused",
+      "error": "Error",
+      "queryPaused": "Query is paused while offline",
+      "willRetryWhenOnline": "Will retry when back online",
+      "fetchFailed": "Failed to fetch data",
+      "serverTime": "Server Time",
+      "simulateOffline": "Simulate Offline",
+      "goOnline": "Go Online",
+      "refetch": "Refetch",
+      "note": "TanStack Query pauses queries when offline"
+    },
+    "httpStatus": {
+      "title": "HTTP Status Codes",
+      "description": "Click to trigger different HTTP errors and see how they're classified.",
+      "clickToTest": "Click a status code button above",
+      "clientErrors": "Client errors (4xx) - no retry",
+      "serverErrors": "Server errors (5xx) - will retry"
+    },
+    "retryComparison": {
+      "title": "Retry Behavior",
+      "description": "Compare how recoverable (5xx) vs non-recoverable (4xx) errors are handled.",
+      "serverError": "500 Server Error",
+      "notFound": "404 Not Found",
+      "willRetry": "Will Retry",
+      "noRetry": "No Retry",
+      "trigger": "Trigger Error",
+      "clickToStart": "Click trigger to start",
+      "attempt": "Attempt",
+      "failed": "Failed",
+      "success": "Success",
+      "note": "Note",
+      "noteText": "500 errors retry up to 3 times with exponential backoff. 404 errors fail immediately because they're not recoverable."
+    },
+    "suspense": {
+      "title": "Loading States",
+      "description": "Demonstrates TanStack Query loading states with cache clearing.",
+      "suspenseLoading": "Loading...",
+      "errorOccurred": "An error occurred",
+      "retry": "Retry",
+      "howItWorks": "How it works",
+      "point1": "Click clears cache to force re-fetch",
+      "point2": "isLoading shows skeleton fallback",
+      "point3": "Error boundary handles failures",
+      "note": "TanStack Query manages loading states automatically"
+    },
+    "parallel": {
+      "title": "Parallel Queries",
+      "weather": "Weather",
+      "stock": "Stock",
+      "news": "News",
+      "loading": "loading...",
+      "refetchAll": "Refetch All",
+      "note": "Uses useQueries to fetch multiple data sources in parallel"
+    },
+    "mutationComparison": {
+      "title": "Mutation Comparison",
+      "description": "Compare standard vs optimistic mutations.",
+      "standardMutation": "Standard Mutation",
+      "optimisticMutation": "Optimistic Mutation",
+      "waiting": "Saving...",
+      "standardNote": "Waits for server response",
+      "optimisticNote": "Instant UI update",
+      "resetBoth": "Reset Both",
+      "note": "Optimistic updates provide instant feedback"
+    },
+    "websocket": {
+      "title": "WebSocket Real-time",
+      "usersOnline": "users online",
+      "increment": "+ Increment",
+      "decrement": "- Decrement",
+      "note": "Counter updates from simulated users every few seconds",
+      "connectionStatus": {
+        "connecting": "Connecting...",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "reconnecting": "Reconnecting..."
+      }
+    },
+    "aiStreaming": {
+      "title": "AI Streaming",
+      "description": "Server-Sent Events for real-time text streaming",
+      "startButton": "Start Streaming",
+      "stopButton": "Stop"
+    }
+  },
+  "homePage": {
+    "badge": "Production-Ready Template",
+    "title": "Vue Template",
+    "subtitle": "Production-ready web app template with mobile-first design and Telegram Mini App support",
+    "getStarted": "Get Started",
+    "explorePatterns": "Explore Patterns",
+    "testAuthFlows": "Test Auth Flows",
+    "tryLiveDemos": "Try Live Demos",
+    "features": {
+      "title": "What You Get",
+      "subtitle": "Battle-tested features, not boilerplate",
+      "items": {
+        "authentication": {
+          "name": "Authentication",
+          "description": "Email + OTP verification, Telegram OAuth, password reset flows"
+        },
+        "rbac": {
+          "name": "Role-Based Access",
+          "description": "Admin/Owner/User roles, protected routes, permission checks"
+        },
+        "realtime": {
+          "name": "Real-Time Data",
+          "description": "WebSocket, polling, AI streaming, optimistic updates"
+        },
+        "mobile": {
+          "name": "Mobile-First Design",
+          "description": "Responsive layouts, bottom nav, Telegram Mini App detection"
+        },
+        "typesat": {
+          "name": "Type-Safe API",
+          "description": "Auto-generated TypeScript hooks from OpenAPI schema"
+        },
+        "i18n": {
+          "name": "i18n + Theming",
+          "description": "Multi-language support, dark/light mode out of the box"
+        },
+        "tanstack": {
+          "name": "TanStack Query Patterns",
+          "description": "17 interactive demos: caching, mutations, infinite scroll, suspense"
+        },
+        "dx": {
+          "name": "Developer Experience",
+          "description": "Hot reload, Make commands, organized monorepo structure"
+        }
+      }
+    },
+    "architecture": {
+      "title": "Modern Stack, Clean Architecture",
+      "subtitle": "End-to-end type safety from database to UI",
+      "highlights": {
+        "endToEnd": {
+          "title": "End-to-End Type Safety",
+          "description": "OpenAPI schema → Kubb generates TypeScript hooks. Change backend, frontend types update automatically."
+        },
+        "make": {
+          "title": "Unified Make Commands",
+          "description": "One interface for all apps: make test APP=x, make migration. No Docker/pytest directly."
+        },
+        "shared": {
+          "title": "Shared Core Logic",
+          "description": "Auth, users, payments, email in core/ — import into any app. No copy-paste between projects."
+        },
+        "hotReload": {
+          "title": "Hot Reload Everywhere",
+          "description": "Edit Python or TypeScript, see changes instantly. No container restarts, no manual rebuilds."
+        },
+        "repo": {
+          "title": "Repository Pattern + Flush",
+          "description": "Clean data access layer. Repositories use flush(), services control transactions. Testable, predictable."
+        },
+        "tanstackPatterns": {
+          "title": "TanStack Query Patterns",
+          "description": "17 demos showing caching, optimistic updates, infinite scroll, real-time — copy patterns directly."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Two Ways to Develop",
+      "subtitle": "Localhost for speed, tunnel for Telegram testing",
+      "localhost": {
+        "title": "Direct Localhost",
+        "subtitle": "Native Vite — fastest iteration, no Docker overhead",
+        "recommended": "Recommended",
+        "url": "http://localhost:5174/template",
+        "benefits": [
+          "~10x faster warm starts with Vite cache",
+          "Direct API calls (CORS enabled in dev)",
+          "Frontend runs natively on macOS"
+        ]
+      },
+      "tunnel": {
+        "title": "Tunnel Mode",
+        "subtitle": "Via nginx + Cloudflare tunnel — for Telegram Mini App testing",
+        "url": "https://local.yourdomain.com/template",
+        "benefits": [
+          "HTTPS with valid certificate",
+          "Telegram WebApp authentication",
+          "Production-like environment"
+        ]
+      },
+      "gateway": {
+        "title": "Gateway Hub",
+        "subtitle": "nginx landing page with quick access to all apps",
+        "description": "Access at https://local.yourdomain.com/ — one hub for tunnel links, localhost ports, and API docs"
+      },
+      "turbopack": {
+        "title": "Vite + Vitest",
+        "highlights": [
+          {
+            "title": "Fast Builds",
+            "description": "Vite hot module replacement for instant feedback"
+          },
+          {
+            "title": "Native Performance",
+            "description": "Frontends run locally on macOS, not in Docker containers"
+          },
+          {
+            "title": "Vue 3 Ready",
+            "description": "Composition API, script setup, and latest Vue features"
+          }
+        ]
+      }
+    },
+    "included": {
+      "title": "Everything Wired Up",
+      "subtitle": "Not just scaffolding — real, working features",
+      "pages": {
+        "title": "5 Pages",
+        "subtitle": "Production-ready routes",
+        "items": [
+          "Home marketing page",
+          "Tech demos (17 patterns)",
+          "Profile management",
+          "Admin dashboard",
+          "Extensible structure"
+        ]
+      },
+      "demos": {
+        "title": "17 Tech Demos",
+        "subtitle": "Reference implementations",
+        "items": [
+          "Loading & error states",
+          "Caching strategies",
+          "Mutations & optimistic UI",
+          "Streaming & real-time",
+          "Infinite scroll & more"
+        ]
+      },
+      "auth": {
+        "title": "Full Auth System",
+        "subtitle": "Complete authentication flows",
+        "items": [
+          "Email + OTP verification",
+          "Telegram OAuth",
+          "Password reset flow",
+          "Account linking",
+          "Session management"
+        ]
+      }
+    },
+    "claudeCode": {
+      "title": "Built for Claude Code",
+      "subtitle": "4-layer orchestration architecture — context-efficient, parallel-ready",
+      "orchestration": {
+        "title": "Orchestration-First Architecture",
+        "layer0": "CLAUDE.md → orchestration rules, quick reference",
+        "layer1": "commands/ → /develop, /create-task, /execute-task, /review",
+        "layer2": "skills/ → auto-invoked procedures (task creation, execution)",
+        "layer3": "agents/ → developer-agent, testing-polish-agent"
+      },
+      "slashCommands": {
+        "title": "Slash Commands",
+        "items": {
+          "createTask": {
+            "cmd": "/create-task",
+            "desc": "PRD → phases → parallel enrichment"
+          },
+          "executeTask": {
+            "cmd": "/execute-task",
+            "desc": "Phase-by-phase with auto-commits"
+          },
+          "develop": {
+            "cmd": "/develop",
+            "desc": "Quick delegation to developer-agent"
+          },
+          "design": {
+            "cmd": "/design",
+            "desc": "Research approaches, compare options"
+          },
+          "review": {
+            "cmd": "/review",
+            "desc": "Deep code review with questions"
+          },
+          "addTesting": {
+            "cmd": "/add-testing",
+            "desc": "Add test phases to existing task"
+          }
+        }
+      },
+      "structuredTasks": {
+        "title": "Structured Task System",
+        "description": "Auto-detects difficulty. Simple tasks: inline enrichment. Hard tasks: hub-and-spoke parallel agents with shared ARCHITECTURE.md to prevent conflicts."
+      },
+      "developerAgent": {
+        "title": "Developer Agent",
+        "items": [
+          "Reads pattern docs before every task. Returns summaries, not code dumps.",
+          "Mandatory reads: critical-rules.md + domain-specific doc",
+          "After changes: make test, make lint, make schema",
+          "Commits: follows conventional format per phase"
+        ]
+      },
+      "patternDocs": {
+        "title": "10 Pattern Docs in .claude/shared/",
+        "docs": [
+          "backend-patterns.md",
+          "vue-frontend.md",
+          "react-frontend.md",
+          "testing-patterns.md",
+          "monorepo-structure.md",
+          "error-handling.md",
+          "critical-rules.md",
+          "playwright-testing.md",
+          "vue-animations.md",
+          "adding-packages.md"
+        ]
+      }
+    },
+    "quickStart": {
+      "title": "Get Started",
+      "subtitle": "Prerequisites: Docker, pnpm, make",
+      "run": {
+        "title": "Run the Template",
+        "subtitle": "Start development in 3 steps",
+        "steps": [
+          {
+            "num": 0,
+            "title": "Setup Cloudflare Tunnel",
+            "desc": "Required for Telegram Mini App testing — exposes localhost via HTTPS"
+          },
+          {
+            "num": 1,
+            "title": "Clone & install",
+            "code": "pnpm install"
+          },
+          {
+            "num": 2,
+            "title": "Configure environment",
+            "code": "cp .env.example .env"
+          },
+          {
+            "num": 3,
+            "title": "Start everything",
+            "code": "make up APP=template"
+          }
+        ],
+        "openAt": "Open http://localhost:5174/template"
+      },
+      "create": {
+        "title": "Create Your Own App",
+        "subtitle": "Use template as foundation",
+        "steps": [
+          {
+            "num": 1,
+            "title": "Copy template",
+            "code": "cp -r apps/template apps/your-app"
+          },
+          {
+            "num": 2,
+            "title": "Update configs",
+            "code": "package.json, docker-compose, .env"
+          },
+          {
+            "num": 3,
+            "title": "Create database",
+            "code": "make upgrade APP=your-app"
+          },
+          {
+            "num": 4,
+            "title": "Start building",
+            "code": "Remove demo code, add your features"
+          }
+        ],
+        "seeDetails": "See .claude/shared/monorepo-structure.md for details"
+      }
+    },
+    "cta": {
+      "title": "Ready to Explore?",
+      "tryDemos": "Try Live Demos",
+      "demoSubtitle": "caching, WebSocket, AI streaming",
+      "testAuth": "Test Auth Flows",
+      "authSubtitle": "friend invites & auth"
+    }
+  },
+  "next": "Continue",
+  "loading": "Loading...",
+  "back_to_app": "Back to app",
+  "back_to_home": "Back to spreads",
+  "share_button": "Share",
+  "comingSoon": "Coming soon!",
+  "out_of_readings": "You are out of free readings.\nPlease subscribe to get unlimited readings\nReturn tomorrow to get free Daily card",
+  "draw": {
+    "loading": {
+      "title": "Purring your destiny...",
+      "caption": "Preparing your cards..."
+    },
+    "placeholder": {
+      "title": "Draw a Card",
+      "titleDrawn": "{cardName}",
+      "caption": "Let the purrs guide your fate",
+      "captionDrawn": "The cards have spoken...",
+      "titleNoReadings": "Buy Subscription",
+      "captionNoReadings": "Return to bot to purchase subscription and get unlimited readings",
+      "titleManualInput": "Text Input",
+      "captionManualInput": "Enter the name of your card"
+    },
+    "manual_mode": "Text Input",
+    "text_draw": {
+      "draw_mode": "Back to Draw Mode",
+      "submit": "Submit",
+      "input_placeholder": "Enter card name..."
+    },
+    "daily": {
+      "placeholder": {
+        "title": "Draw a card of the day",
+        "caption": "Find out what awaits you today"
+      }
+    },
+    "single_card": {
+      "placeholder": {
+        "title": "Draw one card",
+        "caption": "Find out the answer to your question"
+      }
+    },
+    "three_card": {
+      "placeholder": {
+        "title": "Draw three cards",
+        "caption": "Find out the answer to your question"
+      }
+    },
+    "yes_no": {
+      "placeholder": {
+        "title": "Yes or No",
+        "caption": "Find out the answer to your question"
+      }
+    },
+    "love": {
+      "placeholder": {
+        "title": "Love Spread",
+        "caption": "Detailed analysis of your relationship"
+      }
+    },
+    "a_or_b": {
+      "placeholder": {
+        "title": "A or B",
+        "caption": "Compare two options or paths"
+      }
+    },
+    "financial": {
+      "placeholder": {
+        "title": "Financial Spread",
+        "caption": "Cat will tell you where all the money is"
+      }
+    },
+    "destiny": {
+      "placeholder": {
+        "title": "Your destiny",
+        "caption": "Cat will tell you what fate has in store"
+      }
+    },
+    "education": {
+      "placeholder": {
+        "title": "Education Spread",
+        "caption": "Insights about your learning journey"
+      }
+    },
+    "ex_partner": {
+      "placeholder": {
+        "title": "Ex-Partner Spread",
+        "caption": "Understand your past relationship"
+      }
+    },
+    "disappearance": {
+      "placeholder": {
+        "title": "Why They Disappeared",
+        "caption": "Uncover the mystery of their absence"
+      }
+    },
+    "wait_or_release": {
+      "placeholder": {
+        "title": "Wait or Let Go",
+        "caption": "Should you hold on or move forward?"
+      }
+    },
+    "situation": {
+      "placeholder": {
+        "title": "Situation Analysis",
+        "caption": "Get clarity on your circumstances"
+      }
+    },
+    "career_crossroads": {
+      "placeholder": {
+        "title": "Career Crossroads",
+        "caption": "Stay or leave? Find your path"
+      }
+    },
+    "talent": {
+      "placeholder": {
+        "title": "Talent Discovery",
+        "caption": "Uncover your hidden gifts"
+      }
+    },
+    "self_discovery": {
+      "placeholder": {
+        "title": "Self-Discovery",
+        "caption": "Explore your true self"
+      }
+    },
+    "ob_daily": {
+      "placeholder": {
+        "title": "Draw single card",
+        "caption": "Find out what awaits you today"
+      }
+    },
+    "ob_three_card": {
+      "placeholder": {
+        "title": "Draw three cards",
+        "caption": "Find out the answer to your question"
+      }
+    },
+    "celtic_cross": {
+      "placeholder": {
+        "title": "Celtic Cross Spread",
+        "caption": "Comprehensive analysis of your situation"
+      }
+    }
+  },
+  "question": {
+    "button": "Next",
+    "suggestions": "Will I find love this year?;Should I change my job?;What is blocking my success?;How can I improve my relationships?;Will I move in the near future?;What is my purpose?;Is this the right path for me?;Will my financial situation improve?;Can I trust this person?;What awaits me in my career?;How can I find inner peace?;Will my wish come true?;Are these relationships right for me?;What should I focus on now?;How can I overcome current difficulties?;What opportunities will open up for me soon?;How can I find balance between work and personal life?;What do I need to let go of to move forward?;What lessons should I learn from the current situation?;How can I develop my talents?;Should I start a new project?;What obstacles await me on my path?;How can I improve family relationships?;What will bring me joy in the near future?;How can I attract abundance into my life?;What decision will be the best?;How can I find my calling?;What is preventing me from moving forward?;How can I overcome fears and doubts?;What changes await me in my personal life?;Should I invest money in this project?;How can I improve my health and well-being?;What awaits me in my travels?;How can I find true friends?;What qualities do I need to develop?;Should I pursue further education?;How can I attract the right people into my life?;What will help me achieve my goals?;How can I resolve conflict with a loved one?;What opportunities for growth exist now?;Should I change my place of residence?;How can I improve my relationship with my partner?;What will bring me success in work?;How can I find my place in life?;What are the prospects for these relationships?;How can I attract a worthy partner?;What awaits me in spiritual development?;How can I overcome a period of stagnation?;What talents should I develop?;Should I start my own business?;How can I find my dream job?;What will help me become happier?;What changes will the new year bring?;How can I improve my financial situation?;What awaits me in new beginnings?;How can I restore relationships with loved ones?;What opportunities will open up in my career?;Should I trust my intuition in this matter?;How can I overcome creative block?;What will bring me stability?;How can I find my path to success?",
+    "single_card": {
+      "title": "Ask a Question",
+      "caption": "What would you like a quick answer for?",
+      "placeholder": "Type your question here...",
+      "suggestions": "Will today be a good day?;Should I accept this offer?;Is this person thinking of me?;Will my plan succeed?;Is this the right timing?;What energy surrounds me today?;Should I make this purchase?;Will I receive good news soon?;Is this relationship worth pursuing?;Should I take this risk?;What should I focus on today?;Will this project be successful?;Is this path right for me right now?;What do I need to know today?;Should I trust my intuition on this?"
+    },
+    "three_card": {
+      "title": "Ask a Question",
+      "caption": "What would you like deeper insights about?",
+      "placeholder": "Type your question here...",
+      "suggestions": "How will my relationship evolve over the next few months?;What are the key factors influencing my career path right now?;How can I overcome the challenges I'm currently facing?;What do I need to know about this important decision?;How will this situation unfold?;What energies are surrounding my current life path?;How can I improve my relationship with myself?;What past, present, and future energies are shaping my situation?;What should I know about this opportunity?;How can I navigate through this transition period?;What strengths can I draw upon to succeed?;What is blocking me from achieving my goal?;How can I heal from this experience?;What insights should I consider about my spiritual journey?;What forces are at play in my current circumstances?"
+    },
+    "yes_no": {
+      "title": "Ask a Yes/No Question",
+      "caption": "What do you need a clear answer for?",
+      "placeholder": "Type your yes/no question here...",
+      "suggestions": "Should I take this job offer?;Is this relationship going to work out?;Will I succeed if I pursue this path?;Is now the right time to make this change?;Should I trust this person?;Is moving to a new location the right choice?;Should I start this business venture?;Will this investment be profitable?;Is this collaboration beneficial for me?;Should I confront this issue directly?;Will my financial situation improve soon?;Should I wait before making this decision?;Is this the right time to ask for a promotion?;Should I pursue higher education now?;Is reconciliation possible in this relationship?"
+    },
+    "ob_three_card": {
+      "title": "Ask Your Question",
+      "caption": "What would you like to explore with three cards?",
+      "placeholder": "Type your question here...",
+      "suggestions": "What energies are influencing my path right now?;How can I make progress in my current situation?;What should I know about my present circumstances?;What challenges and opportunities await me?;How can I grow from my current experiences?;What insights can help me understand my relationships better?;What past influences are still affecting my present?;What potential future is developing from my current actions?;How should I approach this important life decision?;What aspects of myself should I be more aware of?;What hidden factors are influencing my situation?;How can I navigate through current uncertainties?;What is the most important thing to focus on right now?;How can I find better balance in my life?;What do I need to release to move forward?"
+    },
+    "a_or_b": {
+      "title": "Compare Two Options",
+      "caption": "What choices would you like to compare?",
+      "placeholder": "Describe your question about two options...",
+      "suggestions": "Should I stay in my current job or accept the new offer?;Is it better to move to a new city or remain where I am?;Should I pursue relationship A or relationship B?;Is it better to invest in project X or project Y?;Should I follow my passion or choose the practical path?;Is it better to speak up now or wait for a better time?;Should I commit to this relationship or keep my options open?;Is it better to save money or invest it now?;Should I focus on career growth or work-life balance?;Is it better to work for someone else or start my own business?;Should I continue my education or gain work experience?;Is it better to confront this issue or let it resolve naturally?;Should I trust my head or follow my heart?;Is it better to make this purchase now or wait?;Should I expand my current business or stabilize it first?"
+    },
+    "situation": {
+      "title": "Describe Your Situation",
+      "caption": "What situation would you like clarity on?",
+      "placeholder": "Describe your situation here...",
+      "suggestions": "What is happening in my current situation?;How can I best navigate this situation?;What is the true nature of my current circumstances?;What factors are influencing this situation?;What is hidden from me in this situation?;What should I be aware of in this situation?;How will this situation develop?;What opportunities are hidden in this current challenge?;What is the best approach to this situation?;What energy surrounds this situation?;What forces are at play in this circumstance?;How can I find clarity in this confusing situation?;What is the potential outcome of this situation?;What aspects of this situation am I not seeing?;How can I improve this situation?;What can I learn from this situation?;What is the root cause of this situation?;What should I understand about these circumstances?;How can I resolve this difficult situation?;What do I need to release to move past this situation?;What wisdom can the cards reveal about my situation?;What guidance do I need in this situation?;How should I respond to these circumstances?;What is the meaning behind this challenge?;How can I find peace amid this situation?;What action should I take in this situation?;How will this situation affect me in the long term?;What is the silver lining in this difficult situation?;How can I turn this situation to my advantage?;What perspective shift do I need about this situation?"
+    }
+  },
+  "question_or": {
+    "or": "or",
+    "question": {
+      "title": "Compare Two Options",
+      "subtitle": "Enter the two options you want to compare"
+    },
+    "option_a": "Option A",
+    "option_b": "Option B",
+    "option_a_placeholder": "Enter your first option...",
+    "option_b_placeholder": "Enter your second option..."
+  },
+  "onboarding": {
+    "hello": {
+      "title": "Welcome to Tarot Meow App!",
+      "subtitle": "Discover Tarot wisdom through the paws of wise cats!",
+      "terms": "By proceeding you accept the",
+      "termsLink": "Terms",
+      "and": "and",
+      "privacyLink": "Privacy Policy",
+      "getStarted": "Start"
+    },
+    "struggles": {
+      "title": "What's keeping you up at night?",
+      "options": {
+        "stuck": {
+          "label": "I'm stuck in a situation I can't control"
+        },
+        "relationships": {
+          "label": "My relationships feel chaotic or unfulfilling"
+        },
+        "career": {
+          "label": "I'm lost in my career/financial path"
+        },
+        "purpose": {
+          "label": "I crave purpose but don't know where to start"
+        }
+      }
+    },
+    "frequency": {
+      "questions": {
+        "stuck": "How often do you feel powerless to change things?",
+        "relationships": "Do you worry you'll repeat the same mistakes?",
+        "career": "Does your future feel uncertain or out of reach?",
+        "purpose": "Do you feel disconnected from your true self?"
+      },
+      "options": {
+        "rarely": "Rarely",
+        "sometimes": "Sometimes",
+        "constantly": "Constantly",
+        "everyday": "Every day",
+        "yes": "Yes",
+        "no": "No",
+        "unsure": "I don't know",
+        "not_really": "Not really"
+      }
+    },
+    "future": {
+      "title": "If you could know ONE thing about your future, what would it be?",
+      "options": {
+        "love": "Will I find love?",
+        "career": "Will my career goals succeed?",
+        "peace": "Will I ever feel at peace?",
+        "purpose": "What's my true purpose?"
+      }
+    },
+    "barrier": {
+      "title": "What is stopping you from moving forward?",
+      "options": {
+        "fear": "Fear of the unknown and change",
+        "selfDoubt": "Doubts about your own strengths and decisions",
+        "indecision": "Difficulty in choosing the right path",
+        "lackSupport": "Lack of support or mentorship"
+      }
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "history": "History",
+    "learn": "Learn",
+    "spread": "Spread",
+    "chat": "Chat",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your account and features",
+    "authRequired": "Login required",
+    "ctaText": "Want to see tech demos?",
+    "ctaLink": "Go to Demo",
+    "settings": "Settings",
+    "language": "Language",
+    "appearance": "Appearance",
+    "loadError": "Failed to load profile. Please try again later :(",
+    "languageUpdateError": "Failed to update language. Please try again.",
+    "user": {
+      "title": "User Info",
+      "memberSince": "Member since {date}",
+      "sections": {
+        "activity": "Activity",
+        "preferences": "Preferences",
+        "authMethods": "Auth Methods"
+      },
+      "stats": {
+        "currentStreak": "Current",
+        "bestStreak": "Best",
+        "totalDays": "Total Days"
+      },
+      "prefs": {
+        "language": "Language",
+        "timezone": "Timezone",
+        "birthDate": "Birth Date",
+        "gender": "Gender"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "tg": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "languageCode": "Language",
+        "isPremium": "Premium",
+        "isBot": "Is Bot"
+      },
+      "email": {
+        "address": "Email",
+        "verified": "Verified",
+        "verifiedAt": "Verified At",
+        "lastLogin": "Last Login"
+      },
+      "linkTelegram": "Link Telegram",
+      "addEmail": "Add Email",
+      "logout": "Logout",
+      "loggingOut": "Logging out..."
+    },
+    "subscription": {
+      "premium": "Premium",
+      "free": "Free",
+      "todoNote": "Payment flows coming soon. This shows your current subscription status.",
+      "title": "Subscription",
+      "popular": "Most popular",
+      "subscribe": "Subscribe",
+      "WEEK_SUB": "1 week",
+      "MONTH_SUB": "1 month",
+      "YEAR_SUB": "1 year",
+      "WEEK_SUB_V2": "1 week",
+      "MONTH_SUB_V2": "1 month",
+      "YEAR_SUB_V2": "1 year",
+      "WEEK_SUB_V3": "1 week",
+      "MONTH_SUB_V3": "1 month",
+      "YEAR_SUB_V3": "1 year",
+      "save": "Save {percent}%",
+      "perWeek": "/week",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "saveValue": "{percent}% better value",
+      "bestValue": "Best Value",
+      "active": "Active",
+      "activeUntil": "Active until {date}",
+      "cancel": "Cancel Subscription",
+      "canceled": "Subscription Canceled, but we already miss you!",
+      "renew": "Renew Subscription",
+      "manage": "Manage Subscription",
+      "plan": "Plan",
+      "price": "Price",
+      "change": "Change Subscription",
+      "viewReceipts": "View Receipts",
+      "supportMessages": {
+        "changeRequest": "I would like to change my subscription plan.",
+        "receiptsRequest": "I would like to get my subscription receipts.",
+        "renewRequest": "I would like to renew my subscription."
+      }
+    },
+    "friends": {
+      "title": "Friends",
+      "count": "{count} friends",
+      "noFriends": "No friends yet. Share your invite link!",
+      "andMore": "+{count} more",
+      "createInvite": "Create Invite Link"
+    },
+    "notification": {
+      "title": "Notification Demo",
+      "description": "Test the notification system. Click a button to receive a Telegram message.",
+      "seconds": "s",
+      "sent": "Sent! Check Telegram in {seconds} seconds.",
+      "note": "Demonstrates worker tasks and Telegram bot messaging."
+    },
+    "login": {
+      "title": "Login Required",
+      "description": "Sign in with your Telegram account to access your profile.",
+      "button": "Login with Telegram"
+    },
+    "telegram": {
+      "title": "Platform",
+      "platform": "Current Platform",
+      "telegramApp": "Running inside Telegram",
+      "webBrowser": "Running in web browser",
+      "client": "Client",
+      "colorScheme": "Color Scheme",
+      "actionsTitle": "Telegram-only Actions",
+      "vibrate": "Vibrate Device",
+      "showAlert": "Show Telegram Alert",
+      "alertMessage": "Hello from Telegram Mini App!",
+      "webOnlyMessage": "These actions are only available when running inside Telegram."
+    },
+    "details": {
+      "defaultName": "User",
+      "premium": "Premium",
+      "notPremium": "Not Premium",
+      "verified": "Verified",
+      "notSet": "Not set",
+      "male": "Male",
+      "female": "Female",
+      "days": "days",
+      "loggingOut": "Logging out...",
+      "telegramNotLinked": "Telegram account is not linked.",
+      "emailNotLinked": "Email is not linked to your account.",
+      "sections": {
+        "telegram": "Telegram Account",
+        "email": "Email Account",
+        "appProfile": "App Profile",
+        "activity": "Activity"
+      },
+      "fields": {
+        "telegramId": "Telegram ID",
+        "name": "Name",
+        "username": "Username",
+        "telegramLanguage": "Language",
+        "premiumStatus": "Premium Status",
+        "email": "Email",
+        "verifiedAt": "Verified on",
+        "lastLogin": "Last Login",
+        "appUsername": "App Username",
+        "language": "Language",
+        "timezone": "Timezone",
+        "gender": "Gender",
+        "birthday": "Birthday",
+        "referralCode": "Referral Code",
+        "currentStreak": "Current Streak",
+        "bestStreak": "Best Streak",
+        "totalDays": "Total Active Days",
+        "memberSince": "Member Since"
+      },
+      "actions": {
+        "linkTelegram": "Link Telegram",
+        "addEmail": "Add Email",
+        "editProfile": "Edit Profile",
+        "logout": "Logout"
+      }
+    },
+    "linkTelegram": {
+      "title": "Link Telegram Account",
+      "description": "Link your Telegram account to access this app from Telegram",
+      "scanQr": "Click below to open Telegram and link your account",
+      "openTelegram": "Open in Telegram",
+      "waiting": "Waiting for confirmation...",
+      "success": "Telegram account linked!",
+      "error": "Linking failed. Please try again.",
+      "expired": "Link expired. Please try again."
+    },
+    "addEmail": {
+      "title": "Add Email",
+      "description": "Add an email to login from web browser",
+      "step1": "Enter Email",
+      "step2": "Verify & Set Password",
+      "codeSent": "Code sent to {email}",
+      "linkEmail": "Link Email",
+      "success": "Email added! You can now login from web.",
+      "error": "Failed to add email. Please try again."
+    }
+  },
+  "login": {
+    "title": "Sign In",
+    "description": "Choose your preferred sign-in method",
+    "or": "or",
+    "useTelegramCode": "Having trouble? Use code instead",
+    "email": {
+      "loginTab": "Login",
+      "signupTab": "Sign Up",
+      "loginDescription": "Enter your email and password to login.",
+      "signupDescription": "Create a new account with your email."
+    },
+    "telegram": {
+      "continueWith": "Continue with Telegram",
+      "openButton": "Continue with Telegram",
+      "waiting": "Waiting for confirmation...",
+      "hint": "Click \"Start\" in the Telegram bot",
+      "reopen": "Open Telegram",
+      "canRegister": "New users registered automatically"
+    },
+    "usernameStep": {
+      "description": "Enter your Telegram username to receive a verification code.",
+      "label": "Telegram Username",
+      "placeholder": "@username",
+      "hint": "We'll send a 6-digit code to your Telegram DM.",
+      "submit": "Send Code"
+    },
+    "codeStep": {
+      "description": "Enter the verification code sent to your Telegram.",
+      "label": "Verification Code",
+      "placeholder": "000000",
+      "hint": "Check your Telegram DM from @YourBotName for the code.",
+      "submit": "Verify",
+      "back": "Back",
+      "resend": "Resend code"
+    },
+    "errors": {
+      "sendFailed": "Failed to send code. Please try again.",
+      "verifyFailed": "Invalid code. Please try again.",
+      "networkError": "Network error. Please check your connection."
+    }
+  },
+  "cancel": {
+    "title": "Subscription Cancelled",
+    "message": "Your subscription has been successfully cancelled. You can continue using premium features until the end of your billing period.",
+    "button": "Back to Profile"
+  },
+  "cancelConfirm": {
+    "title": "Are you sure?",
+    "message": "We'll miss you! Remember, you can keep using premium features until the end of your billing period.",
+    "keepButton": "Keep My Subscription",
+    "confirmButton": "Yes, Cancel"
+  },
+  "cancelReason": {
+    "title": "We're sad to see you go",
+    "caption": "What's the main reason for canceling?",
+    "options": {
+      "tooExpensive": {
+        "label": "Too expensive for me",
+        "emoji": "💰"
+      },
+      "notUsing": {
+        "label": "Not using it enough",
+        "emoji": "🕒"
+      },
+      "poorQuality": {
+        "label": "Quality doesn't meet expectations",
+        "emoji": "😕"
+      },
+      "foundAlternative": {
+        "label": "Found a better alternative",
+        "emoji": "🔄"
+      },
+      "technicalIssues": {
+        "label": "Technical issues",
+        "emoji": "🛠️"
+      },
+      "other": {
+        "label": "Other reason",
+        "emoji": "📝"
+      }
+    },
+    "continue": "Continue"
+  },
+  "cancelFeedback": {
+    "title": "Help us improve",
+    "caption": "What could we change to keep you as a subscriber?",
+    "placeholder": "Your feedback...",
+    "button": "Submit & Cancel",
+    "skip": "Skip"
+  },
+  "spread": {
+    "title": "Hey there! What's on your mind?",
+    "subtitle": "Let's see what the cards have to say",
+    "daily": {
+      "title": "Daily Card",
+      "description": "Get insights for your day"
+    },
+    "single_card": {
+      "title": "Ask a Question",
+      "description": "Get a furry answer to your question"
+    },
+    "three_card": {
+      "title": "Three Card Reading",
+      "description": "Deep dive with three cards for your question",
+      "questions": {
+        "q1": "How will my career develop this year?",
+        "q2": "What blocks my path to happiness?",
+        "q3": "Should I make this important decision?",
+        "q4": "What awaits in my love life?",
+        "q5": "How can I improve my relationships?"
+      }
+    },
+    "yes_no": {
+      "title": "Yes or No",
+      "description": "Get a quick answer to your question"
+    },
+    "a_or_b": {
+      "title": "A or B",
+      "description": "Compare two choices or paths"
+    },
+    "love": {
+      "title": "Love Spread",
+      "description": "Insights about your relationships"
+    },
+    "financial": {
+      "title": "Financial Spread",
+      "description": "Guidance for your wealth and career"
+    },
+    "destiny": {
+      "title": "Destiny Spread",
+      "description": "Unveil your life path and purpose"
+    },
+    "education": {
+      "title": "Education Spread",
+      "description": "Guidance for your learning journey"
+    },
+    "ex_partner": {
+      "title": "Ex-Partner Spread",
+      "description": "Insights about your past relationship"
+    },
+    "disappearance": {
+      "title": "Why They Disappeared",
+      "description": "Uncover the mystery of their absence"
+    },
+    "wait_or_release": {
+      "title": "Wait or Let Go",
+      "description": "Help with a difficult decision"
+    },
+    "situation": {
+      "title": "Situation Analysis",
+      "description": "Clarity on your current circumstances"
+    },
+    "career_crossroads": {
+      "title": "Career Crossroads",
+      "description": "Should you stay or should you go?"
+    },
+    "talent": {
+      "title": "Talent Discovery",
+      "description": "Reveal your hidden abilities"
+    },
+    "self_discovery": {
+      "title": "Self-Discovery",
+      "description": "Explore your true self"
+    },
+    "celtic_cross": {
+      "title": "Celtic Cross",
+      "description": "Deep analysis of your situation"
+    },
+    "ob_daily": {
+      "title": "Daily Card",
+      "description": "Get insights for your day"
+    },
+    "ob_three_card": {
+      "title": "Three Card Reading",
+      "description": "Deep dive with three cards for your question"
+    },
+    "comingSoon": "Coming Soon",
+    "onlyPremium": "Subscription",
+    "moreComingSoon": "More spreads coming soon!",
+    "shareIdea": "Do you have an idea? Share it with us"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Your reading journey",
+    "empty": {
+      "title": "Empty",
+      "caption": "Get a reading!"
+    },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "caption": "History feature is under development"
+    }
+  },
+  "error": {
+    "title": "Oops!",
+    "caption": "Something went wrong. Need help? Contact us at",
+    "button": "Back to Home"
+  },
+  "admin": {
+    "ctaText": "Want to see tech demos?",
+    "ctaLink": "Go to Demo"
+  },
+  "common": {
+    "loading": "Loading...",
+    "almostThere": "Almost there!",
+    "cancel": "Cancel",
+    "back": "Back",
+    "notConnected": "Not connected",
+    "link": "Link",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "email": {
+      "continue": "Continue",
+      "continueWithEmail": "Continue with Email",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "emailOrUsername": "Email or Username",
+      "emailOrUsernamePlaceholder": "email@example.com or username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "newPasswordPlaceholder": "Create a password",
+      "passwordRequirements": "At least 8 characters with uppercase, number, or symbol",
+      "code": "Verification Code",
+      "codePlaceholder": "000000",
+      "username": "Username",
+      "usernamePlaceholder": "your_username",
+      "usernameRequirements": "3-32 characters, letters, numbers, and underscores only",
+      "resendCode": "Resend code",
+      "login": {
+        "title": "Login with Email",
+        "description": "Enter your email and password to login.",
+        "submit": "Login",
+        "error": "Login failed. Please try again.",
+        "noAccount": "Don't have an account?",
+        "signupLink": "Sign up"
+      },
+      "signup": {
+        "title": "Create Account",
+        "description": "Create a new account with your email.",
+        "continue": "Continue",
+        "createAccount": "Create Account",
+        "codeSent": "We sent a code to {email}",
+        "confirmPassword": "Confirm Password",
+        "passwordMismatch": "Passwords don't match",
+        "error": "Signup failed. Please try again.",
+        "haveAccount": "Already have an account?",
+        "loginLink": "Log in"
+      },
+      "reset": {
+        "title": "Reset Password",
+        "description": "Enter your email to reset your password.",
+        "emailDescription": "We'll send you a verification code to reset your password.",
+        "forgotPassword": "Forgot password?",
+        "sendCode": "Send Code",
+        "codeSent": "We sent a code to {email}",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "passwordMismatch": "Passwords don't match",
+        "resetPassword": "Reset Password",
+        "backToLogin": "Back to Login",
+        "success": "Password reset successful! You can now log in with your new password.",
+        "error": "Password reset failed. Please try again."
+      },
+      "link": {
+        "title": "Link Email",
+        "description": "Add email login to your account. You'll be able to log in with either Telegram or email.",
+        "sendCode": "Send Verification Code",
+        "linkEmail": "Link Email",
+        "success": "Email Linked!",
+        "successDescription": "You can now log in with your email and password.",
+        "error": "Failed to link email. Please try again."
+      }
+    }
+  },
+  "payment": {
+    "redirecting": "Redirecting you to payment page...",
+    "redirected": "Payment page opened",
+    "redirectedMessage": "You should have been redirected to the payment page. If not, click the button below.",
+    "backToApp": "Back to App",
+    "error": "Payment failed. Please try again.",
+    "errorTitle": "Payment Failed",
+    "errorMessage": "We couldn't process your payment. Please try again later.",
+    "success": {
+      "title": "Payment Successful",
+      "message": "Your payment has been processed successfully. Thank you!",
+      "button": "Go to App!"
+    }
+  },
+  "paywall": {
+    "unlockPremiumAccess": "Unlock Premium Access",
+    "title": "Unlock All Secrets of Your Destiny!",
+    "caption": "Get answers to all your questions",
+    "skip": "Skip for now",
+    "slides": {
+      "all_in_one": {
+        "title": "Everything You Need in One Place",
+        "bullet1": "🔓 Unlimited spreads to find answers anytime",
+        "bullet2": "🔥 Exclusive predictions available only to subscribers",
+        "bullet3": "🌟 Personal chat with AI tarot reader (soon)",
+        "bullet4": "💰 Access to wiki, quizzes, and lessons (soon)"
+      },
+      "uncertainty": {
+        "title": "Uncertainty Wearing You Down?",
+        "bullet1": "😰 Hard to make decisions while anxiety keeps growing",
+        "bullet2": "⏳ While you wait, life passes you by",
+        "bullet3": "📖 Thousands already find answers through Tarot"
+      },
+      "stuck": {
+        "title": "Don't Know What to Do Next?",
+        "bullet1": "🤯 Everything is confusing, and fear of mistakes holds you back",
+        "bullet2": "🔥 Tarot helps see the situation from a new angle",
+        "bullet3": "✅ Users are already making decisions with confidence"
+      },
+      "lost": {
+        "title": "Feeling Lost?",
+        "bullet1": "💔 Feels like no one understands you",
+        "bullet2": "🔮 Cards help you look inside and find peace",
+        "bullet3": "🤝 People find support and answers in Tarot"
+      },
+      "relationships": {
+        "title": "Relationships Became Unclear?",
+        "bullet1": "💔 You don't know what your partner feels",
+        "bullet2": "⏳ Don't wait — learn how to act now",
+        "bullet3": "💞 Many restored harmony by following the cards' advice"
+      },
+      "life": {
+        "title": "Life Feels Stuck?",
+        "bullet1": "🌀 Seems like everything is going wrong",
+        "bullet2": "⏳ Don't waste time — find your path",
+        "bullet3": "🌟 Tarot helps find clarity and motivation"
+      }
+    }
+  },
+  "chat": {
+    "title": "Chat with Tarot Meow",
+    "teaserTitle": "Darling, we need to talk urgently!;What's new with you, beautiful?;Let's discuss the most important things?;Tell me everything, I want to know the details!;Share your secrets! I won't tell anyone!;Let's talk openly, dear?;What's worrying you, dear?;Let's have a heart-to-heart?",
+    "teaserDescription": "Tell me everything that's in your heart, I'm here for you!;I'm always here to discuss your news, dreams and secrets!;Let's talk about what's bothering you? I'll understand and accept everything!;You know, I'm always here to support you and discuss what's not spoken aloud.;Want to talk about everything that's important to you right now? I'm already listening!;Chat with me, and we'll find answers together with Tarot!;Let's pause and discuss what's really important right now!;It's very important for me to know how you feel and what's bothering you. Tell me!;Let's talk sincerely? I'm here to help you understand yourself.",
+    "tellAboutDay": "Tell me about your day as it is;Share your little joys;Let's discuss what's important right now;Tell me everything that's accumulated;Share feelings and emotions;Talk to me about everything that troubles you;Discuss your dreams and plans with me",
+    "chatIntro": "Hi! I'm your personal tarot guide cat. Share anything that's on your mind.",
+    "chatHistory": "Chat History",
+    "welcome": "Hello! I'm Tarot Cat, your mystical guide 🐾✨ What's on your mind today?",
+    "inputPlaceholder": "Share what's on your mind...",
+    "send": "Send",
+    "drewCards": "I drew these cards:",
+    "readyToDraw": "Ready to draw your cards?",
+    "drawCards": "🔮 Draw Cards",
+    "maybeLater": "Maybe Later",
+    "subscriptionRequired": "Chat with Tarot Meow",
+    "subscriptionDescription": "Subscribe to chat with our AI tarot reader for personalized guidance and continuous conversation.",
+    "subscribe": "Subscribe",
+    "disclaimer": "Responses are for entertainment purposes only.",
+    "moreFeaturesSoon": "More chat features coming soon!",
+    "youMayAsk": "You may wanna ask",
+    "change": "Change",
+    "monthlyFortune": "March Fortune",
+    "suggestedQuestions": {
+      "research": "How can I identify the most fulfilling direction for my research?",
+      "family": "How can I balance family expectations with my personal life?",
+      "happiness": "What can I do to be happier?",
+      "peer": "What's the best way to deal with peer pressure?"
+    },
+    "errors": {
+      "retry": "Retry",
+      "networkError": "Connection failed. Please check your internet and try again.",
+      "aiServiceError": "AI service is temporarily unavailable. Please try again.",
+      "cardSendingError": "Failed to send cards: {message}",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "testError": "Test error {count}/{total}: AI service temporarily unavailable. Please try again.",
+      "testCardError": "Test card error {count}/{total}: Card drawing service temporarily unavailable. Please try again."
+    },
+    "developerMode": {
+      "title": "🧪 Developer Mode",
+      "enableTestMode": "Enable Test Mode",
+      "disableTestMode": "Disable Test Mode",
+      "requestsWillFail": "Next {count} requests (messages/cards) will fail"
+    }
+  },
+  "learn": {
+    "title": "Learn Tarot",
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "We are working hard to bring you an amazing tarot learning experience. Stay tuned!"
+    },
+    "welcome": {
+      "title": "Start Your Tarot Journey",
+      "description": "Choose a training mode below to begin mastering tarot card interpretation",
+      "practiceImprove": "Practice & improve",
+      "trackProgress": "Track progress"
+    },
+    "stats": {
+      "solvedTotal": "Solved/Total",
+      "accuracy": "Accuracy",
+      "solved": "solved",
+      "streak": "streak"
+    },
+    "training": {
+      "spreadDescription": "Practice interpreting 3-card spreads with detailed explanations",
+      "recognitionDescription": "Match keywords to tarot cards to improve card recognition"
+    },
+    "tabs": {
+      "wiki": "Wiki",
+      "quizzes": "Quizzes",
+      "lessons": "Lessons"
+    },
+    "wiki": {
+      "searchPlaceholder": "Search for cards, spreads, or meanings...",
+      "popularCards": "Popular Cards",
+      "categories": {
+        "majorArcana": "Major Arcana",
+        "minorArcana": "Minor Arcana",
+        "cups": "Cups",
+        "pentacles": "Pentacles",
+        "swords": "Swords",
+        "wands": "Wands"
+      }
+    },
+    "quizzes": {
+      "basics": {
+        "title": "Tarot Basics",
+        "description": "Test your knowledge of fundamental tarot concepts and card meanings."
+      },
+      "majorArcana": {
+        "title": "Major Arcana",
+        "description": "Challenge yourself with questions about the 22 major arcana cards."
+      },
+      "spreads": {
+        "title": "Reading Spreads",
+        "description": "Test your knowledge of different tarot spreads and their purposes."
+      }
+    },
+    "lessons": {
+      "history": {
+        "title": "History of Tarot",
+        "description": "Learn about the origins and evolution of tarot cards through history."
+      },
+      "meanings": {
+        "title": "Card Meanings",
+        "description": "Deep dive into the symbolism and interpretations of tarot cards."
+      },
+      "techniques": {
+        "title": "Reading Techniques",
+        "description": "Master different methods for conducting accurate and insightful readings."
+      }
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "questions": "{count} questions",
+    "subscribe": "Subscribe",
+    "start": "Start",
+    "retake": "Retake",
+    "review": "Review",
+    "completed": "Completed",
+    "notStarted": "Not started",
+    "moreContentSoon": "More educational content coming soon!"
+  },
+  "trainer": {
+    "loading": "Loading trainer...",
+    "modes": {
+      "selectMode": "Select training mode",
+      "spread": "Spread Interpretation",
+      "recognition": "Card Recognition"
+    },
+    "balance": {
+      "title": "Training Balance",
+      "remaining": "{count} attempts remaining",
+      "unlimited": "Unlimited",
+      "subscribed": "Premium member - unlimited access",
+      "freeUser": "Free user - limited attempts"
+    },
+    "spread": {
+      "loadingQuestion": "Loading question...",
+      "chooseInterpretation": "Choose the best interpretation",
+      "noAttempts": "No attempts remaining",
+      "subscribeToPlay": "Subscribe to continue playing"
+    },
+    "recognition": {
+      "loadingQuestion": "Loading question...",
+      "whichCard": "Which card matches?",
+      "matchKeywords": "Match the keywords to the correct card",
+      "noAttempts": "No attempts remaining",
+      "subscribeToPlay": "Subscribe to continue playing"
+    },
+    "feedback": {
+      "correct": "Correct!",
+      "incorrect": "Not quite...",
+      "correctAnswer": "Correct answer",
+      "yourAnswer": "Your answer",
+      "explanation": "Explanation",
+      "nextQuestion": "Next Question",
+      "continue": "Continue",
+      "greatChoice": "Great choice!",
+      "keepGoing": "Keep up the great work!",
+      "correctCard": "The correct card is",
+      "cardMeaning": "Card Meaning",
+      "keywordConnection": "Keyword Connections"
+    },
+    "progress": {
+      "title": "Your Progress",
+      "accuracy": "Accuracy",
+      "questionsAnswered": "Questions Answered",
+      "currentStreak": "Current Streak",
+      "bestStreak": "Best Streak",
+      "totalQuestions": "Total Questions Completed"
+    },
+    "limit": {
+      "title": "Daily Limit Reached",
+      "message": "You've used all your free attempts for today.",
+      "nextReset": "Next reset in:",
+      "premiumBenefits": "Premium Benefits",
+      "unlimitedQuestions": "Unlimited training questions",
+      "advancedQuestions": "Advanced difficulty levels",
+      "detailedProgress": "Detailed progress analytics",
+      "allReadings": "Access to all reading types",
+      "upgradeNow": "Upgrade Now",
+      "orWait": "Or wait for tomorrow's reset",
+      "noAttemptsRemaining": "No Attempts Remaining",
+      "upgradeMessage": "You've used all your training attempts for today. Upgrade for unlimited access or wait for the daily reset."
+    },
+    "stats": {
+      "trackProgress": "Track your tarot learning progress",
+      "questions": "Questions",
+      "correct": "Correct",
+      "currentStreak": "Current Streak",
+      "bestStreak": "Best Streak"
+    }
+  },
+  "streak": {
+    "phrases": [
+      "You're on fire, keep shining! ✨",
+      "Your magic knows no weekends! 🪄",
+      "Every day brings you closer to the stars! 🌌",
+      "Wow, you're here again? Legend! 😎",
+      "Your path is pure magic! 🔮",
+      "Another day to work miracles! 🃏",
+      "Every day with you is an adventure! 🗺️"
+    ]
+  },
+  "webDemo": {
+    "title": "Welcome to Tarot Meow",
+    "subtitle": "Discover the mysteries of tarot with AI-powered readings",
+    "features": {
+      "readings": {
+        "title": "AI Tarot Readings",
+        "description": "Get personalized tarot readings with various spreads and detailed interpretations"
+      },
+      "chat": {
+        "title": "Chat with AI Tarot Reader",
+        "description": "Have conversations with your AI tarot guide for deeper insights and guidance"
+      },
+      "learn": {
+        "title": "Learn Tarot",
+        "description": "Explore the meanings of cards, spreads, and deepen your tarot knowledge"
+      }
+    },
+    "buttons": {
+      "tryDemo": "🔮 Try Demo",
+      "openTelegram": "📱 Open in Telegram",
+      "loginTelegram": "🔐 Login with Telegram",
+      "goToApp": "🔮 Go to App",
+      "logout": "🚪 Logout"
+    },
+    "auth": {
+      "waitingForTelegram": "Waiting for Telegram authorization...",
+      "instructions": "Please complete the authentication in Telegram, then return here.",
+      "linkLabel": "Telegram Link",
+      "cancel": "Cancel",
+      "success": "Successfully logged in!",
+      "successMessage": "Welcome! You now have access to all features.",
+      "error": "Authentication failed",
+      "retry": "Try Again"
+    },
+    "info": {
+      "guestBadge": "Demo Mode",
+      "guestMode": "You are browsing as a guest with limited features.",
+      "fullExperience": "For the full experience with unlimited readings, use our Telegram Mini App.",
+      "authenticatedMode": "You are logged in and have full access to all features.",
+      "fullAccess": "Enjoy unlimited readings, chat, and personalized tarot experiences!"
+    },
+    "stats": {
+      "readings": "Readings",
+      "satisfaction": "Satisfaction",
+      "availability": "Available"
+    },
+    "clickToTry": "Click to try"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}

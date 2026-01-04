@@ -1,0 +1,129 @@
+# LOCAL COMPOSE FILE
+# Frontend runs locally on macOS for Turbopack performance
+# Start frontend: cd frontend && pnpm dev
+
+name: template-react
+
+services:
+  webhook:
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+      target: development
+    container_name: template-react-webhook
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    working_dir: /workspace/apps/template-react/backend
+    ports:
+      - "8003:8000"  # External:Internal
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template-react/backend/:cached
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+      - PATH=/workspace/.venv/bin:$PATH
+    networks:
+      - template-react-network
+      - shared_gateway
+    depends_on:
+      - db
+      - redis
+    command: /workspace/.venv/bin/uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-react/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
+
+  bot:
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+      target: development
+    container_name: template-react-bot
+    stop_signal: SIGINT
+    working_dir: /workspace/apps/template-react/backend
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template-react/backend/:cached
+    restart: always
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+    networks:
+      - template-react-network
+    depends_on:
+      - webhook
+      - db
+      - redis
+    command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "app.tgbot.bot", "src/", "/workspace/core/backend/src/"]
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+      target: development
+    container_name: template-react-worker
+    stop_signal: SIGINT
+    working_dir: /workspace/apps/template-react/backend
+    volumes:
+      - ../../core/backend/:/workspace/core/backend/:cached
+      - ./backend/:/workspace/apps/template-react/backend/:cached
+    restart: always
+    env_file:
+      - ".env"
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+    networks:
+      - template-react-network
+    depends_on:
+      - webhook
+      - db
+      - redis
+    command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "src/worker_entry.py", "src/", "/workspace/core/backend/src/", "--", "app.worker.worker.WorkerSettings"]
+
+  db:
+    image: postgres:17-alpine
+    container_name: template-react-db
+    ports:
+      - "5455:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=template_react
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - template-react-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: template-react-redis
+    restart: always
+    networks:
+      - template-react-network
+    command: redis-server --port 6391 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    env_file:
+      - ".env"
+    ports:
+      - "6391:6391"
+    volumes:
+      - cache_template_react:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6391", "-a", "$REDIS__PASSWORD", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  template-react-network:
+    driver: bridge
+  shared_gateway:
+    external: true
+
+volumes:
+  postgres_data: { }
+  cache_template_react: { }

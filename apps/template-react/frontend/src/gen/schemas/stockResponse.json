@@ -1,0 +1,1 @@
+{"properties":{"symbol":{"type":"string","title":"Symbol"},"price":{"type":"number","title":"Price"},"change":{"type":"number","title":"Change"},"fetched_at":{"type":"string","title":"Fetched At"}},"type":"object","required":["symbol","price","change","fetched_at"],"title":"StockResponse","x-readme-ref-name":"StockResponse"}

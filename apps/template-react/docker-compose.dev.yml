@@ -1,0 +1,131 @@
+# DEV COMPOSE FILE - Production-like environment with dev- prefix
+
+services:
+  frontend:
+    container_name: dev-template-react-frontend
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/frontend/Dockerfile.prod
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
+        - NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
+        - NEXT_PUBLIC_BOT_USERNAME=${NEXT_PUBLIC_BOT_USERNAME}
+        - NEXT_PUBLIC_WEB_APP_URL=${NEXT_PUBLIC_WEB_APP_URL}
+        - NEXT_PUBLIC_DEBUG=${NEXT_PUBLIC_DEBUG}
+        - NEXT_PUBLIC_POSTHOG_KEY=${NEXT_PUBLIC_POSTHOG_KEY}
+        - NEXT_PUBLIC_POSTHOG_HOST=${NEXT_PUBLIC_POSTHOG_HOST}
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+    environment:
+      - PORT=15176
+
+  bot:
+    container_name: dev-template-react-bot
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+    working_dir: /workspace/apps/template-react/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - db
+      - redis
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+    command: ["python", "-u", "src/app/tgbot/bot.py"]
+
+  webhook:
+    container_name: dev-template-react-webhook
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+    working_dir: /workspace/apps/template-react/backend
+    networks:
+      - dokploy-network
+    restart: always
+    stop_signal: SIGTERM
+    stop_grace_period: 35s
+    env_file:
+      - ".env"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 18003 --workers 1 --timeout-graceful-shutdown 30
+      "
+
+  worker:
+    container_name: dev-template-react-worker
+    build:
+      context: ../..
+      dockerfile: ./apps/template-react/backend/Dockerfile
+    working_dir: /workspace/apps/template-react/backend
+    networks:
+      - dokploy-network
+    restart: always
+    env_file:
+      - ".env"
+    depends_on:
+      - webhook
+      - db
+      - redis
+    environment:
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-react/backend/src
+    command: ["python", "src/worker_entry.py", "app.worker.worker.WorkerSettings"]
+
+  db:
+    container_name: dev-template-react-db
+    image: postgres:17-alpine
+    networks:
+      - dokploy-network
+    restart: always
+    volumes:
+      - dev-template-react-pgdata:/var/lib/postgresql/data
+    command: "postgres -p 15455"
+    env_file:
+      - '.env'
+    environment:
+      - POSTGRES_USER=${DB__USER}
+      - POSTGRES_PASSWORD=${DB__PASSWORD}
+      - POSTGRES_DB=${DB__NAME}
+    ports:
+      - 15455:15455
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  redis:
+    container_name: dev-template-react-redis
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - dokploy-network
+    command: redis-server --port 16391 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    env_file:
+      - ".env"
+    volumes:
+      - dev-template-react-cache:/data
+
+volumes:
+  dev-template-react-pgdata: { }
+  dev-template-react-cache: { }
+
+networks:
+  dokploy-network:
+    external: true

@@ -1,0 +1,1 @@
+{"type":"string","enum":["GUEST","REGISTERED"],"title":"UserType","x-readme-ref-name":"UserType"}

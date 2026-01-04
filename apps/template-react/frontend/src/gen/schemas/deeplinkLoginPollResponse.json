@@ -1,0 +1,1 @@
+{"properties":{"status":{"type":"string","enum":["pending","verified","expired"],"title":"Status"},"user_id":{"anyOf":[{"type":"string","format":"uuid"},{"type":"null"}],"title":"User Id"}},"type":"object","required":["status"],"title":"DeeplinkLoginPollResponse","description":"Response for checking deep link login status.","x-readme-ref-name":"DeeplinkLoginPollResponse"}

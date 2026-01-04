@@ -1,0 +1,1 @@
+{"properties":{"headline":{"type":"string","title":"Headline"},"source":{"type":"string","title":"Source"},"fetched_at":{"type":"string","title":"Fetched At"}},"type":"object","required":["headline","source","fetched_at"],"title":"NewsResponse","x-readme-ref-name":"NewsResponse"}

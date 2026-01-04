@@ -1,0 +1,1 @@
+{"properties":{"reason":{"anyOf":[{"type":"string","maxLength":50},{"type":"null"}],"title":"Reason","description":"Cancellation reason code"},"feedback":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Feedback","description":"Optional user feedback"}},"type":"object","title":"CancelSubscriptionRequest","x-readme-ref-name":"CancelSubscriptionRequest"}

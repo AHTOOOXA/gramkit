@@ -1,0 +1,1 @@
+{"type":"string","enum":["YOOKASSA","TELEGRAM_STARS","GIFT"],"title":"PaymentProvider","x-readme-ref-name":"PaymentProvider"}

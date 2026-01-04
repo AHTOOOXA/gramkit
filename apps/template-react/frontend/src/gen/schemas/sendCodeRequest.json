@@ -1,0 +1,1 @@
+{"properties":{"username":{"type":"string","title":"Username"}},"type":"object","required":["username"],"title":"SendCodeRequest","x-readme-ref-name":"SendCodeRequest"}

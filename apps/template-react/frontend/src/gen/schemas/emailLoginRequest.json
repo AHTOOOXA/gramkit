@@ -1,0 +1,1 @@
+{"properties":{"email_or_username":{"type":"string","maxLength":255,"minLength":3,"title":"Email Or Username"},"password":{"type":"string","title":"Password"}},"type":"object","required":["email_or_username","password"],"title":"EmailLoginRequest","description":"Request to login with email or username.","x-readme-ref-name":"EmailLoginRequest"}

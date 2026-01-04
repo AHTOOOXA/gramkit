@@ -1,0 +1,139 @@
+# ============================================================================
+# Import Linter - Application Architecture Boundaries
+# ============================================================================
+#
+# Purpose: Enforce critical application architecture boundaries that prevent
+#          expensive mistakes and architectural rot.
+#
+# What This Does NOT Do:
+# - Does NOT restrict test architecture (tests can import what they need)
+# - Does NOT enforce "pure black-box" testing patterns
+# - Does NOT create artificial boundaries for the sake of purity
+#
+# What This DOES Do:
+# - Prevents services from coupling to HTTP/Bot frameworks
+# - Prevents circular dependencies between repos and services
+# - Encourages domain/schema purity (with pragmatic exceptions)
+#
+# See: docs/architecture/IMPORT_LINTER_REFACTOR_PLAN.md for rationale
+# ============================================================================
+
+[importlinter]
+root_package = app
+include_external_packages = True
+
+# ============================================================================
+# REMOVED: Contract test isolation rules
+# ============================================================================
+# Previous rules forbid contract tests from importing repos/services, but our
+# test strategy explicitly requires full integration tests with DB access.
+#
+# Our "contract tests" are NOT pure black-box tests - they're full integration
+# tests through public interfaces (API/Bot/Worker) with database verification.
+#
+# Removed rules:
+# - Contract tests must not import repositories directly
+# - Contract tests must not import internal service methods
+#
+# Rationale: Tests should verify behavior, and sometimes that requires
+#            accessing the database to set up state or verify side effects.
+#            The original 3-tier test strategy (80% contract, 15% business,
+#            5% regression) was correct; the linter rules were wrong.
+# ============================================================================
+
+# ============================================================================
+# CONTRACT 1: Services Must Not Import Interface Layer ⭐ CRITICAL
+# ============================================================================
+# Business logic (services) should be framework-agnostic.
+# Services might be called from API, Bot, Worker, or CLI.
+#
+# What this prevents:
+#   from fastapi import HTTPException, Request
+#   class UserService:
+#       async def create_user(self, request: Request):  # ❌ Coupled to HTTP!
+#           raise HTTPException(400, "Bad request")     # ❌ Coupled to FastAPI!
+#
+# Why this matters:
+# - Services remain reusable across interfaces (HTTP, Bot, CLI, Worker)
+# - Services are testable in isolation (no framework mocking needed)
+# - Could swap FastAPI for Flask/Django without touching services
+# - Prevents accidental coupling that's expensive to fix later
+#
+# Impact: HIGH - This mistake is easy to make and very costly to fix
+
+[importlinter:contract:1]
+name = Services must not import interface layer (webhook/tgbot/worker)
+type = forbidden
+source_modules =
+    app.services
+forbidden_modules =
+    app.webhook
+    app.tgbot
+    app.worker
+
+# ============================================================================
+# CONTRACT 2: Repositories Must Not Import Services ⭐ CRITICAL
+# ============================================================================
+# Data access layer should only do CRUD operations.
+# Business logic belongs in services, not repositories.
+#
+# What this prevents:
+#   from app.services.notifications import NotificationService
+#   class UserRepo:
+#       async def create(self, data):
+#           user = UserModel(**data)
+#           await NotificationService.send_welcome(user)  # ❌ Business logic!
+#           return user
+#
+# Why this matters:
+# - Prevents circular dependencies (Service → Repo → Service)
+# - Enforces Single Responsibility Principle (repos = CRUD only)
+# - Makes repositories reusable across different services
+# - Keeps data access layer simple and predictable
+#
+# Impact: HIGH - Creates circular imports that break the application
+
+[importlinter:contract:2]
+name = Repositories must not import services
+type = forbidden
+source_modules =
+    app.infrastructure.database.repo
+forbidden_modules =
+    app.services
+
+# ============================================================================
+# CONTRACT 3: Domain and Schemas Should Minimize Infrastructure Dependencies
+# ============================================================================
+# Domain models and schemas should be as pure as possible.
+# Some pragmatic exceptions are allowed (enums, i18n, logging, config).
+#
+# What this prevents:
+#   from app.services.users import UserService
+#   class UserCreateSchema(BaseModel):
+#       @validator('username')
+#       def validate(cls, v):
+#           if UserService.exists(v):  # ❌ Service call in schema!
+#               raise ValueError("taken")
+#
+# Why this matters:
+# - Schemas are data structures, not business logic
+# - Domain models could be extracted to a shared library
+# - Prevents tight coupling to application specifics
+#
+# Impact: MEDIUM - Good practice, but not as critical as Contracts 1 & 2
+#
+# Note: 6+ exceptions exist because real FastAPI apps need enums, i18n, etc.
+#       This is pragmatic and acceptable - we're not pursuing pure DDD.
+
+[importlinter:contract:3]
+name = Domain and schemas should minimize infrastructure dependencies
+type = forbidden
+source_modules =
+    app.domain
+    app.schemas
+forbidden_modules =
+    app.services
+    app.webhook
+    app.tgbot
+    app.worker
+ignore_imports =
