@@ -41,6 +41,10 @@ export default defineConfig(({ mode }) => {
       // HMR config only applied when accessing via tunnel (not localhost)
       // When on localhost, Vite's default HMR works fine
     },
+    preview: {
+      host: true,
+      allowedHosts: true,  // Allow all hosts (behind reverse proxy)
+    },
     build: {
       target: ['es2015', 'chrome87', 'safari13', 'firefox78', 'edge88'],
       sourcemap: process.env.NODE_ENV === 'production'

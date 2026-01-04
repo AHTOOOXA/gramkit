@@ -23,11 +23,11 @@ services:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "app.tgbot.bot", "src/", "/workspace/core/backend/src/"]
 
-  pg_database:
+  db:
     image: postgres:13-alpine
     container_name: "template-vue-pg"
     ports:
@@ -36,8 +36,10 @@ services:
     volumes:
       - pgdata_template_vue:/var/lib/postgresql/data
     command: "postgres -p 5454"
-    env_file:
-      - '.env'
+    environment:
+      - POSTGRES_USER=${DB__USER}
+      - POSTGRES_PASSWORD=${DB__PASSWORD}
+      - POSTGRES_DB=${DB__NAME}
     logging:
       driver: "json-file"
       options:
@@ -64,7 +66,7 @@ services:
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
-      - pg_database
+      - db
       - redis_cache
     command: >
       sh -c "
@@ -92,7 +94,7 @@ services:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     volumes:
       - ../../core/backend/:/workspace/core/backend/:cached

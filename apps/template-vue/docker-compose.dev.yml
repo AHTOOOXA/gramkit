@@ -41,7 +41,7 @@ services:
       - ".env"
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
@@ -61,7 +61,7 @@ services:
     env_file:
       - ".env"
     depends_on:
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
@@ -84,13 +84,13 @@ services:
       - ".env"
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     command: ["python", "src/worker_entry.py", "app.worker.worker.WorkerSettings"]
 
-  pg_database:
+  db:
     container_name: dev-template-vue-postgres
     image: postgres:13-alpine
     networks:

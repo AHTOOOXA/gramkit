@@ -86,9 +86,9 @@ services:
     ports:
       - "5455:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=template_react
+      - POSTGRES_USER=${DB__USER}
+      - POSTGRES_PASSWORD=${DB__PASSWORD}
+      - POSTGRES_DB=${DB__NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

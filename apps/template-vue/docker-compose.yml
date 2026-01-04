@@ -45,7 +45,7 @@ services:
       - ".env"
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
@@ -69,7 +69,7 @@ services:
     env_file:
       - ".env"
     depends_on:
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
@@ -96,7 +96,7 @@ services:
       - ".env"
     depends_on:
       - webhook
-      - pg_database
+      - db
       - redis_cache
     environment:
       - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
@@ -106,7 +106,7 @@ services:
         limits:
           memory: 400M
 
-  pg_database:
+  db:
     container_name: template-vue-postgres
     image: postgres:13-alpine
     networks:
@@ -115,8 +115,10 @@ services:
     volumes:
       - template-vue-pgdata:/var/lib/postgresql/data
     command: "postgres -p 5432"
-    env_file:
-      - '.env'
+    environment:
+      - POSTGRES_USER=${DB__USER}
+      - POSTGRES_PASSWORD=${DB__PASSWORD}
+      - POSTGRES_DB=${DB__NAME}
     ports:
       - 5454:5432
     logging:
