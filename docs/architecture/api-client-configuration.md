@@ -40,10 +40,10 @@ export function configureApiClient() {
 
 **No configuration needed!** Uses relative paths.
 
-**Vue Template (apps/template):**
-- Frontend: `https://local.gramkit.dev/template/`
-- API: `https://local.gramkit.dev/api/template/`
-- Config: `baseURL: '/api/template'` (relative)
+**Vue Template (apps/template-vue):**
+- Frontend: `https://local.gramkit.dev/template-vue/`
+- API: `https://local.gramkit.dev/api/template-vue/`
+- Config: `baseURL: '/api/template-vue'` (relative)
 
 **React Template (apps/template-react):**
 - Frontend: `https://local.gramkit.dev/template-react/`
@@ -56,16 +56,16 @@ export function configureApiClient() {
 
 ```
 https://yourdomain.com/
-├── /template/          # Vue frontend
+├── /template-vue/      # Vue frontend
 ├── /template-react/    # React frontend
-├── /api/template/      # Vue backend API
+├── /api/template-vue/  # Vue backend API
 └── /api/template-react/# React backend API
 ```
 
 **Nginx configuration:**
 ```nginx
-location /api/template {
-    proxy_pass http://template-backend:8000;
+location /api/template-vue {
+    proxy_pass http://template-vue-backend:8000;
 }
 
 location /api/template-react {
@@ -74,7 +74,7 @@ location /api/template-react {
 ```
 
 **Frontend config:** Uses relative paths (default)
-- `baseURL: '/api/template'`
+- `baseURL: '/api/template-vue'`
 - `baseURL: '/api/template-react'`
 
 ### Production (Subdomain-Based)
@@ -92,8 +92,8 @@ https://api.yourdomain.com/  # All backends
 server {
     server_name api.yourdomain.com;
 
-    location /template {
-        proxy_pass http://template-backend:8000;
+    location /template-vue {
+        proxy_pass http://template-vue-backend:8000;
     }
 
     location /template-react {
@@ -102,10 +102,10 @@ server {
 }
 ```
 
-**Frontend config (apps/template/.env and apps/template-react/.env):**
+**Frontend config (apps/template-vue/.env and apps/template-react/.env):**
 ```bash
 # Vue Template
-VITE_API_HOST=https://api.yourdomain.com/template
+VITE_API_HOST=https://api.yourdomain.com/template-vue
 
 # React Template
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com/template-react
@@ -115,13 +115,13 @@ NEXT_PUBLIC_API_URL=https://api.yourdomain.com/template-react
 
 ### 1. Initialization
 
-**Vue Template (`apps/template/frontend/src/main.ts`):**
+**Vue Template (`apps/template-vue/frontend/src/main.ts`):**
 ```typescript
 import { configureApiClient } from '@gen/client-config';
 
 // Configure BEFORE any API calls
 configureApiClient();
-// Uses VITE_API_HOST from apps/template/.env
+// Uses VITE_API_HOST from apps/template-vue/.env
 ```
 
 **React Template (`apps/template-react/frontend/app/providers.tsx`):**
@@ -143,8 +143,8 @@ import { useGetCurrentUserUsersMeGet } from '@gen/hooks';
 
 const { data: user } = useGetCurrentUserUsersMeGet();
 // Requests: [baseURL]/users/me
-// Local: https://local.gramkit.dev/api/template/users/me
-// Prod: https://yourdomain.com/api/template/users/me
+// Local: https://local.gramkit.dev/api/template-vue/users/me
+// Prod: https://yourdomain.com/api/template-vue/users/me
 ```
 
 ```typescript
@@ -161,30 +161,30 @@ const { data: user } = useGetCurrentUserUsersMeGet();
 
 The backend FastAPI apps are configured with `root_path` to handle path prefixes:
 
-**apps/template/backend/src/app/webhook/app.py:**
+**apps/template-vue/backend/src/app/webhook/app.py:**
 ```python
 app = create_api(
     # ...
-    root_path=tgbot_config.api_root_path,  # "/api/template" in production
+    root_path=tgbot_config.api_root_path,  # "/api/template-vue" in production
 )
 ```
 
 **In .env:**
 ```bash
 # Local dev (nginx handles routing)
-API_ROOT_PATH=/api/template
+API_ROOT_PATH=/api/template-vue
 
 # Production subdomain
-API_ROOT_PATH=/template
+API_ROOT_PATH=/template-vue
 ```
 
 ## Configuration Summary
 
 | Environment | Frontend URL | API URL | baseURL Config | Backend root_path |
 |------------|--------------|---------|----------------|-------------------|
-| **Local Dev** | `https://local.gramkit.dev/template/` | `https://local.gramkit.dev/api/template/` | `/api/template` (default) | `/api/template` |
-| **Prod (Path)** | `https://yourdomain.com/template/` | `https://yourdomain.com/api/template/` | `/api/template` (default) | `/api/template` |
-| **Prod (Subdomain)** | `https://yourdomain.com/template/` | `https://api.yourdomain.com/template/` | `https://api.yourdomain.com/template` (.env) | `/template` |
+| **Local Dev** | `https://local.gramkit.dev/template-vue/` | `https://local.gramkit.dev/api/template-vue/` | `/api/template-vue` (default) | `/api/template-vue` |
+| **Prod (Path)** | `https://yourdomain.com/template-vue/` | `https://yourdomain.com/api/template-vue/` | `/api/template-vue` (default) | `/api/template-vue` |
+| **Prod (Subdomain)** | `https://yourdomain.com/template-vue/` | `https://api.yourdomain.com/template-vue/` | `https://api.yourdomain.com/template-vue` (.env) | `/template-vue` |
 
 ## Best Practices
 
@@ -218,7 +218,7 @@ API_ROOT_PATH=/template
 
 ### 404 Not Found
 
-**Symptom:** `GET /api/template/users/me 404`
+**Symptom:** `GET /api/template-vue/users/me 404`
 
 **Cause:** Backend `root_path` misconfigured
 
@@ -227,21 +227,21 @@ API_ROOT_PATH=/template
 ## Files
 
 **Configuration (Environment Variables):**
-- `apps/template/.env` - Vue template environment variables (VITE_API_HOST)
-- `apps/template/.env.example` - Vue template example configuration
+- `apps/template-vue/.env` - Vue template environment variables (VITE_API_HOST)
+- `apps/template-vue/.env.example` - Vue template example configuration
 - `apps/template-react/.env` - React template environment variables (NEXT_PUBLIC_API_URL)
 - `apps/template-react/.env.example` - React template example configuration
 
 **Vue Template (Frontend):**
-- `apps/template/frontend/src/lib/api-client.ts` - API client configuration
-- `apps/template/frontend/src/main.ts` - Initialization (calls configureApiClient)
+- `apps/template-vue/frontend/src/lib/api-client.ts` - API client configuration
+- `apps/template-vue/frontend/src/main.ts` - Initialization (calls configureApiClient)
 
 **React Template (Frontend):**
 - `apps/template-react/frontend/src/lib/api-client.ts` - API client configuration
 - `apps/template-react/frontend/app/providers.tsx` - Initialization (calls configureApiClient)
 
 **Backend:**
-- `apps/template/backend/.env` - Backend configuration (API_ROOT_PATH)
+- `apps/template-vue/backend/.env` - Backend configuration (API_ROOT_PATH)
 - `apps/template-react/backend/.env` - Backend configuration (API_ROOT_PATH)
 
 **Nginx:**

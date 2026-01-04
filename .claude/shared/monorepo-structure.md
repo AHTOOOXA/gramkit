@@ -24,7 +24,7 @@ This is a monorepo containing:
 
 **Current apps:**
 - `tarot` - AI App feature app (production, Vue.js)
-- `template` - Vue.js web app template (reference)
+- `template-vue` - Vue.js web app template (reference)
 - `template-react` - React/Next.js web app template (reference)
 
 ## Directory Layout
@@ -55,7 +55,7 @@ This is a monorepo containing:
 │
 ├── apps/
 │   ├── tarot/              # AI App feature app (Vue.js + FastAPI)
-│   ├── template/           # Vue.js web app template
+│   ├── template-vue/       # Vue.js web app template
 │   └── template-react/     # React web app template (Next.js)
 │       ├── backend/
 │       │   └── src/app/
@@ -149,7 +149,7 @@ apps/template/backend/src/app/services/template.py
 ```python
 # ❌ WRONG - User repo duplicated in each app
 apps/template/backend/src/app/infrastructure/database/repo/user.py
-apps/template/backend/src/app/infrastructure/database/repo/user.py
+apps/template-vue/backend/src/app/infrastructure/database/repo/user.py
 
 # ✅ CORRECT - User repo in core, used by all apps
 core/backend/src/core/infrastructure/database/repo/user.py
@@ -209,7 +209,7 @@ import { BaseLayout } from '@core/ui/layouts';
 
 **App Ports:**
 - **Tarot:** Frontend 5173, Backend 3779, DB 5432
-- **Template (Vue):** Frontend 5174, Backend 8002, DB 5434
+- **Template Vue:** Frontend 5174, Backend 8002, DB 5434
 - **Template-React:** Frontend 5176, Backend 8003, DB 5455
 
 **App directory structure:**
@@ -224,7 +224,7 @@ apps/<app-name>/
 
 **Determining which app to work on:**
 - Check current task/feature context
-- Look at file paths: `apps/template/` vs `apps/template/` vs `apps/template-react/`
+- Look at file paths: `apps/template/` vs `apps/template-vue/` vs `apps/template-react/`
 - **ALWAYS use `APP=<name>` parameter for ALL make commands**
 - If unclear from context, ASK the user which app to work on
 - NEVER assume which app - be explicit
@@ -244,7 +244,7 @@ apps/<app-name>/
 **Quick checks:**
 1. ✅ Is this specific to one app? → `apps/<app-name>/`
    - App features, cards → `apps/template/`
-   - Template-specific features → `apps/template/` or `apps/template-react/`
+   - Template-specific features → `apps/template-vue/` or `apps/template-react/`
 2. ✅ Is this reusable across apps? → `core/`
 3. ✅ Does it involve users, payments, balance, subscriptions? → Almost always `core/`
 4. ✅ Is it a UI component used by multiple apps? → `core/frontend/` or `core/frontend-react/`

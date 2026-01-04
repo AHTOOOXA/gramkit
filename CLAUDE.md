@@ -38,7 +38,7 @@ Tests?   → Read .claude/shared/testing-patterns.md FIRST
 
 ## Project Overview
 
-Monorepo: `core/` (shared) + `apps/` (tarot, template, template-react)
+Monorepo: `core/` (shared) + `apps/` (tarot, template-vue, template-react)
 
 **Stack:**
 - Backend: Python 3.14 + FastAPI + SQLAlchemy + Alembic
@@ -87,7 +87,7 @@ pnpm lint         # Linting
 | App | Frontend | API Docs |
 |-----|----------|----------|
 | tarot | `https://local.gramkit.dev/tarot` | `https://local.gramkit.dev/api/tarot/docs` |
-| template | `https://local.gramkit.dev/template` | `https://local.gramkit.dev/api/template/docs` |
+| template-vue | `https://local.gramkit.dev/template-vue` | `https://local.gramkit.dev/api/template-vue/docs` |
 | template-react | `https://local.gramkit.dev/template-react` | `https://local.gramkit.dev/api/template-react/docs` |
 
 **NEVER use `http://localhost:PORT`** - always use the domain above.

@@ -933,7 +933,7 @@ Use `key` prop to trigger re-animation on value change:
 - Interactive card: `components/demo/DemoSection.tsx`
 - Globals: `styles/globals.css`
 
-### Vue Template (`apps/template/frontend/src/`)
+### Vue Template (`apps/template-vue/frontend/src/`)
 - Demo page: `app/presentation/screens/Demo.vue`
 - Interactive card: `app/presentation/components/demo/DemoSection.vue`
 - Animation components: `components/ui/animation/` (Animate.vue, Stagger.vue, ScrollReveal.vue)

@@ -71,7 +71,7 @@ lib/
 lib64/
 
 # Exception: Frontend lib directories contain source code (not Python libs)
-!apps/template/frontend/src/lib/
+!apps/template-vue/frontend/src/lib/
 !apps/template-react/frontend/lib/
 parts/
 sdist/

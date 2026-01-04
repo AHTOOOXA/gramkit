@@ -5,14 +5,14 @@ on:
     branches: [main, dev]
     paths:
       - 'core/backend/**'
-      - 'apps/template/backend/**'
+      - 'apps/template-vue/backend/**'
       - 'apps/template-react/backend/**'
       - '.github/workflows/test-backend.yml'
   pull_request:
     branches: [main, dev]
     paths:
       - 'core/backend/**'
-      - 'apps/template/backend/**'
+      - 'apps/template-vue/backend/**'
       - 'apps/template-react/backend/**'
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        app: [template, template-react]
+        app: [template-vue, template-react]
 
     # No services needed - testcontainers handles postgres, InMemoryRedis for redis
 
@@ -133,7 +133,7 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        app: [template, template-react]
+        app: [template-vue, template-react]
 
     steps:
       - name: Checkout code

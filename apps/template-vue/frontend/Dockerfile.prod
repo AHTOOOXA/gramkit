@@ -1,4 +1,4 @@
-# Production Dockerfile for Template Frontend (Vue.js)
+# Production Dockerfile for Template Vue Frontend (Vue.js)
 #
 # Build context: monorepo root (../..)
 # Multi-stage build for optimized production image
@@ -17,7 +17,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
 # Copy workspace packages
 COPY core/frontend ./core/frontend
-COPY apps/template/frontend ./apps/template/frontend
+COPY apps/template-vue/frontend ./apps/template-vue/frontend
 
 # Install all dependencies
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
@@ -52,7 +52,7 @@ ENV VITE_WEB_HOST=$VITE_WEB_HOST \
     VITE_SENTRY_AUTH_TOKEN=$VITE_SENTRY_AUTH_TOKEN \
     VITE_DEBUG=$VITE_DEBUG
 
-WORKDIR /workspace/apps/template/frontend
+WORKDIR /workspace/apps/template-vue/frontend
 
 # Build the app
 RUN pnpm build
@@ -75,16 +75,16 @@ COPY --from=deps /workspace/package.json /workspace/pnpm-workspace.yaml /workspa
 COPY --from=deps /workspace/node_modules ./node_modules
 
 # Copy app package.json and built files
-COPY --from=builder /workspace/apps/template/frontend/package.json ./apps/template/frontend/
-COPY --from=builder /workspace/apps/template/frontend/dist ./apps/template/frontend/dist
-COPY --from=deps /workspace/apps/template/frontend/node_modules ./apps/template/frontend/node_modules
+COPY --from=builder /workspace/apps/template-vue/frontend/package.json ./apps/template-vue/frontend/
+COPY --from=builder /workspace/apps/template-vue/frontend/dist ./apps/template-vue/frontend/dist
+COPY --from=deps /workspace/apps/template-vue/frontend/node_modules ./apps/template-vue/frontend/node_modules
 
 # Set ownership
 RUN chown -R appuser:nodejs /workspace
 
 USER appuser
 
-WORKDIR /workspace/apps/template/frontend
+WORKDIR /workspace/apps/template-vue/frontend
 
 # Default port (can be overridden by PORT env var)
 EXPOSE 4173

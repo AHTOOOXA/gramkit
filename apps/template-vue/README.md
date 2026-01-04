@@ -43,31 +43,31 @@ Production-ready web application template with Vue.js frontend and FastAPI backe
 
 1. **Clone and configure:**
    ```bash
-   cd apps/template
+   cd apps/template-vue
    cp .env.example .env
    # Edit .env with your values
    ```
 
 2. **Start services:**
    ```bash
-   make up APP=template
+   make up APP=template-vue
    ```
 
 3. **Open in browser:**
    ```
-   http://localhost:5174/template
+   http://localhost:5174/template-vue
    ```
 
 ### Key URLs
 
-- Frontend: `http://localhost:5174/template`
-- API: `http://localhost:8000/api/template`
-- API Docs: `http://localhost:8000/api/template/docs`
+- Frontend: `http://localhost:5174/template-vue`
+- API: `http://localhost:8000/api/template-vue`
+- API Docs: `http://localhost:8000/api/template-vue/docs`
 
 ## Project Structure
 
 ```
-apps/template/
+apps/template-vue/
 ├── backend/
 │   └── src/app/
 │       ├── webhook/          # FastAPI routes
@@ -101,28 +101,28 @@ apps/template/
 
 ```bash
 # Start all services
-make up APP=template
+make up APP=template-vue
 
 # Stop services
-make down APP=template
+make down APP=template-vue
 
 # View logs
-make logs APP=template
+make logs APP=template-vue
 
 # Run tests
-make test APP=template
+make test APP=template-vue
 
 # Lint code
-make lint APP=template
+make lint APP=template-vue
 
 # Generate API types
-make schema APP=template
+make schema APP=template-vue
 ```
 
 ### Frontend Development
 
 ```bash
-cd apps/template/frontend
+cd apps/template-vue/frontend
 
 pnpm install      # Install dependencies
 pnpm dev          # Dev server (or use make up)
@@ -139,7 +139,7 @@ All services have hot reload. Code changes take effect immediately without resta
 ### Step 1: Copy Template
 
 ```bash
-cp -r apps/template apps/myapp
+cp -r apps/template-vue apps/myapp
 ```
 
 ### Step 2: Configure
@@ -185,7 +185,7 @@ Client State: Pinia (theme, modals only)
 
 After backend API changes:
 ```bash
-make schema APP=template
+make schema APP=template-vue
 ```
 
 This generates TypeScript hooks in `frontend/src/gen/`.
@@ -194,10 +194,10 @@ This generates TypeScript hooks in `frontend/src/gen/`.
 
 ```bash
 # Run all tests
-make test APP=template
+make test APP=template-vue
 
 # Run specific test file
-make test-file file=src/app/tests/webhook/test_demo.py APP=template
+make test-file file=src/app/tests/webhook/test_demo.py APP=template-vue
 ```
 
 ## Deployment
@@ -211,7 +211,7 @@ make test-file file=src/app/tests/webhook/test_demo.py APP=template
 
 2. Run migrations:
    ```bash
-   make upgrade APP=template
+   make upgrade APP=template-vue
    ```
 
 3. Start with production compose:

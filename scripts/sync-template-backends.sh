@@ -25,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Source and destination
-SOURCE_DIR="$PROJECT_ROOT/apps/template/backend"
+SOURCE_DIR="$PROJECT_ROOT/apps/template-vue/backend"
 DEST_DIR="$PROJECT_ROOT/apps/template-react/backend"
 
 # Parse arguments

@@ -26,7 +26,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Paths
-TEMPLATE_BACKEND="$PROJECT_ROOT/apps/template/backend"
+TEMPLATE_BACKEND="$PROJECT_ROOT/apps/template-vue/backend"
 TEMPLATE_REACT_BACKEND="$PROJECT_ROOT/apps/template-react/backend"
 
 # Parse arguments
@@ -314,12 +314,12 @@ if [[ "$QUICK" != true ]]; then
     echo -e "${CYAN}Checking port allocation...${NC}"
     echo ""
 
-    template_env="$PROJECT_ROOT/apps/template/.env"
+    template_env="$PROJECT_ROOT/apps/template-vue/.env"
     react_env="$PROJECT_ROOT/apps/template-react/.env"
 
     if [[ -f "$template_env" ]] && [[ -f "$react_env" ]]; then
         # Extract ports
-        t_webhook=$(grep "8002:8000" "$PROJECT_ROOT/apps/template/docker-compose.local.yml" || echo "")
+        t_webhook=$(grep "8002:8000" "$PROJECT_ROOT/apps/template-vue/docker-compose.local.yml" || echo "")
         r_webhook=$(grep "8003:8000" "$PROJECT_ROOT/apps/template-react/docker-compose.local.yml" || echo "")
 
         t_redis=$(grep "REDIS_PORT=" "$template_env" | cut -d'=' -f2)
@@ -353,7 +353,7 @@ if [[ "$QUICK" != true ]]; then
     echo -e "${CYAN}Checking docker-compose bot/worker commands...${NC}"
     echo ""
 
-    template_dc="$PROJECT_ROOT/apps/template/docker-compose.local.yml"
+    template_dc="$PROJECT_ROOT/apps/template-vue/docker-compose.local.yml"
     react_dc="$PROJECT_ROOT/apps/template-react/docker-compose.local.yml"
 
     # Check if both use hot_reload.py

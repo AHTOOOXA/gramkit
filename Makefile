@@ -4,7 +4,7 @@
 FRONTEND_RUN_DIR := .run
 
 # Frontend ports by app (must match package.json dev scripts)
-PORT_template := 5174
+PORT_template-vue := 5174
 PORT_template-react := 3001
 
 # Kill process on a given port (usage: $(call kill_port,3001))
@@ -38,7 +38,7 @@ up:
 			app=$$(basename $$app_dir); \
 			case $$app in \
 				template-react) color="\033[1;36m" ;; \
-				template) color="\033[1;32m" ;; \
+				template-vue) color="\033[1;32m" ;; \
 				*) color="\033[0m" ;; \
 			esac; \
 			echo "$$i. $${color}$$app\033[0m"; \
@@ -87,7 +87,7 @@ up:
 		echo "=========================================="; \
 		echo "Backend ready! Start frontends locally:"; \
 		echo "=========================================="; \
-		echo "  cd apps/template/frontend && pnpm dev"; \
+		echo "  cd apps/template-vue/frontend && pnpm dev"; \
 		echo "  cd apps/template-react/frontend && pnpm dev"; \
 		echo "=========================================="; \
 	else \
@@ -274,12 +274,12 @@ status-all:
 	done
 	@echo "=========================================="
 	@echo "Frontends (run locally):"
-	@echo "  template:       cd apps/template/frontend && pnpm dev       → :5174"
+	@echo "  template-vue:   cd apps/template-vue/frontend && pnpm dev   → :5174"
 	@echo "  template-react: cd apps/template-react/frontend && pnpm dev → :3001"
 	@echo ""
 	@echo "Access Points (via nginx):"
 	@echo "  Gateway:        https://local.gramkit.dev/"
-	@echo "  Template:       https://local.gramkit.dev/template/"
+	@echo "  Template Vue:   https://local.gramkit.dev/template-vue/"
 	@echo "  Template React: https://local.gramkit.dev/template-react/"
 	@echo "=========================================="
 
@@ -494,12 +494,12 @@ help:
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo "Frontend Ports:"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  template:       5174 (Vite)"
+	@echo "  template-vue:   5174 (Vite)"
 	@echo "  template-react: 3001 (Next.js)"
 	@echo ""
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo "Access Points:"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-	@echo "  https://local.gramkit.dev/template/"
+	@echo "  https://local.gramkit.dev/template-vue/"
 	@echo "  https://local.gramkit.dev/template-react/"
 	@echo "=========================================="

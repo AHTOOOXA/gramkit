@@ -1,11 +1,11 @@
-# PRODUCTION COMPOSE FILE
+# DEV COMPOSE FILE - Production-like environment with dev- prefix
 
 services:
   app:
-    container_name: template-app
+    container_name: dev-template-vue-app
     build:
       context: ../..
-      dockerfile: ./apps/template/frontend/Dockerfile.prod
+      dockerfile: ./apps/template-vue/frontend/Dockerfile.prod
       args:
         - VITE_WEB_HOST=${VITE_WEB_HOST}
         - VITE_API_HOST=${VITE_API_HOST}
@@ -26,18 +26,14 @@ services:
     depends_on:
       - webhook
     environment:
-      - PORT=4175
-    deploy:
-      resources:
-        limits:
-          memory: 192M
+      - PORT=14175
 
   bot:
-    container_name: template-bot
+    container_name: dev-template-vue-bot
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     networks:
       - dokploy-network
     restart: always
@@ -48,19 +44,15 @@ services:
       - pg_database
       - redis_cache
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     command: ["python", "-u", "src/app/tgbot/bot.py"]
-    deploy:
-      resources:
-        limits:
-          memory: 400M
 
   webhook:
-    container_name: template-webhook
+    container_name: dev-template-vue-webhook
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     networks:
       - dokploy-network
     restart: always
@@ -72,23 +64,19 @@ services:
       - pg_database
       - redis_cache
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     command: >
       sh -c "
         alembic upgrade head &&
-        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8002 --workers 1 --timeout-graceful-shutdown 30
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 18002 --workers 1 --timeout-graceful-shutdown 30
       "
-    deploy:
-      resources:
-        limits:
-          memory: 512M
 
   worker:
-    container_name: template-worker
+    container_name: dev-template-vue-worker
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     networks:
       - dokploy-network
     restart: always
@@ -99,55 +87,43 @@ services:
       - pg_database
       - redis_cache
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     command: ["python", "src/worker_entry.py", "app.worker.worker.WorkerSettings"]
-    deploy:
-      resources:
-        limits:
-          memory: 400M
 
   pg_database:
-    container_name: template-postgres
+    container_name: dev-template-vue-postgres
     image: postgres:13-alpine
     networks:
       - dokploy-network
     restart: always
     volumes:
-      - template-pgdata:/var/lib/postgresql/data
-    command: "postgres -p 5432"
+      - dev-template-vue-pgdata:/var/lib/postgresql/data
+    command: "postgres -p 15454"
     env_file:
       - '.env'
     ports:
-      - 5454:5432
+      - 15454:15454
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
-    deploy:
-      resources:
-        limits:
-          memory: 256M
 
   redis_cache:
-    container_name: template-redis
+    container_name: dev-template-vue-redis
     image: redis:6.2-alpine
     restart: always
     networks:
       - dokploy-network
-    command: redis-server --port 6390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
+    command: redis-server --port 16390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
     env_file:
       - ".env"
     volumes:
-      - template-cache:/data
-    deploy:
-      resources:
-        limits:
-          memory: 64M
+      - dev-template-vue-cache:/data
 
 volumes:
-  template-pgdata: { }
-  template-cache: { }
+  dev-template-vue-pgdata: { }
+  dev-template-vue-cache: { }
 
 networks:
   dokploy-network:

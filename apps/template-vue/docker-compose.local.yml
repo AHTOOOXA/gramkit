@@ -2,25 +2,25 @@
 # Frontend runs locally on macOS for Vite HMR performance
 # Start frontend: cd frontend && pnpm dev
 
-name: template
+name: template-vue
 
 services:
   bot:
-    image: "template-bot"
-    container_name: "template-bot"
+    image: "template-vue-bot"
+    container_name: "template-vue-bot"
     stop_signal: SIGINT
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     volumes:
       - ../../core/backend/:/workspace/core/backend/:cached
-      - ./backend/:/workspace/apps/template/backend/:cached
+      - ./backend/:/workspace/apps/template-vue/backend/:cached
     restart: always
     env_file:
       - ".env"
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
       - webhook
       - pg_database
@@ -29,12 +29,12 @@ services:
 
   pg_database:
     image: postgres:13-alpine
-    container_name: "template-pg"
+    container_name: "template-vue-pg"
     ports:
       - "5454:5454"
     restart: always
     volumes:
-      - pgdata_template:/var/lib/postgresql/data
+      - pgdata_template_vue:/var/lib/postgresql/data
     command: "postgres -p 5454"
     env_file:
       - '.env'
@@ -45,31 +45,31 @@ services:
         max-file: "10"
 
   webhook:
-    image: "template-webhook"
-    container_name: "template-webhook"
+    image: "template-vue-webhook"
+    container_name: "template-vue-webhook"
     stop_signal: SIGTERM
     stop_grace_period: 35s
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     ports:
       - "8002:8000"
     volumes:
       - ../../core/backend/:/workspace/core/backend/:cached
-      - ./backend/:/workspace/apps/template/backend/:cached
+      - ./backend/:/workspace/apps/template-vue/backend/:cached
     restart: always
     env_file:
       - ".env"
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
       - pg_database
       - redis_cache
     command: >
       sh -c "
         alembic upgrade head &&
-        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
+        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-vue/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
       "
     logging:
       driver: "json-file"
@@ -78,30 +78,30 @@ services:
         max-file: "10"
 
   worker:
-    image: "template-worker"
-    container_name: "template-worker"
+    image: "template-vue-worker"
+    container_name: "template-vue-worker"
     stop_signal: SIGINT
     build:
       context: ../..
-      dockerfile: ./apps/template/backend/Dockerfile
-    working_dir: /workspace/apps/template/backend
+      dockerfile: ./apps/template-vue/backend/Dockerfile
+    working_dir: /workspace/apps/template-vue/backend
     restart: always
     env_file:
       - ".env"
     environment:
-      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template/backend/src
+      - PYTHONPATH=/workspace/core/backend/src:/workspace/apps/template-vue/backend/src
     depends_on:
       - webhook
       - pg_database
       - redis_cache
     volumes:
       - ../../core/backend/:/workspace/core/backend/:cached
-      - ./backend/:/workspace/apps/template/backend/:cached
+      - ./backend/:/workspace/apps/template-vue/backend/:cached
     command: ["python", "/workspace/core/backend/scripts/hot_reload.py", "src/worker_entry.py", "src/", "/workspace/core/backend/src/", "--", "app.worker.worker.WorkerSettings"]
 
   redis_cache:
     image: redis:6.2-alpine
-    container_name: "template-redis"
+    container_name: "template-vue-redis"
     restart: always
     command: redis-server --port 6390 --save 20 1 --loglevel warning --requirepass $REDIS__PASSWORD
     env_file:
@@ -109,11 +109,11 @@ services:
     ports:
       - "6390:6390"
     volumes:
-      - cache_template:/data
+      - cache_template_vue:/data
 
 volumes:
-  pgdata_template: { }
-  cache_template: { }
+  pgdata_template_vue: { }
+  cache_template_vue: { }
 
 networks:
   default:

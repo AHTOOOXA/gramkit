@@ -461,8 +461,8 @@ apps/{app}/frontend/src/
 
 ## Reference Implementations
 
-- **Profile page:** `apps/template/frontend/src/app/presentation/screens/user/Profile.vue`
-- **Optimistic updates:** `apps/template/frontend/src/app/composables/useUpdateUser.ts`
-- **Paywall:** `apps/template/frontend/src/app/presentation/screens/payments/Paywall.vue`
-- **Generated hooks:** `apps/template/frontend/src/gen/hooks/`
-- **Pinia stores:** `apps/template/frontend/src/app/store/`
+- **Profile page:** `apps/template-vue/frontend/src/app/presentation/screens/user/Profile.vue`
+- **Optimistic updates:** `apps/template-vue/frontend/src/app/composables/useUpdateUser.ts`
+- **Paywall:** `apps/template-vue/frontend/src/app/presentation/screens/payments/Paywall.vue`
+- **Generated hooks:** `apps/template-vue/frontend/src/gen/hooks/`
+- **Pinia stores:** `apps/template-vue/frontend/src/app/store/`

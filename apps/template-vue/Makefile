@@ -56,25 +56,25 @@ status:
 
 # Shell access
 shell-webhook:
-	docker exec -it template-webhook /bin/bash
+	docker exec -it template-vue-webhook /bin/bash
 
 shell-bot:
-	docker exec -it template-bot /bin/bash
+	docker exec -it template-vue-bot /bin/bash
 
 # Alembic migrations
 migration:
 	@if [ -z "$(msg)" ]; then \
 		read -p "Enter migration message: " msg; \
-		docker exec template-webhook alembic revision --autogenerate -m "$$msg"; \
+		docker exec template-vue-webhook alembic revision --autogenerate -m "$$msg"; \
 	else \
-		docker exec template-webhook alembic revision --autogenerate -m "$(msg)"; \
+		docker exec template-vue-webhook alembic revision --autogenerate -m "$(msg)"; \
 	fi
 
 upgrade:
-	docker exec template-webhook alembic upgrade head
+	docker exec template-vue-webhook alembic upgrade head
 
 downgrade:
-	docker exec template-webhook alembic downgrade -1
+	docker exec template-vue-webhook alembic downgrade -1
 
 # Backend: Linting & Formatting
 lint:
@@ -164,16 +164,16 @@ script:
 		exit 1; \
 	fi
 	@echo "Running script: $(name) $(args)"
-	@docker exec template-webhook bash -c "cd /workspace/apps/template/backend && python -m app.scripts $(name) $(args)"
+	@docker exec template-vue-webhook bash -c "cd /workspace/apps/template-vue/backend && python -m app.scripts $(name) $(args)"
 
 script-list:
 	@echo "Available scripts:"
 	@echo ""
 	@echo "App-specific:"
-	@docker exec template-webhook bash -c "cd /workspace/apps/template/backend/src/app/scripts && ls -1 *.py 2>/dev/null | grep -v '__init__' | grep -v '__main__' | sed 's/\.py$$//' | sed 's/^/  - /' || echo '  (none)'"
+	@docker exec template-vue-webhook bash -c "cd /workspace/apps/template-vue/backend/src/app/scripts && ls -1 *.py 2>/dev/null | grep -v '__init__' | grep -v '__main__' | sed 's/\.py$$//' | sed 's/^/  - /' || echo '  (none)'"
 	@echo ""
 	@echo "Common (available to all apps):"
-	@docker exec template-webhook bash -c "cd /workspace/core/backend/src/core/scripts/common && ls -1 *.py 2>/dev/null | grep -v '__init__' | sed 's/\.py$$//' | sed 's/^/  - /'"
+	@docker exec template-vue-webhook bash -c "cd /workspace/core/backend/src/core/scripts/common && ls -1 *.py 2>/dev/null | grep -v '__init__' | sed 's/\.py$$//' | sed 's/^/  - /'"
 	@echo ""
 	@echo "Usage: make script name=<script_name> [args='<arguments>']"
 

@@ -67,7 +67,7 @@ Native Turbopack — fastest iteration, no Docker overhead for frontend.
 
 ```
 http://localhost:3001/template-react
-http://localhost:5174/template
+http://localhost:5174/template-vue
 ```
 
 - ~10x faster warm starts with Turbopack cache
@@ -80,7 +80,7 @@ Via nginx + Cloudflare tunnel — for Telegram Mini App testing.
 
 ```
 https://local.gramkit.dev/template-react
-https://local.gramkit.dev/template
+https://local.gramkit.dev/template-vue
 ```
 
 - HTTPS with valid certificate
@@ -95,17 +95,17 @@ git clone https://github.com/AHTOOOXA/gramkit.git
 cd gramkit
 
 # Choose template
-cd apps/template        # Vue.js
+cd apps/template-vue    # Vue.js
 cd apps/template-react  # React/Next.js
 
 # Setup
 cp .env.example .env    # Edit with your settings
 
 # Start
-make up APP=template    # or APP=template-react
+make up APP=template-vue    # or APP=template-react
 
 # Open
-# Localhost: http://localhost:3001/template-react
+# Localhost: http://localhost:3001/template-react or http://localhost:5174/template-vue
 # Tunnel: https://local.gramkit.dev/template-react
 ```
 
@@ -170,20 +170,20 @@ All make commands require `APP=<name>`:
 
 ```bash
 # Docker
-make up APP=template           # Start services
-make down APP=template         # Stop services
-make logs APP=template         # View logs
-make shell-webhook APP=template  # Backend shell
+make up APP=template-vue       # Start services
+make down APP=template-vue     # Stop services
+make logs APP=template-vue     # View logs
+make shell-webhook APP=template-vue  # Backend shell
 
 # Backend
-make test APP=template         # Run tests
-make lint APP=template         # Ruff + type checks
-make migration msg="..." APP=template  # Create migration
-make upgrade APP=template      # Apply migrations
-make schema APP=template       # Generate TypeScript types
+make test APP=template-vue     # Run tests
+make lint APP=template-vue     # Ruff + type checks
+make migration msg="..." APP=template-vue  # Create migration
+make upgrade APP=template-vue  # Apply migrations
+make schema APP=template-vue   # Generate TypeScript types
 
 # Frontend
-cd apps/template/frontend
+cd apps/template-vue/frontend
 pnpm dev                       # Dev server
 pnpm build                     # Production build
 pnpm typecheck                 # Type checking
@@ -203,7 +203,7 @@ gramkit/
 │   ├── frontend/        # Shared Vue.js components
 │   └── frontend-react/  # Shared React components
 ├── apps/
-│   ├── template/        # Vue.js template
+│   ├── template-vue/    # Vue.js template
 │   └── template-react/  # React/Next.js template
 ├── docs/                # Documentation
 ├── nginx/               # Gateway configuration
@@ -234,9 +234,10 @@ gramkit/
 
 1. Fork the repository
 2. Create a branch: `git checkout -b feature/your-feature`
-3. Make changes and test: `make test APP=template`
+3. Make changes and test: `make test APP=template-vue`
 4. Commit: `git commit -m "feat: your feature"`
 5. Push and open a Pull Request
+
 
 ## License
 

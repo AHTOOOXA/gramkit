@@ -289,7 +289,7 @@ importers:
         specifier: ^8.45.0
         version: 8.51.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
 
-  apps/template/frontend:
+  apps/template-vue/frontend:
     dependencies:
       '@sentry/vite-plugin':
         specifier: ^2.23.1

@@ -17,7 +17,7 @@
 
 | Template | Framework | Best For |
 |----------|-----------|----------|
-| `apps/template/` | Vue 3 + Vite | Prefer Vue, simpler setup |
+| `apps/template-vue/` | Vue 3 + Vite | Prefer Vue, simpler setup |
 | `apps/template-react/` | Next.js 16 + React 19 | Prefer React, SSR support |
 
 Both templates include:
@@ -35,7 +35,7 @@ Both templates include:
 
 ```bash
 # Vue template
-cp -r apps/template apps/myapp
+cp -r apps/template-vue apps/myapp
 
 # OR React template
 cp -r apps/template-react apps/myapp
@@ -69,7 +69,7 @@ Replace all container name references:
 Current port usage:
 ```
 tarot:          Frontend 5173, Backend 3779, DB 5432, Redis 6379
-template:       Frontend 5175, Backend 8002, DB 5454, Redis 6390
+template-vue:   Frontend 5175, Backend 8002, DB 5454, Redis 6390
 template-react: Frontend 5176, Backend 8003, DB 5455, Redis 6391
 ```
 
@@ -135,7 +135,7 @@ Files to update:
 Copy and edit `.env`:
 
 ```bash
-cp apps/template/.env.example apps/myapp/.env
+cp apps/template-vue/.env.example apps/myapp/.env
 ```
 
 Key changes in `.env`:
@@ -306,7 +306,7 @@ Add your app backend to workspace members:
 members = [
   "core/backend",
   "apps/template/backend",
-  "apps/template/backend",
+  "apps/template-vue/backend",
   "apps/template-react/backend",
   "apps/myapp/backend"  # Add this line
 ]
@@ -325,7 +325,7 @@ Root `.gitignore`:
 The root `.gitignore` has `lib/` which ignores all lib folders (for Python). Add an exception for your app's frontend lib folder:
 ```gitignore
 # Exception: Frontend lib directories contain source code (not Python libs)
-!apps/template/frontend/src/lib/
+!apps/template-vue/frontend/src/lib/
 !apps/template-react/frontend/lib/
 !apps/myapp/frontend/lib/  # Add this line
 ```
@@ -925,7 +925,7 @@ make schema APP=myapp  # Regenerate frontend types
 | App | Frontend | Backend | Database | Redis |
 |-----|----------|---------|----------|-------|
 | tarot | 5173 | 3779 | 5432 | 6379 |
-| template | 5175 | 8002 | 5454 | 6390 |
+| template-vue | 5175 | 8002 | 5454 | 6390 |
 | template-react | 5176 | 8003 | 5455 | 6391 |
 | **Next available** | **5177** | **8004** | **5456** | **6392** |
 
