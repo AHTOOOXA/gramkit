@@ -38,7 +38,6 @@ function LoadingFallback() {
 function ErrorFallback({
   resetErrorBoundary,
 }: {
-  error: Error;
   resetErrorBoundary: () => void;
 }) {
   const t = useTranslations('demo.suspense');
@@ -99,8 +98,8 @@ export function SuspenseDemo() {
         <div className="bg-muted rounded-lg p-4 min-h-[80px]">
           <ErrorBoundary
             onReset={reset}
-            fallbackRender={({ error, resetErrorBoundary }) => (
-              <ErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />
+            fallbackRender={({ resetErrorBoundary }) => (
+              <ErrorFallback resetErrorBoundary={resetErrorBoundary} />
             )}
           >
             <Suspense key={key} fallback={<LoadingFallback />}>
