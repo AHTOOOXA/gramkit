@@ -3,9 +3,6 @@
 import asyncio
 import time
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
-
 from core.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
@@ -57,29 +54,57 @@ class RequestTracker:
         return True
 
 
-class RequestTrackerMiddleware(BaseHTTPMiddleware):
-    """Middleware that tracks active requests and rejects new ones during shutdown.
+class RequestTrackerMiddleware:
+    """Pure ASGI middleware that tracks active requests and rejects new ones during shutdown.
 
     During normal operation, this middleware increments/decrements the active
     request counter. During shutdown, it rejects all new requests (except health
     checks) with a 503 Service Unavailable response.
+
+    Note: Uses raw ASGI instead of BaseHTTPMiddleware to support WebSocket connections.
+    BaseHTTPMiddleware is incompatible with WebSockets.
     """
 
     def __init__(self, app, tracker: RequestTracker):
-        super().__init__(app)
+        self.app = app
         self.tracker = tracker
 
-    async def dispatch(self, request: Request, call_next):
+    async def __call__(self, scope, receive, send):
+        # Only track HTTP requests, pass through WebSocket/lifespan directly
+        if scope["type"] not in ("http", "websocket"):
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+
         # Allow health check endpoints during shutdown (for liveness probes)
-        if self.tracker.is_shutting_down and request.url.path not in ("/health", "/ready"):
-            return Response(status_code=503, content="Service shutting down")
+        if self.tracker.is_shutting_down and path not in ("/health", "/ready"):
+            if scope["type"] == "http":
+                # Return 503 for HTTP requests
+                await send(
+                    {
+                        "type": "http.response.start",
+                        "status": 503,
+                        "headers": [[b"content-type", b"text/plain"]],
+                    }
+                )
+                await send(
+                    {
+                        "type": "http.response.body",
+                        "body": b"Service shutting down",
+                    }
+                )
+                return
+            # For WebSocket during shutdown, just close
+            await send({"type": "websocket.close", "code": 1001})
+            return
 
         # Track this request
         async with self.tracker._lock:
             self.tracker._active_requests += 1
 
         try:
-            return await call_next(request)
+            await self.app(scope, receive, send)
         finally:
             async with self.tracker._lock:
                 self.tracker._active_requests -= 1

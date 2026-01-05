@@ -217,6 +217,8 @@ def create_api(
 
     # CORS
     cors_origins = [config.frontend_url]
+    if hasattr(config, "cors_origins") and config.cors_origins:
+        cors_origins.extend(config.cors_origins)
     # In debug mode, allow any localhost origin for direct frontend access
     allow_origin_regex = r"^http://localhost:\d+$" if settings.debug else None
     app.add_middleware(

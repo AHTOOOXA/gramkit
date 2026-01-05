@@ -395,7 +395,364 @@
     "welcomeTitle": "Добро пожаловать, {name}!",
     "user": "Пользователь",
     "subtitle": "Это ваш домашний экран",
-    "placeholder": "Это примерный домашний экран. Добавьте сюда контент вашего приложения."
+    "placeholder": "Это примерный домашний экран. Добавьте сюда контент вашего приложения.",
+    "badge": "Готовый шаблон",
+    "title": "React Шаблон",
+    "heroSubtitle": "Готовый шаблон веб-приложения с адаптивным дизайном и поддержкой Telegram Mini App",
+    "getStarted": "Начать",
+    "explorePatterns": "Смотреть паттерны",
+    "tryVueVersion": "Версия на Vue",
+    "features": {
+      "title": "Что включено",
+      "subtitle": "Не заглушки — работающий код",
+      "items": {
+        "authentication": {
+          "name": "Авторизация",
+          "description": "Email с кодом подтверждения, Telegram OAuth, восстановление пароля"
+        },
+        "rbac": {
+          "name": "Разграничение доступа",
+          "description": "Роли Admin/Owner/User, защита маршрутов, проверка прав"
+        },
+        "realtime": {
+          "name": "Данные в реальном времени",
+          "description": "WebSocket, поллинг, потоковая передача от AI, оптимистичные обновления"
+        },
+        "mobile": {
+          "name": "Адаптивный дизайн",
+          "description": "Мобильная версия в приоритете, нижняя навигация, определение Telegram Mini App"
+        },
+        "typeSafe": {
+          "name": "Типизированный API",
+          "description": "Автогенерация TypeScript хуков из OpenAPI схемы"
+        },
+        "i18n": {
+          "name": "Локализация и темы",
+          "description": "Мультиязычность, светлая и тёмная тема из коробки"
+        },
+        "tanstack": {
+          "name": "Паттерны TanStack Query",
+          "description": "17 интерактивных демо: кеширование, мутации, бесконечная прокрутка, Suspense"
+        },
+        "dx": {
+          "name": "Удобство разработки",
+          "description": "Горячая перезагрузка, Make-команды, структурированный монорепозиторий"
+        }
+      }
+    },
+    "architecture": {
+      "title": "Современный стек, чистая архитектура",
+      "subtitle": "Сквозная типизация от базы данных до интерфейса",
+      "monorepoTitle": "Структура монорепозитория",
+      "highlightsTitle": "Технические особенности",
+      "highlightsSubtitle": "Не просто стек — решения реальных проблем",
+      "highlights": {
+        "endToEnd": {
+          "title": "Сквозная типизация",
+          "description": "OpenAPI схема + Kubb генерирует TypeScript хуки. Меняете бэкенд — типы на фронтенде обновляются автоматически."
+        },
+        "make": {
+          "title": "Единые Make-команды",
+          "description": "Один интерфейс для всех приложений: make test APP=x, make migration. Без прямых вызовов Docker и pytest."
+        },
+        "shared": {
+          "title": "Общий код в core/",
+          "description": "Авторизация, пользователи, платежи, email — всё в core/, подключается в любое приложение. Без копирования между проектами."
+        },
+        "hotReload": {
+          "title": "Горячая перезагрузка везде",
+          "description": "Редактируете Python или TypeScript — изменения видны сразу. Без перезапуска контейнеров и ручных пересборок."
+        },
+        "repo": {
+          "title": "Паттерн Repository + Flush",
+          "description": "Чистый слой доступа к данным. Репозитории используют flush(), сервисы управляют транзакциями. Тестируемо и предсказуемо."
+        },
+        "tanstackPatterns": {
+          "title": "Паттерны TanStack Query",
+          "description": "17 демо: кеширование, оптимистичные обновления, бесконечная прокрутка, работа в реальном времени — копируйте готовые решения."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Два режима разработки",
+      "subtitle": "Localhost для скорости, туннель для тестирования Telegram",
+      "localhost": {
+        "title": "Локальная разработка",
+        "subtitle": "Нативный Turbopack — максимальная скорость без Docker",
+        "recommended": "Рекомендуется",
+        "url": "http://localhost:3001/template-react",
+        "benefits": [
+          "В 10 раз быстрее запуск с кешем Turbopack",
+          "Прямые вызовы API (CORS включён для разработки)",
+          "Фронтенд работает нативно на macOS"
+        ]
+      },
+      "tunnel": {
+        "title": "Режим туннеля",
+        "subtitle": "Через nginx + Cloudflare — для тестирования Telegram Mini App",
+        "url": "https://local.yourdomain.com/template-react",
+        "benefits": [
+          "HTTPS с валидным сертификатом",
+          "Авторизация Telegram WebApp",
+          "Окружение, приближённое к продакшену"
+        ]
+      },
+      "gateway": {
+        "title": "Шлюз приложений",
+        "subtitle": "Страница nginx с быстрым доступом ко всем приложениям",
+        "description": "Доступно по https://local.yourdomain.com/ — единая точка для ссылок туннеля, локальных портов и API документации",
+        "apps": {
+          "react": "template-react",
+          "vue": "template-vue",
+          "yourApp": "your-app"
+        },
+        "appDetails": "туннель • :3001 • api",
+        "vueDetails": "туннель • :5174 • api",
+        "yourAppDetails": "туннель • :1234 • api"
+      },
+      "turbopack": {
+        "title": "Next.js 16.1 + Turbopack",
+        "highlights": [
+          {
+            "title": "Постоянный кеш",
+            "description": "Кеш Turbopack сохраняется между перезапусками — холодный старт становится тёплым"
+          },
+          {
+            "title": "Нативная производительность",
+            "description": "Фронтенд работает локально на macOS, а не в Docker-контейнерах"
+          },
+          {
+            "title": "React 19 из коробки",
+            "description": "Server Components, Actions и все современные возможности React"
+          }
+        ]
+      }
+    },
+    "included": {
+      "title": "Всё уже настроено",
+      "subtitle": "Не просто заготовка — реальные, работающие функции",
+      "pages": {
+        "title": "5 страниц",
+        "subtitle": "Готовые к продакшену маршруты",
+        "items": [
+          "Главная страница",
+          "Технические демо (17 паттернов)",
+          "Управление профилем",
+          "Панель администратора",
+          "Расширяемая структура"
+        ]
+      },
+      "demos": {
+        "title": "17 технических демо",
+        "subtitle": "Эталонные реализации",
+        "items": [
+          "Состояния загрузки и ошибок",
+          "Стратегии кеширования",
+          "Мутации и оптимистичный интерфейс",
+          "Потоковая передача и работа в реальном времени",
+          "Бесконечная прокрутка и другое"
+        ]
+      },
+      "auth": {
+        "title": "Полная система авторизации",
+        "subtitle": "Все сценарии входа",
+        "items": [
+          "Email с кодом подтверждения",
+          "Telegram OAuth",
+          "Восстановление пароля",
+          "Привязка аккаунтов",
+          "Управление сессиями"
+        ]
+      }
+    },
+    "claudeCode": {
+      "title": "Создано для Claude Code",
+      "subtitle": "4-уровневая архитектура оркестрации — экономия контекста, готовность к параллельной работе",
+      "orchestration": {
+        "title": "Архитектура с оркестрацией",
+        "layer0": "CLAUDE.md — правила оркестрации, краткий справочник",
+        "layer1": "commands/ — /develop, /create-task, /execute-task, /review",
+        "layer2": "skills/ — автоматически вызываемые процедуры (создание и выполнение задач)",
+        "layer3": "agents/ — developer-agent, testing-polish-agent"
+      },
+      "slashCommands": {
+        "title": "Slash-команды",
+        "items": {
+          "createTask": {
+            "cmd": "/create-task",
+            "desc": "PRD, фазы, параллельная проработка"
+          },
+          "executeTask": {
+            "cmd": "/execute-task",
+            "desc": "Выполнение по фазам с автокоммитами"
+          },
+          "develop": {
+            "cmd": "/develop",
+            "desc": "Быстрое делегирование developer-agent"
+          },
+          "design": {
+            "cmd": "/design",
+            "desc": "Исследование подходов, сравнение вариантов"
+          },
+          "review": {
+            "cmd": "/review",
+            "desc": "Глубокий анализ кода"
+          },
+          "addTesting": {
+            "cmd": "/add-testing",
+            "desc": "Добавить тестовые фазы к задаче"
+          }
+        }
+      },
+      "structuredTasks": {
+        "title": "Система структурированных задач",
+        "description": "Автоматическое определение сложности. Простые задачи обогащаются сразу. Сложные — через параллельные агенты с общим ARCHITECTURE.md для предотвращения конфликтов."
+      },
+      "developerAgent": {
+        "title": "Developer Agent",
+        "intro": "Читает документы с паттернами перед каждой задачей. Возвращает сводки, а не дампы кода.",
+        "items": [
+          "Обязательное чтение: critical-rules.md + документ по предметной области",
+          "После изменений: make test, make lint, make schema",
+          "Коммиты: следует формату Conventional Commits для каждой фазы"
+        ]
+      },
+      "patternDocs": {
+        "title": "10 документов с паттернами в .claude/shared/",
+        "docs": [
+          "backend-patterns.md",
+          "react-frontend.md",
+          "vue-frontend.md",
+          "testing-patterns.md",
+          "monorepo-structure.md",
+          "error-handling.md",
+          "critical-rules.md",
+          "playwright-testing.md",
+          "react-animations.md",
+          "adding-packages.md"
+        ]
+      },
+      "example": {
+        "title": "Пример: добавление функции",
+        "createTask": {
+          "cmd": "/create-task",
+          "desc": "\"добавить уведомления\"",
+          "result": "Создаёт PRD, определяет сложность HARD, запускает параллельные агенты"
+        },
+        "executeTask": {
+          "cmd": "/execute-task",
+          "desc": "Делегирует каждую фазу developer-agent",
+          "result": "Читает CONTEXT.md, возобновляет работу при прерывании"
+        },
+        "developerAgent": {
+          "cmd": "developer-agent",
+          "desc": "Читает backend-patterns.md, реализует, запускает тесты",
+          "result": "Возвращает сводку со ссылками на файлы и строки"
+        },
+        "review": {
+          "cmd": "/review",
+          "desc": "Глубокий архитектурный анализ",
+          "result": "Оценивает решения по проектированию, а не только стиль"
+        }
+      }
+    },
+    "quickStart": {
+      "title": "Быстрый старт",
+      "subtitle": "Требования: Docker, pnpm, make",
+      "run": {
+        "title": "Запустить шаблон",
+        "subtitle": "Начало работы за 3 шага",
+        "steps": [
+          {
+            "num": 0,
+            "title": "Настроить Cloudflare Tunnel",
+            "desc": "Нужен для тестирования Telegram Mini App — открывает localhost через HTTPS"
+          },
+          {
+            "num": 1,
+            "title": "Клонировать и установить",
+            "code": "pnpm install"
+          },
+          {
+            "num": 2,
+            "title": "Настроить окружение",
+            "code": "cp .env.example .env"
+          },
+          {
+            "num": 3,
+            "title": "Запустить всё",
+            "code": "make up APP=template-react"
+          }
+        ],
+        "openAt": "Открыть http://localhost:3001/template-react"
+      },
+      "create": {
+        "title": "Создать своё приложение",
+        "subtitle": "Использовать шаблон как основу",
+        "steps": [
+          {
+            "num": 1,
+            "title": "Скопировать шаблон",
+            "code": "cp -r apps/template-react apps/your-app"
+          },
+          {
+            "num": 2,
+            "title": "Обновить конфигурацию",
+            "code": "package.json, docker-compose, .env"
+          },
+          {
+            "num": 3,
+            "title": "Создать базу данных",
+            "code": "make upgrade APP=your-app"
+          },
+          {
+            "num": 4,
+            "title": "Начать разработку",
+            "code": "Удалить демо-код, добавить свои функции"
+          }
+        ],
+        "seeDetails": "Подробнее в .claude/shared/monorepo-structure.md"
+      }
+    },
+    "testing": {
+      "title": "Тесты, которые работают",
+      "subtitle": "Правило 80/15/5: Контрактные тесты, бизнес-логика, регрессия",
+      "items": {
+        "realPostgres": {
+          "title": "Настоящий PostgreSQL",
+          "description": "testcontainers, не SQLite моки"
+        },
+        "parallel": {
+          "title": "Параллельное выполнение",
+          "description": "pytest-xdist для полного прогона"
+        },
+        "incremental": {
+          "title": "Инкрементальные тесты",
+          "description": "pytest-testmon для мгновенной обратной связи"
+        },
+        "isolated": {
+          "title": "Изолированные транзакции",
+          "description": "Автоматический откат после каждого теста"
+        }
+      },
+      "commands": {
+        "full": "make test APP=myapp",
+        "fullDesc": "Полный параллельный прогон",
+        "quick": "make test-quick APP=myapp",
+        "quickDesc": "Мгновенная обратная связь"
+      }
+    },
+    "cta": {
+      "title": "Готовы попробовать?",
+      "tryDemos": "Смотреть демо",
+      "demoSubtitle": "кеширование, WebSocket, потоковая передача от AI",
+      "testAuth": "Проверить авторизацию",
+      "authSubtitle": "приглашения друзей и вход"
+    },
+    "footer": {
+      "text": "React Шаблон",
+      "vueLink": "Также доступна версия на Vue"
+    }
   },
   "profilePage": {
     "noUsername": "Нет имени пользователя",

@@ -12,23 +12,34 @@ Analysis of all 4 apps reveals **~18,000+ lines** of duplicated code across back
 
 ### Duplication Matrix
 
-| File/Category | tarot | template-react | template-vue | maxstat | Total Lines |
-|---------------|:-----:|:--------------:|:------------:|:-------:|------------:|
-| `webhook/auth.py` | ✅ | ✅ | ✅ | ✅ | ~2,400 |
-| `tgbot/handlers/admin.py` | ✅ | ✅ | ✅ | ✅ | ~6,400 |
-| `webhook/routers/base.py` | ✅ | ✅ | ✅ | ~80%* | ~280 |
-| `webhook/routers/demo.py` | ✅ | ✅ | ✅ | ❌ | ~2,700 |
-| `services/statistics.py` | ✅ | ✅ | ✅ | ✅ | ~660 |
-| `worker/jobs.py` (common) | ✅ | ✅ | ✅ | ✅ | ~1,200 |
-| `exceptions.py` | ✅ | ✅ | ✅ | ✅ | ~240 |
-| `services/notifications/` | ✅ | ✅ | ✅ | ✅ | ~420 |
-| `webhook/dependencies/` | ✅ | ✅ | ✅ | ~90%* | ~400 |
-| **Backend Total** | | | | | **~14,700** |
-| Frontend providers | ✅ | ✅ | ✅ | N/A | ~1,200 |
-| Frontend hooks | ✅ | ✅ | ✅ | N/A | ~600 |
-| **Grand Total** | | | | | **~16,500** |
+| File/Category | tarot | template-react | template-vue | maxstat | Lines | Can Extract? |
+|---------------|:-----:|:--------------:|:------------:|:-------:|------:|:------------:|
+| `webhook/auth.py` | ✅ | ✅ | ✅ | ✅ | ~2,400 | ✅ YES |
+| `tgbot/handlers/admin.py` | ✅ | ✅ | ✅ | ✅ | ~6,400 | ✅ YES (w/ injection) |
+| `webhook/routers/base.py` | ✅ | ✅ | ✅ | ~80%* | ~280 | ✅ YES |
+| `webhook/routers/demo.py` | ✅ | ✅ | ✅ | ❌ | ~2,700 | ✅ YES |
+| `services/statistics.py` | ✅ | ✅ | ✅ | ✅ | ~660 | 🟡 NEEDS REFACTOR |
+| `worker/jobs.py` (common) | ✅ | ✅ | ✅ | ✅ | ~1,200 | 🟡 NEEDS REFACTOR |
+| `exceptions.py` | ✅ | ✅ | ✅ | ✅ | ~240 | 🟡 NEEDS REFACTOR |
+| `services/notifications/` | ✅ | ✅ | ✅ | ✅ | ~420 | ❌ BY DESIGN |
+| `webhook/dependencies/` | ✅ | ✅ | ✅ | ~90%* | ~400 | ❌ BY DESIGN |
+| **Backend Total** | | | | | **~14,700** | |
+| Frontend providers | ✅ | ✅ | ✅ | N/A | ~1,200 | ✅ YES |
+| Frontend hooks | ✅ | ✅ | ✅ | N/A | ~600 | ✅ YES |
+| **Grand Total** | | | | | **~16,500** | |
 
 *maxstat has minor variations due to app-specific features
+
+### Extraction Feasibility Summary (Revised After Deep Analysis)
+
+| Status | Files | Lines | Notes |
+|--------|------:|------:|-------|
+| ✅ Can extract now | 3 | ~5,380 | `auth.py`, `routers/base.py`, `routers/demo.py` |
+| 🟡 Needs DI refactoring | 4 | ~8,640 | `admin.py`, `jobs.py`, `statistics.py`, `exceptions.py` |
+| 🟡 Frontend (2 frameworks) | 8 | ~1,800 | Split into core-react + core-vue packages |
+| ❌ Stay in apps (by design) | 3 | ~1,240 | notifications/, dependencies/, base.py |
+
+**Key Insight:** Most "identical" files have hidden blockers (app-specific imports, type coupling, framework differences). Only 3 backend files can be extracted without significant refactoring.
 
 ---
 
@@ -805,22 +816,421 @@ export const useAuth = createUseAuth(useAppInit);
 
 ---
 
+---
+
+## Why These Files Were Left in Apps (Blocker Analysis)
+
+Several files appear 100% identical but have **hidden dependencies** that blocked extraction:
+
+### `services/statistics.py` — Type Coupling Blocker
+
+**The Problem:**
+```python
+# apps/*/backend/src/app/services/statistics.py
+from app.services.base import BaseService  # ← App-specific!
+
+class StatisticsService(BaseService):  # ← Inherits app's BaseService
+    async def get_daily_statistics(self):
+        await self.repo.users.get_users_count()  # ← Uses app's repo type
+```
+
+**Dependency Chain:**
+```
+StatisticsService
+└── extends app.services.base.BaseService
+        └── typed to app.infrastructure.database.repo.requests.RequestsRepo
+                └── has app-specific methods not in CoreRequestsRepo
+```
+
+**Why Extraction Fails:**
+- `BaseService` takes `RequestsRepo` (app) not `CoreRequestsRepo` (core)
+- Apps extend repos with custom methods (e.g., `repo.readings`, `repo.chat`)
+- Core's `BaseService` uses `CoreRequestsRepo` with only core methods
+
+**Solution Required:**
+```python
+# Option A: Generic typing
+class StatisticsService(Generic[TRepo]):
+    def __init__(self, repo: TRepo): ...
+
+# Option B: Protocol-based
+class StatisticsRepoProtocol(Protocol):
+    users: UsersRepoProtocol
+    payments: PaymentsRepoProtocol
+    subscriptions: SubscriptionsRepoProtocol
+```
+
+---
+
+### `worker/jobs.py` — App-Specific Imports Blocker
+
+**The Problem (line 55, 79):**
+```python
+from app.tgbot.keyboards.keyboards import command_keyboard  # ← App-specific!
+
+# Later in code:
+text=i18n("tarot.open_app_button"),  # ← App-specific i18n key!
+url=f"{settings.web.app_url}?startapp=r-dailycardnotification",  # ← App-specific URL!
+```
+
+**Why Extraction Fails:**
+- `command_keyboard()` is defined in each app with different buttons
+- i18n keys are app-specific (`tarot.open_app_button` vs `template.open_app_button`)
+- Deep link parameters vary (`r-dailycardnotification` vs `r-daily`)
+
+**Solution Required:**
+```python
+# Inject keyboard and i18n as parameters
+async def user_broadcast_job(
+    ctx: WorkerContext,
+    broadcast_data: dict,
+    requester_telegram_id: int,
+    keyboard_factory: Callable | None = None,  # ← Injected
+    i18n_key: str = "common.open_app",  # ← Configurable
+):
+```
+
+---
+
+### `services/notifications/` — Intentional Boilerplate Blocker
+
+**The Problem:**
+```python
+# templates.py header comment:
+"""Example notification templates for the template app.
+Replace these with your app's actual notification templates.
+...
+"""
+```
+
+**Why Extraction Fails:**
+- Templates are **intentionally duplicated** as starting points
+- Each app needs different notification content, targeting, keyboards
+- `service.py` references these app-specific templates:
+  ```python
+  MORNING_NOTIFICATIONS = [ExampleDailyNotification]  # ← App-specific class
+  ```
+
+**This is correct design** — notifications ARE app-specific. The duplication is the template pattern, not actual duplication.
+
+---
+
+### `exceptions.py` — Inheritance Chain Blocker
+
+**The Problem:**
+```python
+# apps/*/backend/src/app/exceptions.py
+class BackendException(Exception):  # ← Base defined in app
+    ...
+
+class UserNotFoundException(BackendException):  # ← Inherits from app's base
+    ...
+```
+
+**Meanwhile in core:**
+```python
+# core/exceptions.py
+class UserNotFoundException(Exception):  # ← Different base class!
+    ...
+```
+
+**Why Extraction Fails:**
+- Apps import `from app.exceptions import UserNotFoundException`
+- Core has its own `UserNotFoundException` with different base
+- Changing app imports would break exception handling chains
+
+**Solution Required:**
+1. Make apps import from core: `from core.exceptions import UserNotFoundException`
+2. Add `BackendException` to core as the base
+3. Update all app imports (breaking change)
+
+---
+
+### `services/base.py` — The Root Cause
+
+**Comparison:**
+```python
+# tarot/services/base.py
+def __init__(self, repo: RequestsRepo, ..., bot: Bot):
+    self.bot = bot  # Required
+
+# template-react/services/base.py
+def __init__(self, repo: RequestsRepo, ..., bot: Bot | None):
+    self.bot = bot  # Optional!
+
+# core/services/base.py
+def __init__(self, repo: CoreRequestsRepo, ..., bot: Bot):
+    self.bot = bot  # Required, different repo type
+```
+
+**This is the real blocker** — apps have subtly different base service signatures:
+- `bot: Bot` (required) vs `bot: Bot | None` (optional)
+- `RequestsRepo` (app) vs `CoreRequestsRepo` (core)
+
+---
+
+## Revised Extraction Strategy
+
+Given these blockers, here's the realistic extraction plan:
+
+### ✅ Can Extract Now (No Blockers)
+| File | Blocker | Solution |
+|------|---------|----------|
+| `webhook/auth.py` | None | Use core's existing `TelegramAuthenticator` |
+| `webhook/routers/base.py` | None | Dependency override pattern |
+| `webhook/routers/demo.py` | None | Simple configuration |
+| `tgbot/handlers/admin.py` | Keyboard injection | Pass keyboard factory |
+
+### 🟡 Can Extract With Refactoring
+| File | Blocker | Solution |
+|------|---------|----------|
+| `worker/jobs.py` | App imports | Inject keyboard/i18n as params |
+| `exceptions.py` | Inheritance | Add `BackendException` to core |
+| `services/statistics.py` | Type coupling | Protocol-based typing |
+
+### ❌ Should Stay in Apps (By Design)
+| File | Reason |
+|------|--------|
+| `services/notifications/templates.py` | Intentional boilerplate for customization |
+| `services/notifications/service.py` | References app-specific templates |
+| `services/base.py` | Different signatures per app |
+
+---
+
+## Additional Blockers Discovered
+
+### `webhook/routers/demo.py` — Same Blocker as Base Router
+
+**The Problem:**
+```python
+from app.services.requests import RequestsService  # ← App-specific!
+from app.webhook.dependencies.service import get_services  # ← App-specific!
+```
+
+**But this CAN be extracted** because:
+- Already uses `from core.infrastructure.fastapi.dependencies import get_user`
+- Can use same dependency override pattern as `base.py`
+- Only difference is mock data structure (dict vs MockItem class)
+
+**Status:** ✅ CAN EXTRACT with dependency overrides
+
+---
+
+### `tgbot/handlers/admin.py` — Multiple Blockers
+
+**App-Specific Imports (lines 10-12):**
+```python
+from app.infrastructure import file_manager  # ← Tarot-specific for images
+from app.services.requests import RequestsService  # ← App-specific service
+from app.tgbot.keyboards.keyboards import command_keyboard, keygo_keyboard  # ← App keyboards!
+```
+
+**Why It's Harder Than Expected:**
+1. `file_manager` — tarot uses this for `/keygo_prediction` image path
+2. `command_keyboard()` — different buttons per app
+3. `keygo_keyboard()` — tarot-only keyboard
+4. `RequestsService` — app-specific service type
+
+**Solution Required:**
+```python
+# Core admin handlers with injected dependencies
+def create_admin_handlers(
+    keyboard_factory: Callable[[], InlineKeyboardMarkup],
+    services_type: Type[RequestsService],
+    file_manager: FileManager | None = None,
+):
+    router = Router()
+    # ... handlers using injected dependencies
+    return router
+```
+
+**Status:** 🟡 CAN EXTRACT but requires dependency injection refactoring
+
+---
+
+### Frontend — TWO DIFFERENT FRAMEWORKS!
+
+**Critical Discovery:**
+| App | Framework | Hooks Location |
+|-----|-----------|----------------|
+| tarot | **Vue.js** | `src/app/composables/use*.ts` |
+| template-vue | **Vue.js** | `src/app/composables/use*.ts` |
+| template-react | **Next.js/React** | `hooks/use*.ts` |
+| maxstat | **Next.js/React** | `hooks/use*.ts` |
+
+**This means:**
+- Frontend extraction MUST be split into TWO packages:
+  - `@tma-platform/core-react` — for React apps
+  - `@tma-platform/core-vue` — for Vue apps
+
+**Common Blockers Across All Frontend:**
+
+1. **Generated Code Imports:**
+```typescript
+// React apps
+import { useLogoutAuthLogoutPost } from '@/src/gen/hooks';  // ← Generated!
+import { processStartProcessStartPost } from '@/src/gen/client/...';  // ← Generated!
+
+// Vue apps
+import { useLogoutAuthLogoutPost } from '@/src/gen/hooks';  // ← Same pattern!
+```
+
+2. **Router Imports:**
+```typescript
+// React (Next.js)
+import { useRouter } from 'next/navigation';
+
+// Vue
+import { useRouter } from 'vue-router';
+```
+
+3. **Provider/Composable Imports:**
+```typescript
+// React
+import { useAppInit } from '@/providers/AppInitProvider';
+
+// Vue
+import { useAppInit } from '@/app/composables/useAppInit';
+```
+
+4. **Type Names May Differ:**
+```typescript
+// template-react
+import type { UserSchema } from '@/src/gen/models';
+
+// maxstat
+import type { CoreSchemasUsersUserSchema as UserSchema } from '@/src/gen/models';
+```
+
+**Status:** 🟡 CAN EXTRACT but requires:
+- Separate packages for React and Vue
+- Generic type parameters for generated types
+- Dependency injection for generated hooks/clients
+
+---
+
+## Core Frontend Packages — Current State Analysis
+
+### Package Overview
+
+| Package | Name | Used By | Status |
+|---------|------|---------|--------|
+| `core/frontend-react/` | `@tma-platform/core-react` | template-react, maxstat | ✅ ACTIVELY USED |
+| `core/frontend/` | `@tma-platform/core` | tarot, template-vue | ❌ DEAD CODE |
+
+### `@tma-platform/core-react` — What's Exported vs Used
+
+| Module | Export | Used? | Imported By |
+|--------|--------|:-----:|-------------|
+| **platform/** | `useTelegram` | ✅ | AppInitProvider, useStartParams, useAppTheme |
+| | `SDKProvider` | ✅ | providers.tsx |
+| | `isMockModeEnabled` | ✅ | kubb-config.ts |
+| | `usePlatform` | ❌ | — |
+| | `usePlatformMock` | ❌ | — |
+| | `initPlatformMock` | ❌ | — |
+| | `injectMockInitData` | ❌ | — |
+| | `createMockInitDataString` | ❌ | — |
+| | `getSelectedMockUser` | ❌ | — |
+| | `DEFAULT_THEME_COLORS` | ❌ | — |
+| | `getHeaderColorForScheme` | ❌ | — |
+| | `getBackgroundColorFromCSS` | ❌ | — |
+| **errors/** | `getErrorMessage` | ✅ | FriendsSection, profile, demos |
+| | `isApiError` | ✅ | providers.tsx |
+| | `classifyHttpError` | ✅ | kubb-config, demos |
+| | `classifyNetworkError` | ✅ | kubb-config, demos |
+| | `createApiError` | ❌ | — |
+| **analytics/** | `usePostHog` | ✅ | AppInitProvider, useStartParams, page-view-tracker |
+| | `initPostHog` | ✅ | providers.tsx |
+| **hooks/** | `useScroll` | ❌ | — |
+| | `useLayout` | ❌ | — |
+| | `usePlaceholderHeight` | ❌ | — |
+| **types/** | `Language` | ✅ | constants.ts |
+| **services/** | `useStatic` | ❌ | — |
+| **utils/** | (all) | ❌ | — |
+
+**Summary:** 11 exports used, 14 exports UNUSED (dead code)
+
+### `@tma-platform/core` (Vue) — COMPLETELY UNUSED
+
+```
+📦 core/frontend/src/
+├── analytics/usePostHog.ts      ❌ Not imported
+├── api/client.ts                ❌ Not imported
+├── composables/
+│   ├── useLanguage.ts           ❌ Not imported
+│   ├── useLayout.ts             ❌ Not imported
+│   ├── usePlaceholderHeight.ts  ❌ Not imported
+│   └── useScroll.ts             ❌ Not imported
+├── errors/                      ❌ Not imported
+├── platform/
+│   ├── useTelegram.ts           ❌ Not imported
+│   └── usePlatform.ts           ❌ Not imported
+├── services/useStatic.ts        ❌ Not imported
+├── ui/loading/                  ❌ Not imported
+└── utils/                       ❌ Not imported
+```
+
+**Status:** Package exists in `package.json` but has **ZERO** actual imports in tarot or template-vue source code. This is 100% dead code.
+
+### What Vue Apps Actually Use
+
+Instead of `@tma-platform/core`, Vue apps have **duplicated the functionality locally**:
+
+```
+apps/template/frontend/src/app/composables/
+├── useAppInit.ts        ← Duplicated (similar to AppInitProvider)
+├── useAuth.ts           ← Duplicated
+├── useLogout.ts         ← Duplicated
+├── useEmailAuth.ts      ← Duplicated
+├── useTelegramLink.ts   ← Duplicated
+├── useUser.ts           ← Vue-specific
+└── ... (20+ more composables)
+```
+
+### Recommendations
+
+1. **Delete `core/frontend/`** — It's completely unused dead code
+2. **Clean up `core/frontend-react/`** — Remove 14 unused exports
+3. **For Vue apps** — Either:
+   - Option A: Continue with local composables (current approach)
+   - Option B: Create new `@tma-platform/core-vue` from scratch based on actual needs
+
+### What SHOULD Be in Core Frontend (Both Frameworks)
+
+Based on actual app usage patterns:
+
+| Functionality | React (used) | Vue (duplicated in apps) |
+|--------------|:------------:|:------------------------:|
+| Telegram SDK wrapper | `useTelegram` | `useAppInit` (partial) |
+| PostHog analytics | `usePostHog`, `initPostHog` | Manual in each app |
+| Error classification | `getErrorMessage`, `isApiError` | Manual in each app |
+| Mock mode for dev | `isMockModeEnabled`, `SDKProvider` | Manual in each app |
+| Auth hooks | ❌ In apps | ❌ In apps |
+| Logout hook | ❌ In apps | ❌ In apps |
+| App initialization | ❌ In apps (AppInitProvider) | ❌ In apps (useAppInit) |
+
+**Key Finding:** The original DRY review identified `AppInitProvider` and auth hooks for extraction, but these are NOT currently in core — they're duplicated in apps. The existing core packages contain utility functions, not the main app initialization logic.
+
+---
+
 ## Implementation Roadmap
 
 ### Phase 1: Foundation (Week 1)
 1. **Exceptions** → Merge into core (lowest risk)
-2. **Statistics Service** → Extract to core (read-only)
-3. **Demo Router** → Extract to core (templates only)
+2. **Demo Router** → Extract to core (templates only)
 
 ### Phase 2: Authentication (Week 2)
-4. **`webhook/auth.py`** → Use core TelegramAuthenticator + extract session
-5. **`webhook/routers/base.py`** → Extract with dependency overrides
+3. **`webhook/auth.py`** → Use core TelegramAuthenticator + extract session
+4. **`webhook/routers/base.py`** → Extract with dependency overrides
 
 ### Phase 3: Bot & Workers (Week 3)
-6. **Worker Jobs** → Extract common jobs to core
-7. **Admin Bot Handlers** → Extract to core with keyboard injection
+5. **Admin Bot Handlers** → Extract to core with keyboard injection
+6. **Worker Jobs** → Extract with parameter injection for keyboards/i18n
 
-### Phase 4: Frontend (Week 4)
+### Phase 4: Services (Week 4) — Requires Protocol Refactoring
+7. **Statistics Service** → Extract with protocol-based repo typing
+
+### Phase 5: Frontend (Week 5)
 8. **AppInitProvider** → Extract to core-react
 9. **Auth Hooks** → Extract hook factories
 

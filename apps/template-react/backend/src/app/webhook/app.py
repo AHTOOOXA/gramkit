@@ -91,6 +91,11 @@ app = create_api(
     ),
 )
 
+# Mount Socket.IO app for real-time demo
+from app.webhook.socketio import socket_app
+
+app.mount("/socket.io", socket_app)
+
 # Configure core auth components in app state
 app.state.telegram_auth = telegram_auth
 app.state.settings = settings

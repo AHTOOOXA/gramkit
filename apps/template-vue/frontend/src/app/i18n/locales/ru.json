@@ -178,158 +178,158 @@
   "homePage": {
     "badge": "Готовый шаблон",
     "title": "Vue Шаблон",
-    "subtitle": "Готовый шаблон веб-приложения с mobile-first дизайном и поддержкой Telegram Mini App",
+    "subtitle": "Готовый шаблон веб-приложения с адаптивным дизайном и поддержкой Telegram Mini App",
     "getStarted": "Начать",
-    "explorePatterns": "Изучить паттерны",
-    "testAuthFlows": "Тестировать авторизацию",
-    "tryLiveDemos": "Попробовать демо",
+    "explorePatterns": "Смотреть паттерны",
+    "testAuthFlows": "Проверить авторизацию",
+    "tryLiveDemos": "Смотреть демо",
     "features": {
-      "title": "Что вы получаете",
-      "subtitle": "Проверенные функции, а не шаблон",
+      "title": "Что включено",
+      "subtitle": "Не заглушки — работающий код",
       "items": {
         "authentication": {
-          "name": "Аутентификация",
-          "description": "Email + OTP проверка, Telegram OAuth, сброс пароля"
+          "name": "Авторизация",
+          "description": "Email с кодом подтверждения, Telegram OAuth, восстановление пароля"
         },
         "rbac": {
-          "name": "Управление доступом",
-          "description": "Роли Admin/Owner/User, защищённые маршруты, проверка прав"
+          "name": "Разграничение доступа",
+          "description": "Роли Admin/Owner/User, защита маршрутов, проверка прав"
         },
         "realtime": {
           "name": "Данные в реальном времени",
-          "description": "WebSocket, polling, AI streaming, оптимистичные обновления"
+          "description": "WebSocket, поллинг, потоковая передача от AI, оптимистичные обновления"
         },
         "mobile": {
-          "name": "Mobile-First дизайн",
-          "description": "Адаптивные макеты, нижняя навигация, определение Telegram Mini App"
+          "name": "Адаптивный дизайн",
+          "description": "Мобильная версия в приоритете, нижняя навигация, определение Telegram Mini App"
         },
         "typesat": {
-          "name": "Type-Safe API",
-          "description": "Автогенерируемые TypeScript хуки из OpenAPI схемы"
+          "name": "Типизированный API",
+          "description": "Автогенерация TypeScript хуков из OpenAPI схемы"
         },
         "i18n": {
-          "name": "i18n + Темы",
-          "description": "Мультиязычность, светлая/тёмная тема из коробки"
+          "name": "Локализация и темы",
+          "description": "Мультиязычность, светлая и тёмная тема из коробки"
         },
         "tanstack": {
           "name": "Паттерны TanStack Query",
-          "description": "17 интерактивных демо: кеширование, мутации, бесконечная прокрутка, suspense"
+          "description": "17 интерактивных демо: кеширование, мутации, бесконечная прокрутка, Suspense"
         },
         "dx": {
-          "name": "Developer Experience",
-          "description": "Hot reload, Make команды, организованная monorepo структура"
+          "name": "Удобство разработки",
+          "description": "Горячая перезагрузка, Make-команды, структурированный монорепозиторий"
         }
       }
     },
     "architecture": {
       "title": "Современный стек, чистая архитектура",
-      "subtitle": "Типобезопасность от базы данных до UI",
+      "subtitle": "Сквозная типизация от базы данных до интерфейса",
       "highlights": {
         "endToEnd": {
-          "title": "End-to-End типобезопасность",
-          "description": "OpenAPI схема → Kubb генерирует TypeScript хуки. Изменили backend, типы frontend обновятся автоматически."
+          "title": "Сквозная типизация",
+          "description": "OpenAPI схема + Kubb генерирует TypeScript хуки. Меняете бэкенд — типы на фронтенде обновляются автоматически."
         },
         "make": {
-          "title": "Унифицированные Make команды",
-          "description": "Один интерфейс для всех приложений: make test APP=x, make migration. Никакого прямого Docker/pytest."
+          "title": "Единые Make-команды",
+          "description": "Один интерфейс для всех приложений: make test APP=x, make migration. Без прямых вызовов Docker и pytest."
         },
         "shared": {
-          "title": "Общая логика в core/",
-          "description": "Авторизация, пользователи, платежи, email в core/ — импортируйте в любое приложение. Никакого копипаста между проектами."
+          "title": "Общий код в core/",
+          "description": "Авторизация, пользователи, платежи, email — всё в core/, подключается в любое приложение. Без копирования между проектами."
         },
         "hotReload": {
-          "title": "Hot Reload везде",
-          "description": "Редактируйте Python или TypeScript, видьте изменения мгновенно. Без перезапуска контейнеров, без ручных пересборок."
+          "title": "Горячая перезагрузка везде",
+          "description": "Редактируете Python или TypeScript — изменения видны сразу. Без перезапуска контейнеров и ручных пересборок."
         },
         "repo": {
-          "title": "Repository Pattern + Flush",
-          "description": "Чистый слой доступа к данным. Репозитории используют flush(), сервисы контролируют транзакции. Тестируемо, предсказуемо."
+          "title": "Паттерн Repository + Flush",
+          "description": "Чистый слой доступа к данным. Репозитории используют flush(), сервисы управляют транзакциями. Тестируемо и предсказуемо."
         },
         "tanstackPatterns": {
           "title": "Паттерны TanStack Query",
-          "description": "17 демо показывают кеширование, оптимистичные обновления, бесконечную прокрутку, real-time — копируйте паттерны напрямую."
+          "description": "17 демо: кеширование, оптимистичные обновления, бесконечная прокрутка, работа в реальном времени — копируйте готовые решения."
         }
       }
     },
     "workflow": {
-      "title": "Два способа разработки",
+      "title": "Два режима разработки",
       "subtitle": "Localhost для скорости, туннель для тестирования Telegram",
       "localhost": {
-        "title": "Прямой Localhost",
-        "subtitle": "Нативный Vite — самая быстрая итерация, без накладных расходов Docker",
+        "title": "Локальная разработка",
+        "subtitle": "Нативный Vite — максимальная скорость без Docker",
         "recommended": "Рекомендуется",
         "url": "http://localhost:5174/template",
         "benefits": [
-          "~10x быстрее прогрев с кешем Vite",
-          "Прямые вызовы API (CORS включён в dev)",
-          "Frontend запускается нативно на macOS"
+          "В 10 раз быстрее запуск с кешем Vite",
+          "Прямые вызовы API (CORS включён для разработки)",
+          "Фронтенд работает нативно на macOS"
         ]
       },
       "tunnel": {
         "title": "Режим туннеля",
-        "subtitle": "Через nginx + Cloudflare туннель — для тестирования Telegram Mini App",
+        "subtitle": "Через nginx + Cloudflare — для тестирования Telegram Mini App",
         "url": "https://local.yourdomain.com/template",
         "benefits": [
           "HTTPS с валидным сертификатом",
-          "Аутентификация Telegram WebApp",
-          "Production-подобное окружение"
+          "Авторизация Telegram WebApp",
+          "Окружение, приближённое к продакшену"
         ]
       },
       "gateway": {
-        "title": "Gateway Hub",
-        "subtitle": "nginx страница с быстрым доступом ко всем приложениям",
-        "description": "Доступ по https://local.yourdomain.com/ — один хаб для туннельных ссылок, портов localhost и API документации"
+        "title": "Шлюз приложений",
+        "subtitle": "Страница nginx с быстрым доступом ко всем приложениям",
+        "description": "Доступно по https://local.yourdomain.com/ — единая точка для ссылок туннеля, локальных портов и API документации"
       },
       "turbopack": {
         "title": "Vite + Vitest",
         "highlights": [
           {
             "title": "Быстрая сборка",
-            "description": "Vite hot module replacement для мгновенной обратной связи"
+            "description": "Горячая замена модулей Vite для мгновенной обратной связи"
           },
           {
             "title": "Нативная производительность",
-            "description": "Фронтенды запускаются локально на macOS, а не в Docker контейнерах"
+            "description": "Фронтенд работает локально на macOS, а не в Docker-контейнерах"
           },
           {
-            "title": "Готовность к Vue 3",
-            "description": "Composition API, script setup и последние функции Vue"
+            "title": "Vue 3 из коробки",
+            "description": "Composition API, script setup и все современные возможности Vue"
           }
         ]
       }
     },
     "included": {
       "title": "Всё уже настроено",
-      "subtitle": "Не просто скаффолдинг — реальные, работающие функции",
+      "subtitle": "Не просто заготовка — реальные, работающие функции",
       "pages": {
         "title": "5 страниц",
-        "subtitle": "Production-готовые маршруты",
+        "subtitle": "Готовые к продакшену маршруты",
         "items": [
-          "Маркетинговая страница",
+          "Главная страница",
           "Технические демо (17 паттернов)",
           "Управление профилем",
-          "Админ панель",
+          "Панель администратора",
           "Расширяемая структура"
         ]
       },
       "demos": {
         "title": "17 технических демо",
-        "subtitle": "Референсные реализации",
+        "subtitle": "Эталонные реализации",
         "items": [
           "Состояния загрузки и ошибок",
           "Стратегии кеширования",
-          "Мутации и оптимистичный UI",
-          "Стриминг и real-time",
-          "Бесконечная прокрутка и др."
+          "Мутации и оптимистичный интерфейс",
+          "Потоковая передача и работа в реальном времени",
+          "Бесконечная прокрутка и другое"
         ]
       },
       "auth": {
         "title": "Полная система авторизации",
-        "subtitle": "Полные потоки аутентификации",
+        "subtitle": "Все сценарии входа",
         "items": [
-          "Email + OTP верификация",
+          "Email с кодом подтверждения",
           "Telegram OAuth",
-          "Поток сброса пароля",
+          "Восстановление пароля",
           "Привязка аккаунтов",
           "Управление сессиями"
         ]
@@ -337,24 +337,24 @@
     },
     "claudeCode": {
       "title": "Создано для Claude Code",
-      "subtitle": "4-слойная архитектура оркестрации — контекстно-эффективная, готовая к параллельности",
+      "subtitle": "4-уровневая архитектура оркестрации — экономия контекста, готовность к параллельной работе",
       "orchestration": {
-        "title": "Архитектура Orchestration-First",
-        "layer0": "CLAUDE.md → правила оркестрации, быстрая справка",
-        "layer1": "commands/ → /develop, /create-task, /execute-task, /review",
-        "layer2": "skills/ → автоматически вызываемые процедуры (создание задач, выполнение)",
-        "layer3": "agents/ → developer-agent, testing-polish-agent"
+        "title": "Архитектура с оркестрацией",
+        "layer0": "CLAUDE.md — правила оркестрации, краткий справочник",
+        "layer1": "commands/ — /develop, /create-task, /execute-task, /review",
+        "layer2": "skills/ — автоматически вызываемые процедуры (создание и выполнение задач)",
+        "layer3": "agents/ — developer-agent, testing-polish-agent"
       },
       "slashCommands": {
-        "title": "Slash команды",
+        "title": "Slash-команды",
         "items": {
           "createTask": {
             "cmd": "/create-task",
-            "desc": "PRD → фазы → параллельное обогащение"
+            "desc": "PRD, фазы, параллельная проработка"
           },
           "executeTask": {
             "cmd": "/execute-task",
-            "desc": "Фаза за фазой с автокоммитами"
+            "desc": "Выполнение по фазам с автокоммитами"
           },
           "develop": {
             "cmd": "/develop",
@@ -366,25 +366,25 @@
           },
           "review": {
             "cmd": "/review",
-            "desc": "Глубокий code review с вопросами"
+            "desc": "Глубокий анализ кода"
           },
           "addTesting": {
             "cmd": "/add-testing",
-            "desc": "Добавить тестовые фазы к существующей задаче"
+            "desc": "Добавить тестовые фазы к задаче"
           }
         }
       },
       "structuredTasks": {
         "title": "Система структурированных задач",
-        "description": "Автоопределение сложности. Простые задачи: inline обогащение. Сложные задачи: hub-and-spoke параллельные агенты с общим ARCHITECTURE.md для предотвращения конфликтов."
+        "description": "Автоматическое определение сложности. Простые задачи обогащаются сразу. Сложные — через параллельные агенты с общим ARCHITECTURE.md для предотвращения конфликтов."
       },
       "developerAgent": {
         "title": "Developer Agent",
         "items": [
           "Читает документы с паттернами перед каждой задачей. Возвращает сводки, а не дампы кода.",
-          "Обязательное чтение: critical-rules.md + domain-specific документ",
+          "Обязательное чтение: critical-rules.md + документ по предметной области",
           "После изменений: make test, make lint, make schema",
-          "Коммиты: следует конвенциональному формату для каждой фазы"
+          "Коммиты: следует формату Conventional Commits для каждой фазы"
         ]
       },
       "patternDocs": {
@@ -404,16 +404,16 @@
       }
     },
     "quickStart": {
-      "title": "Начать",
+      "title": "Быстрый старт",
       "subtitle": "Требования: Docker, pnpm, make",
       "run": {
         "title": "Запустить шаблон",
-        "subtitle": "Начать разработку за 3 шага",
+        "subtitle": "Начало работы за 3 шага",
         "steps": [
           {
             "num": 0,
             "title": "Настроить Cloudflare Tunnel",
-            "desc": "Требуется для тестирования Telegram Mini App — открывает localhost через HTTPS"
+            "desc": "Нужен для тестирования Telegram Mini App — открывает localhost через HTTPS"
           },
           {
             "num": 1,
@@ -444,7 +444,7 @@
           },
           {
             "num": 2,
-            "title": "Обновить конфиги",
+            "title": "Обновить конфигурацию",
             "code": "package.json, docker-compose, .env"
           },
           {
@@ -455,18 +455,46 @@
           {
             "num": 4,
             "title": "Начать разработку",
-            "code": "Удалить демо код, добавить свои функции"
+            "code": "Удалить демо-код, добавить свои функции"
           }
         ],
-        "seeDetails": "См. .claude/shared/monorepo-structure.md для деталей"
+        "seeDetails": "Подробнее в .claude/shared/monorepo-structure.md"
+      }
+    },
+    "testing": {
+      "title": "Тесты, которые работают",
+      "subtitle": "Правило 80/15/5: Контрактные тесты, бизнес-логика, регрессия",
+      "items": {
+        "realPostgres": {
+          "title": "Настоящий PostgreSQL",
+          "description": "testcontainers, не SQLite моки"
+        },
+        "parallel": {
+          "title": "Параллельное выполнение",
+          "description": "pytest-xdist для полного прогона"
+        },
+        "incremental": {
+          "title": "Инкрементальные тесты",
+          "description": "pytest-testmon для мгновенной обратной связи"
+        },
+        "isolated": {
+          "title": "Изолированные транзакции",
+          "description": "Автоматический откат после каждого теста"
+        }
+      },
+      "commands": {
+        "full": "make test APP=myapp",
+        "fullDesc": "Полный параллельный прогон",
+        "quick": "make test-quick APP=myapp",
+        "quickDesc": "Мгновенная обратная связь"
       }
     },
     "cta": {
-      "title": "Готовы изучить?",
-      "tryDemos": "Попробовать Live демо",
-      "demoSubtitle": "кеширование, WebSocket, AI стриминг",
-      "testAuth": "Тестировать авторизацию",
-      "authSubtitle": "приглашения друзей и авторизация"
+      "title": "Готовы попробовать?",
+      "tryDemos": "Смотреть демо",
+      "demoSubtitle": "кеширование, WebSocket, потоковая передача от AI",
+      "testAuth": "Проверить авторизацию",
+      "authSubtitle": "приглашения друзей и вход"
     }
   },
   "next": "Продолжить",
@@ -946,7 +974,7 @@
     "usernameStep": {
       "description": "Введите ваш Telegram username, чтобы получить код подтверждения.",
       "label": "Telegram Username",
-      "placeholder": "@username",
+      "placeholder": "{'@'}username",
       "hint": "Мы отправим 6-значный код в ваш Telegram.",
       "submit": "Отправить код"
     },
@@ -954,7 +982,7 @@
       "description": "Введите код подтверждения, отправленный в ваш Telegram.",
       "label": "Код подтверждения",
       "placeholder": "000000",
-      "hint": "Проверьте личные сообщения от @YourBotName.",
+      "hint": "Проверьте личные сообщения от {'@'}YourBotName.",
       "submit": "Подтвердить",
       "back": "Назад",
       "resend": "Отправить код повторно"
@@ -1141,9 +1169,9 @@
       "continue": "Продолжить",
       "continueWithEmail": "Войти через Email",
       "email": "Email",
-      "emailPlaceholder": "you@example.com",
+      "emailPlaceholder": "you{'@'}example.com",
       "emailOrUsername": "Email или имя пользователя",
-      "emailOrUsernamePlaceholder": "email@example.com или username",
+      "emailOrUsernamePlaceholder": "email{'@'}example.com или username",
       "password": "Пароль",
       "passwordPlaceholder": "Введите пароль",
       "newPasswordPlaceholder": "Создайте пароль",

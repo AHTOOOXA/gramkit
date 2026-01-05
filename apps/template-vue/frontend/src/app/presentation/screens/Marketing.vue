@@ -20,6 +20,7 @@ import {
   Globe,
   Laptop,
   LayoutGrid,
+  FlaskConical,
   type LucideIcon,
 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
@@ -445,6 +446,88 @@ const featureDelays = [
               <ul class="space-y-2 text-sm text-muted-foreground">
                 <li v-for="(item, idx) in (tm('homePage.included.auth.items') as string[])" :key="idx">• {{ item }}</li>
               </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </ScrollReveal>
+
+    <!-- Testing Section -->
+    <ScrollReveal :delay="250">
+      <section class="space-y-6 md:space-y-8">
+        <div class="text-center">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">{{ t('homePage.testing.title') }}</h2>
+          <p class="text-muted-foreground text-lg">
+            {{ t('homePage.testing.subtitle') }}
+          </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+          <Card :class="[cardInfo, 'border-primary/20 bg-gradient-to-br from-card to-primary/[0.02]']">
+            <CardHeader class="pb-3">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="p-2 rounded-lg bg-primary/15">
+                  <FlaskConical class="w-4 h-4 text-primary" />
+                </div>
+                <CardTitle class="text-lg">{{ t('homePage.testing.title') }}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                  <div class="flex items-start gap-3">
+                    <div class="p-1.5 rounded bg-primary/10 mt-0.5">
+                      <Database class="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">{{ t('homePage.testing.items.realPostgres.title') }}</p>
+                      <p class="text-xs text-muted-foreground">{{ t('homePage.testing.items.realPostgres.description') }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="p-1.5 rounded bg-primary/10 mt-0.5">
+                      <Zap class="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">{{ t('homePage.testing.items.parallel.title') }}</p>
+                      <p class="text-xs text-muted-foreground">{{ t('homePage.testing.items.parallel.description') }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-start gap-3">
+                    <div class="p-1.5 rounded bg-primary/10 mt-0.5">
+                      <Terminal class="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">{{ t('homePage.testing.items.incremental.title') }}</p>
+                      <p class="text-xs text-muted-foreground">{{ t('homePage.testing.items.incremental.description') }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="p-1.5 rounded bg-primary/10 mt-0.5">
+                      <Shield class="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">{{ t('homePage.testing.items.isolated.title') }}</p>
+                      <p class="text-xs text-muted-foreground">{{ t('homePage.testing.items.isolated.description') }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-muted p-4 rounded-lg font-mono text-xs space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-primary">$</span>
+                  <code class="text-foreground">{{ t('homePage.testing.commands.full') }}</code>
+                  <span class="text-muted-foreground ml-2"># {{ t('homePage.testing.commands.fullDesc') }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-primary">$</span>
+                  <code class="text-foreground">{{ t('homePage.testing.commands.quick') }}</code>
+                  <span class="text-muted-foreground ml-2"># {{ t('homePage.testing.commands.quickDesc') }}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

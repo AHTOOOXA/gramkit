@@ -18,9 +18,11 @@ import {
   Globe,
   Laptop,
   LayoutGrid,
+  FlaskConical,
   type LucideIcon,
 } from 'lucide-react';
 import { SiVuedotjs } from 'react-icons/si';
+import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -77,56 +79,21 @@ function ScrollReveal({
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
+  const t = useTranslations('homePage');
 
   const featureItems: {
-    name: string;
-    description: string;
+    key: string;
     icon: LucideIcon;
     highlighted?: boolean;
   }[] = [
-    {
-      name: 'Authentication',
-      description: 'Email + OTP verification, Telegram OAuth, password reset flows',
-      icon: Shield,
-      highlighted: true,
-    },
-    {
-      name: 'Role-Based Access',
-      description: 'Admin/Owner/User roles, protected routes, permission checks',
-      icon: Users,
-    },
-    {
-      name: 'Real-Time Data',
-      description: 'WebSocket, polling, AI streaming, optimistic updates',
-      icon: Radio,
-      highlighted: true,
-    },
-    {
-      name: 'Mobile-First Design',
-      description: 'Responsive layouts, bottom nav, Telegram Mini App detection',
-      icon: Smartphone,
-    },
-    {
-      name: 'Type-Safe API',
-      description: 'Auto-generated TypeScript hooks from OpenAPI schema',
-      icon: Code2,
-      highlighted: true,
-    },
-    {
-      name: 'i18n + Theming',
-      description: 'Multi-language support, dark/light mode out of the box',
-      icon: Palette,
-    },
-    {
-      name: 'TanStack Query Patterns',
-      description: '17 interactive demos: caching, mutations, infinite scroll, suspense',
-      icon: Database,
-    },
-    {
-      name: 'Developer Experience',
-      description: 'Hot reload, Make commands, organized monorepo structure',
-      icon: Terminal,
-    },
+    { key: 'authentication', icon: Shield, highlighted: true },
+    { key: 'rbac', icon: Users },
+    { key: 'realtime', icon: Radio, highlighted: true },
+    { key: 'mobile', icon: Smartphone },
+    { key: 'typeSafe', icon: Code2, highlighted: true },
+    { key: 'i18n', icon: Palette },
+    { key: 'tanstack', icon: Database },
+    { key: 'dx', icon: Terminal },
   ];
 
   // Staggered delays for feature cards
@@ -147,26 +114,26 @@ export default function HomePage() {
       <section className="text-center space-y-6 py-6 md:py-12 motion-blur-in-[10px] motion-scale-in-[0.95] motion-opacity-in-[0%] motion-duration-[0.7s] motion-ease-spring-smooth">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
           <Sparkles className="w-4 h-4" />
-          <span>Production-Ready Template</span>
+          <span>{t('badge')}</span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">React Template</h1>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">{t('title')}</h1>
 
         <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-          Production-ready web app template with mobile-first design and Telegram Mini App support
+          {t('heroSubtitle')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
           <Button asChild size="lg" className={btnPrimary}>
             <Link href={isAuthenticated ? '/demo' : '/login'}>
-              {isAuthenticated ? 'Explore Patterns' : 'Get Started'}
+              {isAuthenticated ? t('explorePatterns') : t('getStarted')}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className={btnSecondary}>
             <a href="https://vue.antonchaynik.ru" target="_blank" rel="noopener noreferrer">
               <SiVuedotjs className="w-4 h-4 mr-2" />
-              Try Vue Version
+              {t('tryVueVersion')}
             </a>
           </Button>
         </div>
@@ -175,16 +142,16 @@ export default function HomePage() {
       {/* Key Features Section - Above fold, interactive cards */}
       <section className="space-y-6 md:space-y-8 motion-opacity-in-[0%] motion-translate-y-in-[30px] motion-blur-in-[4px] motion-duration-[0.5s] motion-delay-[0.3s] motion-ease-spring-smooth">
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">What You Get</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('features.title')}</h2>
           <p className="text-muted-foreground text-lg">
-            Battle-tested features, not boilerplate
+            {t('features.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {featureItems.map((item, index) => (
             <Card
-              key={item.name}
+              key={item.key}
               className={cn(
                 cardFeature,
                 'py-4 gap-3', // Tighter spacing for feature cards
@@ -207,10 +174,10 @@ export default function HomePage() {
                     <item.icon className="w-4 h-4 text-primary transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 </div>
-                <CardTitle className="text-base">{item.name}</CardTitle>
+                <CardTitle className="text-base">{t(`features.items.${item.key}.name`)}</CardTitle>
               </CardHeader>
               <CardContent className="relative pt-0">
-                <CardDescription className="text-sm">{item.description}</CardDescription>
+                <CardDescription className="text-sm">{t(`features.items.${item.key}.description`)}</CardDescription>
               </CardContent>
             </Card>
           ))}
@@ -221,14 +188,14 @@ export default function HomePage() {
       <ScrollReveal delay={0}>
         <section className="space-y-6 md:space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Modern Stack, Clean Architecture</h2>
-            <p className="text-muted-foreground text-lg">End-to-end type safety from database to UI</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('architecture.title')}</h2>
+            <p className="text-muted-foreground text-lg">{t('architecture.subtitle')}</p>
           </div>
 
           <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-xl">Monorepo Structure</CardTitle>
+                <CardTitle className="text-xl">{t('architecture.monorepoTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ArchitectureDiagram />
@@ -237,9 +204,9 @@ export default function HomePage() {
 
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-xl">Technical Highlights</CardTitle>
+                <CardTitle className="text-xl">{t('architecture.highlightsTitle')}</CardTitle>
                 <CardDescription>
-                  Not just a stack — solutions to real problems
+                  {t('architecture.highlightsSubtitle')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -250,9 +217,9 @@ export default function HomePage() {
                         <FileCode2 className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">End-to-End Type Safety</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.endToEnd.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          OpenAPI schema → Kubb generates TypeScript hooks. Change backend, frontend types update automatically.
+                          {t('architecture.highlights.endToEnd.description')}
                         </p>
                       </div>
                     </div>
@@ -261,11 +228,9 @@ export default function HomePage() {
                         <Terminal className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Unified Make Commands</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.make.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          One interface for all apps:{' '}
-                          <code className="bg-muted px-1 rounded">make test APP=x</code>,{' '}
-                          <code className="bg-muted px-1 rounded">make migration</code>. No Docker/pytest directly.
+                          {t('architecture.highlights.make.description')}
                         </p>
                       </div>
                     </div>
@@ -274,9 +239,9 @@ export default function HomePage() {
                         <Layers className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Shared Core Logic</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.shared.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Auth, users, payments, email in core/ — import into any app. No copy-paste between projects.
+                          {t('architecture.highlights.shared.description')}
                         </p>
                       </div>
                     </div>
@@ -287,9 +252,9 @@ export default function HomePage() {
                         <Zap className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Hot Reload Everywhere</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.hotReload.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Edit Python or TypeScript, see changes instantly. No container restarts, no manual rebuilds.
+                          {t('architecture.highlights.hotReload.description')}
                         </p>
                       </div>
                     </div>
@@ -298,9 +263,9 @@ export default function HomePage() {
                         <Database className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Repository Pattern + Flush</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.repo.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          Clean data access layer. Repositories use flush(), services control transactions. Testable, predictable.
+                          {t('architecture.highlights.repo.description')}
                         </p>
                       </div>
                     </div>
@@ -309,9 +274,9 @@ export default function HomePage() {
                         <Radio className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">TanStack Query Patterns</p>
+                        <p className="text-sm font-medium">{t('architecture.highlights.tanstackPatterns.title')}</p>
                         <p className="text-xs text-muted-foreground">
-                          17 demos showing caching, optimistic updates, infinite scroll, real-time — copy patterns directly.
+                          {t('architecture.highlights.tanstackPatterns.description')}
                         </p>
                       </div>
                     </div>
@@ -327,9 +292,9 @@ export default function HomePage() {
       <ScrollReveal delay={100}>
         <section className="space-y-6 md:space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Two Ways to Develop</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('workflow.title')}</h2>
             <p className="text-muted-foreground text-lg">
-              Localhost for speed, tunnel for Telegram testing
+              {t('workflow.subtitle')}
             </p>
           </div>
 
@@ -341,27 +306,23 @@ export default function HomePage() {
                     <div className="p-2 rounded-lg bg-primary/15">
                       <Laptop className="w-4 h-4 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">Direct Localhost</CardTitle>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Recommended</span>
+                    <CardTitle className="text-lg">{t('workflow.localhost.title')}</CardTitle>
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t('workflow.localhost.recommended')}</span>
                   </div>
                   <CardDescription>
-                    Native Turbopack — fastest iteration, no Docker overhead
+                    {t('workflow.localhost.subtitle')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="bg-muted p-3 rounded font-mono text-xs">
-                    <div className="text-foreground">http://localhost:3001/template-react</div>
+                    <div className="text-foreground">{t('workflow.localhost.url')}</div>
                   </div>
                   <ul className="space-y-1.5 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> ~10x faster warm starts with Turbopack cache
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> Direct API calls (CORS enabled in dev)
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> Frontend runs natively on macOS
-                    </li>
+                    {(t.raw('workflow.localhost.benefits') as string[]).map((benefit, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <span className="text-primary">✓</span> {benefit}
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
@@ -372,26 +333,22 @@ export default function HomePage() {
                     <div className="p-2 rounded-lg bg-primary/10">
                       <Globe className="w-4 h-4 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">Tunnel Mode</CardTitle>
+                    <CardTitle className="text-lg">{t('workflow.tunnel.title')}</CardTitle>
                   </div>
                   <CardDescription>
-                    Via nginx + Cloudflare tunnel — for Telegram Mini App testing
+                    {t('workflow.tunnel.subtitle')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="bg-muted p-3 rounded font-mono text-xs">
-                    <div className="text-muted-foreground">https://local.yourdomain.com/template-react</div>
+                    <div className="text-muted-foreground">{t('workflow.tunnel.url')}</div>
                   </div>
                   <ul className="space-y-1.5 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> HTTPS with valid certificate
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> Telegram WebApp authentication
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-primary">✓</span> Production-like environment
-                    </li>
+                    {(t.raw('workflow.tunnel.benefits') as string[]).map((benefit, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <span className="text-primary">✓</span> {benefit}
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
@@ -403,37 +360,35 @@ export default function HomePage() {
                   <div className="p-2 rounded-lg bg-primary/10">
                     <LayoutGrid className="w-4 h-4 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">Gateway Hub</CardTitle>
+                  <CardTitle className="text-lg">{t('workflow.gateway.title')}</CardTitle>
                 </div>
                 <CardDescription>
-                  nginx landing page with quick access to all apps
+                  {t('workflow.gateway.subtitle')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-3 text-xs">
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-blue-400">template-react</code>
+                    <code className="text-blue-400">{t('workflow.gateway.apps.react')}</code>
                     <div className="mt-1.5 space-y-1 text-muted-foreground">
-                      <div>tunnel • :3001 • api</div>
+                      <div>{t('workflow.gateway.appDetails')}</div>
                     </div>
                   </div>
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-green-400">template-vue</code>
+                    <code className="text-green-400">{t('workflow.gateway.apps.vue')}</code>
                     <div className="mt-1.5 space-y-1 text-muted-foreground">
-                      <div>tunnel • :5174 • api</div>
+                      <div>{t('workflow.gateway.vueDetails')}</div>
                     </div>
                   </div>
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">your-app</code>
+                    <code className="text-primary">{t('workflow.gateway.apps.yourApp')}</code>
                     <div className="mt-1.5 space-y-1 text-muted-foreground">
-                      <div>tunnel • :1234 • api</div>
+                      <div>{t('workflow.gateway.yourAppDetails')}</div>
                     </div>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground mt-3">
-                  Access at{' '}
-                  <code className="bg-muted px-1.5 py-0.5 rounded">https://local.yourdomain.com/</code>
-                  {' '}— one hub for tunnel links, localhost ports, and API docs
+                  {t('workflow.gateway.description')}
                 </p>
               </CardContent>
             </Card>
@@ -444,29 +399,19 @@ export default function HomePage() {
                   <div className="p-2 rounded-lg bg-primary/15">
                     <Zap className="w-4 h-4 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">Next.js 16.1 + Turbopack</CardTitle>
+                  <CardTitle className="text-lg">{t('workflow.turbopack.title')}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p className="font-medium">Persistent Cache</p>
-                    <p className="text-xs text-muted-foreground">
-                      Turbopack cache survives restarts — cold start becomes warm start
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-medium">Native Performance</p>
-                    <p className="text-xs text-muted-foreground">
-                      Frontends run locally on macOS, not in Docker containers
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-medium">React 19 Ready</p>
-                    <p className="text-xs text-muted-foreground">
-                      Server Components, Actions, and latest React features
-                    </p>
-                  </div>
+                  {(t.raw('workflow.turbopack.highlights') as {title: string; description: string}[]).map((highlight, idx) => (
+                    <div key={idx}>
+                      <p className="font-medium">{highlight.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {highlight.description}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -478,58 +423,134 @@ export default function HomePage() {
       <ScrollReveal delay={200}>
         <section className="space-y-6 md:space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Everything Wired Up</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('included.title')}</h2>
             <p className="text-muted-foreground text-lg">
-              Not just scaffolding — real, working features
+              {t('included.subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-lg">5 Pages</CardTitle>
-                <CardDescription>Production-ready routes</CardDescription>
+                <CardTitle className="text-lg">{t('included.pages.title')}</CardTitle>
+                <CardDescription>{t('included.pages.subtitle')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Home marketing page</li>
-                  <li>• Tech demos (17 patterns)</li>
-                  <li>• Profile management</li>
-                  <li>• Admin dashboard</li>
-                  <li>• Extensible structure</li>
+                  {(t.raw('included.pages.items') as string[]).map((item, idx) => (
+                    <li key={idx}>• {item}</li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
 
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-lg">17 Tech Demos</CardTitle>
-                <CardDescription>Reference implementations</CardDescription>
+                <CardTitle className="text-lg">{t('included.demos.title')}</CardTitle>
+                <CardDescription>{t('included.demos.subtitle')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Loading & error states</li>
-                  <li>• Caching strategies</li>
-                  <li>• Mutations & optimistic UI</li>
-                  <li>• Streaming & real-time</li>
-                  <li>• Infinite scroll & more</li>
+                  {(t.raw('included.demos.items') as string[]).map((item, idx) => (
+                    <li key={idx}>• {item}</li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
 
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-lg">Full Auth System</CardTitle>
-                <CardDescription>Complete authentication flows</CardDescription>
+                <CardTitle className="text-lg">{t('included.auth.title')}</CardTitle>
+                <CardDescription>{t('included.auth.subtitle')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Email + OTP verification</li>
-                  <li>• Telegram OAuth</li>
-                  <li>• Password reset flow</li>
-                  <li>• Account linking</li>
-                  <li>• Session management</li>
+                  {(t.raw('included.auth.items') as string[]).map((item, idx) => (
+                    <li key={idx}>• {item}</li>
+                  ))}
                 </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* Testing Section */}
+      <ScrollReveal delay={250}>
+        <section className="space-y-6 md:space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('testing.title')}</h2>
+            <p className="text-muted-foreground text-lg">
+              {t('testing.subtitle')}
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className={cn(cardInfo, 'border-primary/20 bg-gradient-to-br from-card to-primary/[0.02]')}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-primary/15">
+                    <FlaskConical className="w-4 h-4 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">{t('testing.title')}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-1.5 rounded bg-primary/10 mt-0.5">
+                        <Database className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{t('testing.items.realPostgres.title')}</p>
+                        <p className="text-xs text-muted-foreground">{t('testing.items.realPostgres.description')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-1.5 rounded bg-primary/10 mt-0.5">
+                        <Zap className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{t('testing.items.parallel.title')}</p>
+                        <p className="text-xs text-muted-foreground">{t('testing.items.parallel.description')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-1.5 rounded bg-primary/10 mt-0.5">
+                        <Terminal className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{t('testing.items.incremental.title')}</p>
+                        <p className="text-xs text-muted-foreground">{t('testing.items.incremental.description')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-1.5 rounded bg-primary/10 mt-0.5">
+                        <Shield className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{t('testing.items.isolated.title')}</p>
+                        <p className="text-xs text-muted-foreground">{t('testing.items.isolated.description')}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-muted p-4 rounded-lg font-mono text-xs space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">$</span>
+                    <code className="text-foreground">{t('testing.commands.full')}</code>
+                    <span className="text-muted-foreground ml-2"># {t('testing.commands.fullDesc')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">$</span>
+                    <code className="text-foreground">{t('testing.commands.quick')}</code>
+                    <span className="text-muted-foreground ml-2"># {t('testing.commands.quickDesc')}</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -541,10 +562,10 @@ export default function HomePage() {
         <section className="space-y-6 md:space-y-8">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Built for Claude Code
+              {t('claudeCode.title')}
             </h2>
             <p className="text-muted-foreground text-lg">
-              4-layer orchestration architecture — context-efficient, parallel-ready
+              {t('claudeCode.subtitle')}
             </p>
           </div>
 
@@ -552,21 +573,21 @@ export default function HomePage() {
             {/* Architecture Overview */}
             <Card className={cardInfo}>
               <CardHeader>
-                <CardTitle className="text-xl">Orchestration-First Architecture</CardTitle>
+                <CardTitle className="text-xl">{t('claudeCode.orchestration.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg font-mono text-xs overflow-x-auto">
                   <div className="text-muted-foreground">
-                    <span className="text-primary">Layer 0:</span> CLAUDE.md → orchestration rules, quick reference
+                    <span className="text-primary">Layer 0:</span> {t('claudeCode.orchestration.layer0')}
                   </div>
                   <div className="text-muted-foreground ml-4">
-                    ├── <span className="text-primary">Layer 1:</span> commands/ → /develop, /create-task, /execute-task, /review
+                    ├── <span className="text-primary">Layer 1:</span> {t('claudeCode.orchestration.layer1')}
                   </div>
                   <div className="text-muted-foreground ml-4">
-                    ├── <span className="text-primary">Layer 2:</span> skills/ → auto-invoked procedures (task creation, execution)
+                    ├── <span className="text-primary">Layer 2:</span> {t('claudeCode.orchestration.layer2')}
                   </div>
                   <div className="text-muted-foreground ml-4">
-                    └── <span className="text-primary">Layer 3:</span> agents/ → developer-agent, testing-polish-agent
+                    └── <span className="text-primary">Layer 3:</span> {t('claudeCode.orchestration.layer3')}
                   </div>
                 </div>
               </CardContent>
@@ -575,33 +596,33 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
               <Card className={cardInfo}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Slash Commands</CardTitle>
+                  <CardTitle className="text-base">{t('claudeCode.slashCommands.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                     <div>
-                      <code className="text-primary">/create-task</code>
-                      <p className="text-muted-foreground">PRD → phases → parallel enrichment</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.createTask.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.createTask.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">/execute-task</code>
-                      <p className="text-muted-foreground">Phase-by-phase with auto-commits</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.executeTask.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.executeTask.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">/develop</code>
-                      <p className="text-muted-foreground">Quick delegation to developer-agent</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.develop.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.develop.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">/design</code>
-                      <p className="text-muted-foreground">Research approaches, compare options</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.design.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.design.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">/review</code>
-                      <p className="text-muted-foreground">Deep code review with questions</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.review.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.review.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">/add-testing</code>
-                      <p className="text-muted-foreground">Add test phases to existing task</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.addTesting.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.addTesting.desc')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -609,12 +630,11 @@ export default function HomePage() {
 
               <Card className={cardInfo}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Structured Task System</CardTitle>
+                  <CardTitle className="text-base">{t('claudeCode.structuredTasks.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-xs text-muted-foreground">
-                    Auto-detects difficulty. Simple tasks: inline enrichment. Hard tasks: hub-and-spoke
-                    parallel agents with shared ARCHITECTURE.md to prevent conflicts.
+                    {t('claudeCode.structuredTasks.description')}
                   </p>
                   <div className="bg-muted p-3 rounded text-xs font-mono">
                     <div className="text-muted-foreground">docs/tasks/user-settings/</div>
@@ -629,40 +649,29 @@ export default function HomePage() {
 
               <Card className={cardInfo}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Developer Agent</CardTitle>
+                  <CardTitle className="text-base">{t('claudeCode.developerAgent.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-xs text-muted-foreground">
-                  <p>Reads pattern docs before every task. Returns summaries, not code dumps.</p>
+                  <p>{t('claudeCode.developerAgent.intro')}</p>
                   <ul className="space-y-1">
-                    <li>
-                      • <span className="text-foreground">Mandatory reads:</span> critical-rules.md + domain-specific doc
-                    </li>
-                    <li>
-                      • <span className="text-foreground">After changes:</span> make test, make lint, make schema
-                    </li>
-                    <li>
-                      • <span className="text-foreground">Commits:</span> follows conventional format per phase
-                    </li>
+                    {(t.raw('claudeCode.developerAgent.items') as string[]).map((item, idx) => (
+                      <li key={idx}>
+                        • <span className="text-foreground">{item}</span>
+                      </li>
+                    ))}
                   </ul>
                 </CardContent>
               </Card>
 
               <Card className={cardInfo}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">10 Pattern Docs in .claude/shared/</CardTitle>
+                  <CardTitle className="text-base">{t('claudeCode.patternDocs.title')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-1.5">
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">backend-patterns.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">react-frontend.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">vue-frontend.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">testing-patterns.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">monorepo-structure.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">error-handling.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">critical-rules.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">playwright-testing.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">react-animations.md</code>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">adding-packages.md</code>
+                    {(t.raw('claudeCode.patternDocs.docs') as string[]).map((doc, idx) => (
+                      <code key={idx} className="bg-muted px-1.5 py-0.5 rounded text-xs">{doc}</code>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -671,44 +680,44 @@ export default function HomePage() {
             {/* Workflow Example */}
             <Card className={cardInfo}>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Example: Adding a Feature</CardTitle>
+                <CardTitle className="text-base">{t('claudeCode.example.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-4 gap-3 text-xs">
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">/create-task</code>
+                    <code className="text-primary">{t('claudeCode.example.createTask.cmd')}</code>
                     <p className="text-muted-foreground mt-1">
-                      "add user notifications"
+                      {t('claudeCode.example.createTask.desc')}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      → Creates PRD, detects HARD, launches parallel enrichment agents
-                    </p>
-                  </div>
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">/execute-task</code>
-                    <p className="text-muted-foreground mt-1">
-                      Delegates each phase to developer-agent
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      → Reads CONTEXT.md, resumes if interrupted
+                      {t('claudeCode.example.createTask.result')}
                     </p>
                   </div>
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">developer-agent</code>
+                    <code className="text-primary">{t('claudeCode.example.executeTask.cmd')}</code>
                     <p className="text-muted-foreground mt-1">
-                      Reads backend-patterns.md, implements, runs tests
+                      {t('claudeCode.example.executeTask.desc')}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      → Returns summary with file:line refs
+                      {t('claudeCode.example.executeTask.result')}
                     </p>
                   </div>
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">/review</code>
+                    <code className="text-primary">{t('claudeCode.example.developerAgent.cmd')}</code>
                     <p className="text-muted-foreground mt-1">
-                      Deep architectural review
+                      {t('claudeCode.example.developerAgent.desc')}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      → Questions design decisions, not just style
+                      {t('claudeCode.example.developerAgent.result')}
+                    </p>
+                  </div>
+                  <div className="bg-muted p-3 rounded">
+                    <code className="text-primary">{t('claudeCode.example.review.cmd')}</code>
+                    <p className="text-muted-foreground mt-1">
+                      {t('claudeCode.example.review.desc')}
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      {t('claudeCode.example.review.result')}
                     </p>
                   </div>
                 </div>
@@ -722,9 +731,9 @@ export default function HomePage() {
       <ScrollReveal delay={400}>
         <section className="space-y-6 md:space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Get Started</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('quickStart.title')}</h2>
             <p className="text-muted-foreground text-lg">
-              Prerequisites: Docker, pnpm, make
+              {t('quickStart.subtitle')}
             </p>
           </div>
 
@@ -735,60 +744,33 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
               <Card className={cardInfo}>
                 <CardHeader>
-                  <CardTitle className="text-lg">Run the Template</CardTitle>
-                  <CardDescription>Start development in 3 steps</CardDescription>
+                  <CardTitle className="text-lg">{t('quickStart.run.title')}</CardTitle>
+                  <CardDescription>{t('quickStart.run.subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs flex items-center justify-center font-medium">
-                        0
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Setup Cloudflare Tunnel</p>
-                        <p className="text-xs text-muted-foreground">
-                          Required for Telegram Mini App testing — exposes localhost via HTTPS
-                        </p>
+                    {(t.raw('quickStart.run.steps') as {num: number; title: string; code?: string; desc?: string}[]).map((step, idx) => (
+                      <div key={idx} className="flex gap-3">
+                        <span className={cn(
+                          "flex-shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-medium",
+                          step.num === 0 ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+                        )}>
+                          {step.num}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{step.title}</p>
+                          {step.code ? (
+                            <code className="text-xs text-muted-foreground">{step.code}</code>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">{step.desc}</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        1
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Clone & install</p>
-                        <code className="text-xs text-muted-foreground">pnpm install</code>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        2
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Configure environment</p>
-                        <code className="text-xs text-muted-foreground">
-                          cp .env.example .env
-                        </code>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        3
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Start everything</p>
-                        <code className="text-xs text-muted-foreground">
-                          make up APP=template-react
-                        </code>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   <div className="pt-2 border-t">
                     <p className="text-xs text-muted-foreground">
-                      Open{' '}
-                      <code className="bg-muted px-1.5 py-0.5 rounded">
-                        http://localhost:3001/template-react
-                      </code>
+                      {t('quickStart.run.openAt')}
                     </p>
                   </div>
                 </CardContent>
@@ -796,63 +778,28 @@ export default function HomePage() {
 
               <Card className={cardInfo}>
                 <CardHeader>
-                  <CardTitle className="text-lg">Create Your Own App</CardTitle>
-                  <CardDescription>Use template as foundation</CardDescription>
+                  <CardTitle className="text-lg">{t('quickStart.create.title')}</CardTitle>
+                  <CardDescription>{t('quickStart.create.subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        1
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Copy template</p>
-                        <code className="text-xs text-muted-foreground">
-                          cp -r apps/template-react apps/your-app
-                        </code>
+                    {(t.raw('quickStart.create.steps') as {num: number; title: string; code: string}[]).map((step, idx) => (
+                      <div key={idx} className="flex gap-3">
+                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
+                          {step.num}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{step.title}</p>
+                          <code className="text-xs text-muted-foreground">
+                            {step.code}
+                          </code>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        2
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Update configs</p>
-                        <code className="text-xs text-muted-foreground">
-                          package.json, docker-compose, .env
-                        </code>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        3
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Create database</p>
-                        <code className="text-xs text-muted-foreground">
-                          make upgrade APP=your-app
-                        </code>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                        4
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Start building</p>
-                        <code className="text-xs text-muted-foreground">
-                          Remove demo code, add your features
-                        </code>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   <div className="pt-2 border-t">
                     <p className="text-xs text-muted-foreground">
-                      See{' '}
-                      <code className="bg-muted px-1.5 py-0.5 rounded">
-                        .claude/shared/monorepo-structure.md
-                      </code>{' '}
-                      for details
+                      {t('quickStart.create.seeDetails')}
                     </p>
                   </div>
                 </CardContent>
@@ -869,19 +816,19 @@ export default function HomePage() {
             <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <div className="relative space-y-4">
-              <h3 className="text-2xl font-bold">Ready to Explore?</h3>
+              <h3 className="text-2xl font-bold">{t('cta.title')}</h3>
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                 <Button asChild size="lg" className={btnPrimary}>
                   <Link href="/demo">
-                    <span className="hidden sm:inline">Try live demos: caching, WebSocket, AI streaming</span>
-                    <span className="sm:hidden">Try Live Demos</span>
+                    <span className="hidden sm:inline">{t('cta.tryDemos')}: {t('cta.demoSubtitle')}</span>
+                    <span className="sm:hidden">{t('cta.tryDemos')}</span>
                     <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className={btnSecondary}>
                   <Link href="/profile">
-                    <span className="hidden sm:inline">Test auth flows & friend invites</span>
-                    <span className="sm:hidden">Test Auth Flows</span>
+                    <span className="hidden sm:inline">{t('cta.testAuth')}: {t('cta.authSubtitle')}</span>
+                    <span className="sm:hidden">{t('cta.testAuth')}</span>
                   </Link>
                 </Button>
               </div>
@@ -892,14 +839,14 @@ export default function HomePage() {
 
       {/* Footer Credits */}
       <footer className="text-center py-6 text-sm text-muted-foreground">
-        React Template •{' '}
+        {t('footer.text')} •{' '}
         <a
           href="https://vue.antonchaynik.ru"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          Vue version also available
+          {t('footer.vueLink')}
         </a>
       </footer>
     </div>

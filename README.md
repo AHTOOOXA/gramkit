@@ -164,6 +164,25 @@ docs/tasks/user-settings/
 └── 02-api.md
 ```
 
+## Testing
+
+**80/15/5 rule:** Contract tests (API, bot) → Business logic → Regression.
+
+| Package | Purpose |
+|---------|---------|
+| testcontainers | Real PostgreSQL, not SQLite |
+| pytest-xdist | Parallel execution |
+| pytest-testmon | Incremental (only changed code) |
+| inline-snapshot | Snapshot assertions |
+| respx | HTTP mocking (LLM, payments) |
+
+```bash
+make test APP=myapp       # Full parallel suite
+make test-quick APP=myapp # Incremental — sub-second feedback
+```
+
+Each test runs in isolated transaction with automatic rollback.
+
 ## Commands Reference
 
 All make commands require `APP=<name>`:

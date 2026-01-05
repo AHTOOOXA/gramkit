@@ -539,7 +539,364 @@
     "welcomeTitle": "Welcome, {name}!",
     "user": "User",
     "subtitle": "This is your home screen",
-    "placeholder": "This is a placeholder home screen. Add your app-specific content here."
+    "placeholder": "This is a placeholder home screen. Add your app-specific content here.",
+    "badge": "Production-Ready Template",
+    "title": "React Template",
+    "heroSubtitle": "Production-ready web app template with mobile-first design and Telegram Mini App support",
+    "getStarted": "Get Started",
+    "explorePatterns": "Explore Patterns",
+    "tryVueVersion": "Try Vue Version",
+    "features": {
+      "title": "What You Get",
+      "subtitle": "Battle-tested features, not boilerplate",
+      "items": {
+        "authentication": {
+          "name": "Authentication",
+          "description": "Email + OTP verification, Telegram OAuth, password reset flows"
+        },
+        "rbac": {
+          "name": "Role-Based Access",
+          "description": "Admin/Owner/User roles, protected routes, permission checks"
+        },
+        "realtime": {
+          "name": "Real-Time Data",
+          "description": "WebSocket, polling, AI streaming, optimistic updates"
+        },
+        "mobile": {
+          "name": "Mobile-First Design",
+          "description": "Responsive layouts, bottom nav, Telegram Mini App detection"
+        },
+        "typeSafe": {
+          "name": "Type-Safe API",
+          "description": "Auto-generated TypeScript hooks from OpenAPI schema"
+        },
+        "i18n": {
+          "name": "i18n + Theming",
+          "description": "Multi-language support, dark/light mode out of the box"
+        },
+        "tanstack": {
+          "name": "TanStack Query Patterns",
+          "description": "17 interactive demos: caching, mutations, infinite scroll, suspense"
+        },
+        "dx": {
+          "name": "Developer Experience",
+          "description": "Hot reload, Make commands, organized monorepo structure"
+        }
+      }
+    },
+    "architecture": {
+      "title": "Modern Stack, Clean Architecture",
+      "subtitle": "End-to-end type safety from database to UI",
+      "monorepoTitle": "Monorepo Structure",
+      "highlightsTitle": "Technical Highlights",
+      "highlightsSubtitle": "Not just a stack — solutions to real problems",
+      "highlights": {
+        "endToEnd": {
+          "title": "End-to-End Type Safety",
+          "description": "OpenAPI schema → Kubb generates TypeScript hooks. Change backend, frontend types update automatically."
+        },
+        "make": {
+          "title": "Unified Make Commands",
+          "description": "One interface for all apps: make test APP=x, make migration. No Docker/pytest directly."
+        },
+        "shared": {
+          "title": "Shared Core Logic",
+          "description": "Auth, users, payments, email in core/ — import into any app. No copy-paste between projects."
+        },
+        "hotReload": {
+          "title": "Hot Reload Everywhere",
+          "description": "Edit Python or TypeScript, see changes instantly. No container restarts, no manual rebuilds."
+        },
+        "repo": {
+          "title": "Repository Pattern + Flush",
+          "description": "Clean data access layer. Repositories use flush(), services control transactions. Testable, predictable."
+        },
+        "tanstackPatterns": {
+          "title": "TanStack Query Patterns",
+          "description": "17 demos showing caching, optimistic updates, infinite scroll, real-time — copy patterns directly."
+        }
+      }
+    },
+    "workflow": {
+      "title": "Two Ways to Develop",
+      "subtitle": "Localhost for speed, tunnel for Telegram testing",
+      "localhost": {
+        "title": "Direct Localhost",
+        "subtitle": "Native Turbopack — fastest iteration, no Docker overhead",
+        "recommended": "Recommended",
+        "url": "http://localhost:3001/template-react",
+        "benefits": [
+          "~10x faster warm starts with Turbopack cache",
+          "Direct API calls (CORS enabled in dev)",
+          "Frontend runs natively on macOS"
+        ]
+      },
+      "tunnel": {
+        "title": "Tunnel Mode",
+        "subtitle": "Via nginx + Cloudflare tunnel — for Telegram Mini App testing",
+        "url": "https://local.yourdomain.com/template-react",
+        "benefits": [
+          "HTTPS with valid certificate",
+          "Telegram WebApp authentication",
+          "Production-like environment"
+        ]
+      },
+      "gateway": {
+        "title": "Gateway Hub",
+        "subtitle": "nginx landing page with quick access to all apps",
+        "description": "Access at https://local.yourdomain.com/ — one hub for tunnel links, localhost ports, and API docs",
+        "apps": {
+          "react": "template-react",
+          "vue": "template-vue",
+          "yourApp": "your-app"
+        },
+        "appDetails": "tunnel • :3001 • api",
+        "vueDetails": "tunnel • :5174 • api",
+        "yourAppDetails": "tunnel • :1234 • api"
+      },
+      "turbopack": {
+        "title": "Next.js 16.1 + Turbopack",
+        "highlights": [
+          {
+            "title": "Persistent Cache",
+            "description": "Turbopack cache survives restarts — cold start becomes warm start"
+          },
+          {
+            "title": "Native Performance",
+            "description": "Frontends run locally on macOS, not in Docker containers"
+          },
+          {
+            "title": "React 19 Ready",
+            "description": "Server Components, Actions, and latest React features"
+          }
+        ]
+      }
+    },
+    "included": {
+      "title": "Everything Wired Up",
+      "subtitle": "Not just scaffolding — real, working features",
+      "pages": {
+        "title": "5 Pages",
+        "subtitle": "Production-ready routes",
+        "items": [
+          "Home marketing page",
+          "Tech demos (17 patterns)",
+          "Profile management",
+          "Admin dashboard",
+          "Extensible structure"
+        ]
+      },
+      "demos": {
+        "title": "17 Tech Demos",
+        "subtitle": "Reference implementations",
+        "items": [
+          "Loading & error states",
+          "Caching strategies",
+          "Mutations & optimistic UI",
+          "Streaming & real-time",
+          "Infinite scroll & more"
+        ]
+      },
+      "auth": {
+        "title": "Full Auth System",
+        "subtitle": "Complete authentication flows",
+        "items": [
+          "Email + OTP verification",
+          "Telegram OAuth",
+          "Password reset flow",
+          "Account linking",
+          "Session management"
+        ]
+      }
+    },
+    "claudeCode": {
+      "title": "Built for Claude Code",
+      "subtitle": "4-layer orchestration architecture — context-efficient, parallel-ready",
+      "orchestration": {
+        "title": "Orchestration-First Architecture",
+        "layer0": "CLAUDE.md → orchestration rules, quick reference",
+        "layer1": "commands/ → /develop, /create-task, /execute-task, /review",
+        "layer2": "skills/ → auto-invoked procedures (task creation, execution)",
+        "layer3": "agents/ → developer-agent, testing-polish-agent"
+      },
+      "slashCommands": {
+        "title": "Slash Commands",
+        "items": {
+          "createTask": {
+            "cmd": "/create-task",
+            "desc": "PRD → phases → parallel enrichment"
+          },
+          "executeTask": {
+            "cmd": "/execute-task",
+            "desc": "Phase-by-phase with auto-commits"
+          },
+          "develop": {
+            "cmd": "/develop",
+            "desc": "Quick delegation to developer-agent"
+          },
+          "design": {
+            "cmd": "/design",
+            "desc": "Research approaches, compare options"
+          },
+          "review": {
+            "cmd": "/review",
+            "desc": "Deep code review with questions"
+          },
+          "addTesting": {
+            "cmd": "/add-testing",
+            "desc": "Add test phases to existing task"
+          }
+        }
+      },
+      "structuredTasks": {
+        "title": "Structured Task System",
+        "description": "Auto-detects difficulty. Simple tasks: inline enrichment. Hard tasks: hub-and-spoke parallel agents with shared ARCHITECTURE.md to prevent conflicts."
+      },
+      "developerAgent": {
+        "title": "Developer Agent",
+        "intro": "Reads pattern docs before every task. Returns summaries, not code dumps.",
+        "items": [
+          "Mandatory reads: critical-rules.md + domain-specific doc",
+          "After changes: make test, make lint, make schema",
+          "Commits: follows conventional format per phase"
+        ]
+      },
+      "patternDocs": {
+        "title": "10 Pattern Docs in .claude/shared/",
+        "docs": [
+          "backend-patterns.md",
+          "react-frontend.md",
+          "vue-frontend.md",
+          "testing-patterns.md",
+          "monorepo-structure.md",
+          "error-handling.md",
+          "critical-rules.md",
+          "playwright-testing.md",
+          "react-animations.md",
+          "adding-packages.md"
+        ]
+      },
+      "example": {
+        "title": "Example: Adding a Feature",
+        "createTask": {
+          "cmd": "/create-task",
+          "desc": "\"add user notifications\"",
+          "result": "→ Creates PRD, detects HARD, launches parallel enrichment agents"
+        },
+        "executeTask": {
+          "cmd": "/execute-task",
+          "desc": "Delegates each phase to developer-agent",
+          "result": "→ Reads CONTEXT.md, resumes if interrupted"
+        },
+        "developerAgent": {
+          "cmd": "developer-agent",
+          "desc": "Reads backend-patterns.md, implements, runs tests",
+          "result": "→ Returns summary with file:line refs"
+        },
+        "review": {
+          "cmd": "/review",
+          "desc": "Deep architectural review",
+          "result": "→ Questions design decisions, not just style"
+        }
+      }
+    },
+    "quickStart": {
+      "title": "Get Started",
+      "subtitle": "Prerequisites: Docker, pnpm, make",
+      "run": {
+        "title": "Run the Template",
+        "subtitle": "Start development in 3 steps",
+        "steps": [
+          {
+            "num": 0,
+            "title": "Setup Cloudflare Tunnel",
+            "desc": "Required for Telegram Mini App testing — exposes localhost via HTTPS"
+          },
+          {
+            "num": 1,
+            "title": "Clone & install",
+            "code": "pnpm install"
+          },
+          {
+            "num": 2,
+            "title": "Configure environment",
+            "code": "cp .env.example .env"
+          },
+          {
+            "num": 3,
+            "title": "Start everything",
+            "code": "make up APP=template-react"
+          }
+        ],
+        "openAt": "Open http://localhost:3001/template-react"
+      },
+      "create": {
+        "title": "Create Your Own App",
+        "subtitle": "Use template as foundation",
+        "steps": [
+          {
+            "num": 1,
+            "title": "Copy template",
+            "code": "cp -r apps/template-react apps/your-app"
+          },
+          {
+            "num": 2,
+            "title": "Update configs",
+            "code": "package.json, docker-compose, .env"
+          },
+          {
+            "num": 3,
+            "title": "Create database",
+            "code": "make upgrade APP=your-app"
+          },
+          {
+            "num": 4,
+            "title": "Start building",
+            "code": "Remove demo code, add your features"
+          }
+        ],
+        "seeDetails": "See .claude/shared/monorepo-structure.md for details"
+      }
+    },
+    "testing": {
+      "title": "Testing That Works",
+      "subtitle": "80/15/5 rule: Contract tests, business logic, regression",
+      "items": {
+        "realPostgres": {
+          "title": "Real PostgreSQL",
+          "description": "testcontainers, not SQLite mocks"
+        },
+        "parallel": {
+          "title": "Parallel Execution",
+          "description": "pytest-xdist for full suite"
+        },
+        "incremental": {
+          "title": "Incremental Testing",
+          "description": "pytest-testmon for sub-second feedback"
+        },
+        "isolated": {
+          "title": "Isolated Transactions",
+          "description": "Automatic rollback per test"
+        }
+      },
+      "commands": {
+        "full": "make test APP=myapp",
+        "fullDesc": "Full parallel suite",
+        "quick": "make test-quick APP=myapp",
+        "quickDesc": "Sub-second feedback"
+      }
+    },
+    "cta": {
+      "title": "Ready to Explore?",
+      "tryDemos": "Try Live Demos",
+      "demoSubtitle": "caching, WebSocket, AI streaming",
+      "testAuth": "Test Auth Flows",
+      "authSubtitle": "friend invites & auth"
+    },
+    "footer": {
+      "text": "React Template",
+      "vueLink": "Vue version also available"
+    }
   },
   "profilePage": {
     "noUsername": "No username",

@@ -63,7 +63,7 @@ async def user_broadcast_job(ctx: WorkerContext, broadcast_data: dict, requester
         async with ctx.with_transaction() as services:
             all_users = await services.users.get_all()
             # Extract just the data we need (avoid holding user objects)
-            user_data = [(u.user_id, u.telegram_id) for u in all_users if u.telegram_id]
+            user_data = [(u.id, u.telegram_id) for u in all_users if u.telegram_id]
 
         total_users = len(user_data)
         logger.info(f"Broadcasting to {total_users} users")

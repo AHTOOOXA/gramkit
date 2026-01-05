@@ -461,6 +461,34 @@
         "seeDetails": "See .claude/shared/monorepo-structure.md for details"
       }
     },
+    "testing": {
+      "title": "Testing That Works",
+      "subtitle": "80/15/5 rule: Contract tests, business logic, regression",
+      "items": {
+        "realPostgres": {
+          "title": "Real PostgreSQL",
+          "description": "testcontainers, not SQLite mocks"
+        },
+        "parallel": {
+          "title": "Parallel Execution",
+          "description": "pytest-xdist for full suite"
+        },
+        "incremental": {
+          "title": "Incremental Testing",
+          "description": "pytest-testmon for sub-second feedback"
+        },
+        "isolated": {
+          "title": "Isolated Transactions",
+          "description": "Automatic rollback per test"
+        }
+      },
+      "commands": {
+        "full": "make test APP=myapp",
+        "fullDesc": "Full parallel suite",
+        "quick": "make test-quick APP=myapp",
+        "quickDesc": "Sub-second feedback"
+      }
+    },
     "cta": {
       "title": "Ready to Explore?",
       "tryDemos": "Try Live Demos",
@@ -946,7 +974,7 @@
     "usernameStep": {
       "description": "Enter your Telegram username to receive a verification code.",
       "label": "Telegram Username",
-      "placeholder": "@username",
+      "placeholder": "{'@'}username",
       "hint": "We'll send a 6-digit code to your Telegram DM.",
       "submit": "Send Code"
     },
@@ -954,7 +982,7 @@
       "description": "Enter the verification code sent to your Telegram.",
       "label": "Verification Code",
       "placeholder": "000000",
-      "hint": "Check your Telegram DM from @YourBotName for the code.",
+      "hint": "Check your Telegram DM from {'@'}YourBotName for the code.",
       "submit": "Verify",
       "back": "Back",
       "resend": "Resend code"
@@ -1141,9 +1169,9 @@
       "continue": "Continue",
       "continueWithEmail": "Continue with Email",
       "email": "Email",
-      "emailPlaceholder": "you@example.com",
+      "emailPlaceholder": "you{'@'}example.com",
       "emailOrUsername": "Email or Username",
-      "emailOrUsernamePlaceholder": "email@example.com or username",
+      "emailOrUsernamePlaceholder": "email{'@'}example.com or username",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
       "newPasswordPlaceholder": "Create a password",

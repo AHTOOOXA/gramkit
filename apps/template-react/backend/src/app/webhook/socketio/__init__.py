@@ -1,4 +1,4 @@
-"""Socket.IO server for template-react app."""
+"""Socket.IO server for template app."""
 
 from .server import sio, socket_app
 
