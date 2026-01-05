@@ -12,10 +12,6 @@ class UserNotFoundException(BackendException):
     """Raised when a user is not found"""
 
 
-class FriendAlreadyExistsException(BackendException):
-    """Raised when trying to add an existing friend"""
-
-
 class NoAvailableReadingsError(BackendException):
     """Raised when user has no available readings"""
 
@@ -30,18 +26,6 @@ class NoChatMessagesError(BackendException):
 
 class NoTrainerAttemptsError(BackendException):
     """Raised when user has no available trainer attempts"""
-
-    pass
-
-
-class DailyReadingError(BackendException):
-    """Base class for daily reading errors"""
-
-    pass
-
-
-class QuestionReadingError(BackendException):
-    """Raised when question reading fails"""
 
     pass
 

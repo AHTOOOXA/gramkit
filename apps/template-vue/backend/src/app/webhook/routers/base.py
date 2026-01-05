@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
-from app.exceptions import FriendAlreadyExistsException, UserNotFoundException
+from app.exceptions import UserNotFoundException
 from app.services.requests import RequestsService
 from app.webhook.auth import get_user
 from app.webhook.dependencies.service import get_services
@@ -42,8 +42,6 @@ async def add_friend(
         return {"status": "success"}
     except UserNotFoundException:
         raise HTTPException(status_code=404, detail="Friend not found")
-    except FriendAlreadyExistsException:
-        raise HTTPException(status_code=409, detail="Friend already exists")
 
 
 @router.get("/create_invite")
