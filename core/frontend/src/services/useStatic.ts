@@ -12,10 +12,11 @@ export function useStatic() {
   };
 
   const preloadImage = (path: string): Promise<void> =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error(`Failed to load image: ${path}`));
+      const timeout = setTimeout(() => resolve(), 10000);
+      img.onload = () => { clearTimeout(timeout); resolve(); };
+      img.onerror = () => { clearTimeout(timeout); resolve(); };
       img.src = getStaticUrl(path);
     });
 

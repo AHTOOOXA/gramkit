@@ -18,6 +18,8 @@ export interface AppShellProps {
   footer?: React.ReactNode;
   /** Content width variant (default: 'default') */
   variant?: keyof typeof variantClasses;
+  /** Hide navigation and remove bottom nav padding (for full-screen routes) */
+  hideNav?: boolean;
 }
 
 /**
@@ -33,24 +35,29 @@ export interface AppShellProps {
  * - Auth pages: <AppShell footer={<FooterMinimal />}> or <AppShell>
  * - App pages: <AppShell>
  * - Admin pages: <AppShell variant="wide">
+ * - Full-screen: <AppShell hideNav>
  */
 export function AppShell({
   children,
   footer,
-  variant = 'default'
+  variant = 'default',
+  hideNav = false
 }: AppShellProps) {
   const { isTelegramMobile } = usePlatform();
   const { mobileLayout } = layoutConfig;
 
+  const showBottomNav = !hideNav && mobileLayout === 'bottom-tabs';
+
   // Telegram Mini App on mobile device with bottom tabs: reduce top padding
-  const useMobilePadding = isTelegramMobile && mobileLayout === 'bottom-tabs';
+  const useMobilePadding = isTelegramMobile && showBottomNav;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AppNav />
+      {!hideNav && <AppNav />}
       <main className={cn(
-        'flex-1 w-full mx-auto px-[var(--page-padding-x)] py-[var(--page-padding-y)] pb-[var(--bottom-nav-height)] md:pb-[var(--page-padding-y)]',
+        'flex-1 w-full mx-auto px-[var(--page-padding-x)] py-[var(--page-padding-y)] md:pb-[var(--page-padding-y)]',
         variantClasses[variant],
+        showBottomNav ? 'pb-[var(--bottom-nav-height)]' : 'pb-[var(--page-padding-y)]',
         useMobilePadding && 'pt-2'
       )}>
         {children}

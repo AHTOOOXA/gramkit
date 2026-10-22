@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Loader2, Send } from 'lucide-vue-next';
+import { Loader2, Send } from '@lucide/vue';
 import { useEmailLogin, useEmailSignup } from '@app/composables/useEmailAuth';
 import { useTelegramDeeplinkLogin } from '@app/composables/useTelegramDeeplinkLogin';
 import { usePasswordReset } from '@app/composables/usePasswordReset';

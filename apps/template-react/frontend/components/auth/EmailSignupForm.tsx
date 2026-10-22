@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export function EmailSignupForm({
 
   const errorMessage = getErrorMessage();
 
-  const handleStartSignup = async (e: FormEvent) => {
+  const handleStartSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await start(email);
@@ -63,7 +63,7 @@ export function EmailSignupForm({
     }
   };
 
-  const handleVerify = async (e: FormEvent) => {
+  const handleVerify = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await verify(code, password, username);

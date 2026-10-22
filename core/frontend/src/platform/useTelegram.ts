@@ -8,6 +8,7 @@ interface useTelegramComposableState {
   hideBackButton: () => void;
   setButtonLoader: (state: boolean) => void;
   showAlert: (text: string) => void;
+  showConfirm: (message: string) => Promise<boolean>;
   openInvoice: (url: string, callback: (status: 'pending' | 'failed' | 'cancelled' | 'paid') => void) => void;
   closeApp: () => void;
   expand: () => void;
@@ -18,11 +19,15 @@ interface useTelegramComposableState {
   platform: 'android' | 'android_x' | 'ios' | 'macos' | 'tdesktop' | 'web' | 'weba' | 'webk' | 'unigram' | 'unknown';
   headerColor: string;
   setHeaderColor: (color: 'bg_color' | 'secondary_bg_color' | `#${string}`) => void;
+  setBackgroundColor: (color: 'bg_color' | 'secondary_bg_color' | `#${string}`) => void;
+  setBottomBarColor: (color: 'bg_color' | 'secondary_bg_color' | 'bottom_bar_bg_color' | `#${string}`) => void;
   webAppInitData: string;
   openTelegramLink: (url: string) => void;
   shareMessage: (msgId: string, callback?: (success: boolean) => void) => void;
   openLink: (url: string) => void;
   disableVerticalSwipes: () => void;
+  enableClosingConfirmation: () => void;
+  disableClosingConfirmation: () => void;
 }
 
 /**
@@ -171,6 +176,19 @@ export default function useTelegram(): useTelegramComposableState {
   }
 
   /**
+   * Shows native Telegram confirm dialog. Resolves true if the user confirms.
+   * Use this over window.confirm — native JS dialogs are unreliable in the
+   * Telegram WebView.
+   *
+   * @param message The text to show in the confirm dialog
+   */
+  function showConfirm(message: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      WebApp.showConfirm(message, (confirmed) => resolve(confirmed));
+    });
+  }
+
+  /**
    * Opens Telegram invoice
    *
    * @param url The invoice URL
@@ -246,6 +264,25 @@ export default function useTelegram(): useTelegramComposableState {
     WebApp.setHeaderColor(color);
   }
 
+  /**
+   * Sets the WebView background colour (Bot API 6.1+) — what Telegram paints
+   * before the first frame and in iOS overscroll. No-op on older clients (the
+   * SDK would only log a warning there).
+   */
+  function setBackgroundColor(color: 'bg_color' | 'secondary_bg_color' | `#${string}`): void {
+    if (!WebApp.isVersionAtLeast('6.1')) return;
+    WebApp.setBackgroundColor(color);
+  }
+
+  /**
+   * Sets the colour of the bottom bar behind the native Main/Secondary buttons
+   * (Bot API 7.10+). No-op on older clients.
+   */
+  function setBottomBarColor(color: 'bg_color' | 'secondary_bg_color' | 'bottom_bar_bg_color' | `#${string}`): void {
+    if (!WebApp.isVersionAtLeast('7.10')) return;
+    WebApp.setBottomBarColor(color);
+  }
+
   function openTelegramLink(url: string): void {
     WebApp.openTelegramLink(url);
   }
@@ -260,6 +297,18 @@ export default function useTelegram(): useTelegramComposableState {
 
   function disableVerticalSwipes(): void {
     WebApp.disableVerticalSwipes();
+  }
+
+  /**
+   * Ask Telegram to confirm before the user closes the Mini App (e.g. a
+   * swipe-to-close). Use while content is streaming or unsaved.
+   */
+  function enableClosingConfirmation(): void {
+    WebApp.enableClosingConfirmation();
+  }
+
+  function disableClosingConfirmation(): void {
+    WebApp.disableClosingConfirmation();
   }
 
   /**
@@ -288,6 +337,7 @@ export default function useTelegram(): useTelegramComposableState {
     hideMainButton,
     setButtonLoader,
     showAlert,
+    showConfirm,
     openInvoice,
     closeApp,
     expand,
@@ -300,10 +350,14 @@ export default function useTelegram(): useTelegramComposableState {
     platform,
     headerColor,
     setHeaderColor,
+    setBackgroundColor,
+    setBottomBarColor,
     webAppInitData,
     openTelegramLink,
     openLink,
     shareMessage,
     disableVerticalSwipes,
+    enableClosingConfirmation,
+    disableClosingConfirmation,
   };
 }

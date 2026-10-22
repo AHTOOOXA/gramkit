@@ -9,18 +9,17 @@ export interface MockUser {
 }
 
 /**
- * Mock users for platform testing in debug mode
+ * Mock users for platform testing in debug mode (fake data — replace freely)
  */
 export const MOCK_USERS: MockUser[] = [
   {
-    user_id: 7934526008,
-    username: 'ReallyCoolSupport',
-    first_name: 'Катя',
-    last_name: '',
-    photo_url:
-      'https://t.me/i/userpic/320/hUiiHPraMdflrwLN5nuAhcZQN4QsyVx8NiieccatyeBv1I8u4eAOah5sgP75FZX3.svg',
+    user_id: 123456789,
+    username: 'alex_demo',
+    first_name: 'Alex',
+    last_name: 'Demo',
+    photo_url: undefined,
     user_type: 'REGISTERED',
-    app_username: 'ReallyCoolSupport',
+    app_username: 'alex_demo',
   },
   {
     user_id: 987654321,
@@ -32,13 +31,12 @@ export const MOCK_USERS: MockUser[] = [
     app_username: 'dev',
   },
   {
-    user_id: 123456789,
-    username: 'anton_whatever',
-    first_name: 'Anton',
-    last_name: '',
-    photo_url:
-      'https://t.me/i/userpic/320/UodwQMzZvdFeOA_xaUzsE4JveHPsTct_gfSi78xkw_0.svg',
+    user_id: 111222333,
+    username: 'sam_demo',
+    first_name: 'Sam',
+    last_name: 'Demo',
+    photo_url: undefined,
     user_type: 'REGISTERED',
-    app_username: 'anton_whatever',
+    app_username: 'sam_demo',
   },
 ];

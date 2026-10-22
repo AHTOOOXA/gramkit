@@ -1,4 +1,4 @@
-"""Tarot application base service with app-specific types."""
+"""Application base service with app-specific types."""
 
 from typing import TYPE_CHECKING
 
@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 class BaseService:
     """
-    Tarot application base service.
+    Application base service.
 
-    Provides common dependencies for all tarot services with app-specific types.
+    Provides common dependencies for all app services with app-specific types.
     """
 
     def __init__(

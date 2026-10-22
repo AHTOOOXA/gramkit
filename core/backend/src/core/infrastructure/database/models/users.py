@@ -2,7 +2,7 @@ from datetime import date, datetime
 from uuid import UUID, uuid7
 
 from sqlalchemy import BIGINT, Boolean, Date, Enum, Integer, String
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -58,7 +58,17 @@ class User(Base, CreatedAtMixin, UpdatedAtMixin, TableNameMixin):
     # Onboarding & Referral
     is_onboarded: Mapped[bool | None] = mapped_column(Boolean, default=False)
     is_terms_accepted: Mapped[bool | None] = mapped_column(Boolean, default=False)
-    referral_code: Mapped[str | None] = mapped_column(String(40), unique=True)
+    referral_code: Mapped[str | None] = mapped_column(String(40))
+
+    # Set when a bot send fails with TelegramForbiddenError (the user blocked the bot or
+    # deleted the account); cleared on /start and on app open. Scheduled notifications skip
+    # users with it set.
+    bot_blocked_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+
+    # Feature-reveal tracking — generic per-user map of `feature_key -> value`
+    # (one-shot bool, version int, or a shallow nudge record). Written only via
+    # the dedicated PATCH /users/me/seen-features endpoint (atomic JSONB merge).
+    seen_features: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict, server_default="{}")
 
     # Relationships
     friendships: Mapped[list[Friendship]] = relationship(

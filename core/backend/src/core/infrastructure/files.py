@@ -44,7 +44,7 @@ class FileManager:
 
         Args:
             file_name: Relative path within static directory
-                      (e.g., "images/logo.png", "spreads/spread_123.jpg")
+                      (e.g., "images/logo.png", "uploads/avatar_123.jpg")
 
         Returns:
             Absolute path to file
@@ -68,7 +68,7 @@ class FileManager:
         Ensure a subdirectory exists within static directory.
 
         Args:
-            subdirectory: Subdirectory path (e.g., "images", "spreads")
+            subdirectory: Subdirectory path (e.g., "images", "uploads")
 
         Returns:
             Absolute path to subdirectory

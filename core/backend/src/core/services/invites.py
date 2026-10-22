@@ -43,7 +43,7 @@ class InvitesService(BaseService):
         # If we got here, all retries failed
         raise RuntimeError(f"Failed to create invite after {max_retries} attempts") from last_error
 
-    async def process_invite(self, invite_code: str, invitee_id: int) -> GroupSchema:
+    async def process_invite(self, invite_code: str, invitee_id: UUID) -> GroupSchema:
         """
         Process a group invitation and add the user to the group and as friend to all members.
 

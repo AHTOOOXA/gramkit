@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { noop, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -33,9 +33,9 @@ export function PrefetchDemo() {
   const handlePrefetch = async (itemId: number) => {
     if (prefetchedIds.has(itemId)) return;
 
-    await queryClient.prefetchQuery(
-      getItemDetailDemoItemsItemIdGetQueryOptions(itemId, { delay_ms: 800 })
-    );
+    await queryClient
+      .query(getItemDetailDemoItemsItemIdGetQueryOptions(itemId, { delay_ms: 800 }))
+      .catch(noop);
     setPrefetchedIds((prev) => new Set(prev).add(itemId));
   };
 

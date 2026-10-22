@@ -82,9 +82,6 @@ function handleModeRouting(mode: string) {
     case 'draw':
       // TODO: redirect to draw
       break;
-    case 'keygo':
-      void router.push('/keygo');
-      break;
     case 'settings':
       void router.push('/profile');
       break;

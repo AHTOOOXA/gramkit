@@ -5,6 +5,7 @@ from core.infrastructure.fastapi.middleware.request_id import (
     RequestIdConfig,
     RequestIdMiddleware,
 )
+from core.infrastructure.fastapi.middleware.root_path import RootPathMiddleware
 from core.infrastructure.fastapi.middleware.security import SecurityConfig, SecurityHeadersMiddleware
 from core.infrastructure.fastapi.middleware.static import CachedStaticFiles
 from core.infrastructure.fastapi.middleware.tracker import RequestTracker, RequestTrackerMiddleware
@@ -18,4 +19,5 @@ __all__ = [
     "RequestIdMiddleware",
     "RequestIdConfig",
     "REQUEST_ID_HEADER",
+    "RootPathMiddleware",
 ]

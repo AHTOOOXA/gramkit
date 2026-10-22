@@ -24,19 +24,10 @@ from core.infrastructure.database.repo.base import BaseRepo
 if TYPE_CHECKING:
     from core.infrastructure.database.models.users import User
 
-# Auth fixtures
-from core.testing.fixtures.auth import generate_telegram_init_data
-
-# Database fixtures
-from core.testing.fixtures.database import db_engine, db_session, postgres_container
-
-# Re-export for pytest discovery
-__all__ = [
-    "postgres_container",
-    "db_engine",
-    "db_session",
-    "generate_telegram_init_data",
-    "balance_repo",
+# Load fixtures via pytest_plugins - allows apps to override them
+pytest_plugins = [
+    "core.testing.fixtures.auth",
+    "core.testing.fixtures.database",
 ]
 
 

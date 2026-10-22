@@ -10,33 +10,3 @@ class BackendException(Exception):
 
 class UserNotFoundException(BackendException):
     """Raised when a user is not found"""
-
-
-class NoAvailableReadingsError(BackendException):
-    """Raised when user has no available readings"""
-
-    pass
-
-
-class NoChatMessagesError(BackendException):
-    """Raised when user has no available chat messages"""
-
-    pass
-
-
-class NoTrainerAttemptsError(BackendException):
-    """Raised when user has no available trainer attempts"""
-
-    pass
-
-
-class LLMError(BackendException):
-    """Raised when LLM fails to generate response"""
-
-    pass
-
-
-class AllLLMProvidersFailedError(BackendException):
-    """Raised when all LLM providers fail to generate response"""
-
-    pass

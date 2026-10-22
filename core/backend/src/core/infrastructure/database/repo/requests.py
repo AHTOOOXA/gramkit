@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.infrastructure.database.repo.groups import GroupMemberRepo, GroupRepo
 from core.infrastructure.database.repo.invites import InviteRepo
+from core.infrastructure.database.repo.notifications import NotificationDeliveryRepo
 from core.infrastructure.database.repo.payments import PaymentEventRepo, PaymentRepo
 from core.infrastructure.database.repo.subscriptions import SubscriptionRepo
 from core.infrastructure.database.repo.users import UserRepo
@@ -84,6 +85,11 @@ class CoreRequestsRepo:
         """Subscription repository for managing user subscriptions."""
         return SubscriptionRepo(self.session)
 
+    @cached_property
+    def notification_deliveries(self) -> NotificationDeliveryRepo:
+        """Log of scheduled notification sends (one row per attempt)."""
+        return NotificationDeliveryRepo(self.session)
+
     def get_all_repos(self) -> dict[str, Any]:
         """Get all core repos as dict (useful for debugging/introspection).
 
@@ -98,4 +104,5 @@ class CoreRequestsRepo:
             "payments": self.payments,
             "payment_events": self.payment_events,
             "subscriptions": self.subscriptions,
+            "notification_deliveries": self.notification_deliveries,
         }

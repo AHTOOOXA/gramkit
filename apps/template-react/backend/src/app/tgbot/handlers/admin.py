@@ -7,9 +7,8 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.infrastructure import file_manager
 from app.services.requests import RequestsService
-from app.tgbot.keyboards.keyboards import command_keyboard, keygo_keyboard
+from app.tgbot.keyboards.keyboards import command_keyboard
 from core.infrastructure.config import settings
 from core.infrastructure.database.models.enums import NotificationTimeSlot
 from core.infrastructure.i18n import i18n
@@ -95,8 +94,6 @@ async def admin_command(message: types.Message, user: UserSchema):
         "• /giftsub <user\\_id> <week|month|year|max> - Gift subscription to user\n\n"
         "Statistics:\n"
         "• /stats - Generate and send daily statistics manually\n\n"
-        "Special:\n"
-        "• /keygo\\_prediction - Send keygo prediction message\n\n"
         "This Menu:\n"
         "• /admin - Show this admin commands list"
     )
@@ -225,7 +222,7 @@ async def process_broadcast_message(message: types.Message, state: FSMContext):
         inline_keyboard=[
             [InlineKeyboardButton(text="No keyboard", callback_data="keyboard_none")],
             [InlineKeyboardButton(text="Main menu keyboard", callback_data="keyboard_main")],
-            [InlineKeyboardButton(text="Daily card keyboard", callback_data="keyboard_daily")],
+            [InlineKeyboardButton(text="Daily keyboard", callback_data="keyboard_daily")],
         ]
     )
 
@@ -253,8 +250,8 @@ async def process_keyboard_selection(callback: types.CallbackQuery, state: FSMCo
         elif keyboard_type == "daily":
             kb = InlineKeyboardBuilder()
             kb.button(
-                text=i18n("tarot.open_app_button"),
-                url=f"{settings.web.app_url}?startapp=r-dailycardnotification",
+                text=i18n("app.open_app_button"),
+                url=f"{settings.web.app_url}?startapp=r-dailynotification",
             )
             kb.adjust(1)
             keyboard = kb.as_markup()
@@ -274,8 +271,8 @@ async def process_keyboard_selection(callback: types.CallbackQuery, state: FSMCo
         elif keyboard_type == "daily":
             kb = InlineKeyboardBuilder()
             kb.button(
-                text=i18n("tarot.open_app_button"),
-                url=f"{settings.web.app_url}?startapp=r-dailycardnotification",
+                text=i18n("app.open_app_button"),
+                url=f"{settings.web.app_url}?startapp=r-dailynotification",
             )
             kb.adjust(1)
             keyboard = kb.as_markup()
@@ -344,26 +341,6 @@ async def confirm_broadcast(callback: types.CallbackQuery, state: FSMContext, se
         await callback.message.answer("❌ Failed to queue broadcast job. Please try again or check logs.")
 
     await state.clear()
-
-
-@router.message(Command("keygo_prediction"))
-async def keygo_prediction_command(message: types.Message, user: UserSchema):
-    """Handler for /keygo_prediction command. Sends a prediction message with keygo image."""
-    # Check if user is admin
-    if not user.telegram_id or user.telegram_id not in settings.rbac.owner_ids:
-        await message.answer("You don't have permission to use this command")
-        return
-
-    # Get the keygo keyboard
-    keygo_kb = keygo_keyboard()
-
-    # Get the path to the keygo image
-    image_path = file_manager.get_full_path("images/keygo/placeholder.png")
-
-    # Send the prediction message with the image
-    await message.answer_photo(
-        photo=types.FSInputFile(image_path), caption="Предсказание на сегодняшнюю встречу", reply_markup=keygo_kb
-    )
 
 
 @router.message(Command("stats"))
@@ -542,7 +519,7 @@ async def process_repeat_count(callback: types.CallbackQuery, state: FSMContext)
         inline_keyboard=[
             [InlineKeyboardButton(text="No keyboard", callback_data="keyboard_none")],
             [InlineKeyboardButton(text="Main menu keyboard (custom text)", callback_data="keyboard_main")],
-            [InlineKeyboardButton(text="Daily card keyboard", callback_data="keyboard_daily")],
+            [InlineKeyboardButton(text="Daily keyboard", callback_data="keyboard_daily")],
         ]
     )
 
@@ -565,7 +542,7 @@ async def process_promo_keyboard_selection(callback: types.CallbackQuery, state:
         await callback.message.answer(
             "📝 **Custom Button Text**\n\n"
             "Please enter the text you want to display on the button.\n"
-            "Example: 'Open App', 'Get Reading', 'Try Now', etc.",
+            "Example: 'Open App', 'Learn More', 'Try Now', etc.",
             parse_mode="Markdown",
         )
         await state.set_state(PromoStates.waiting_for_button_text)
@@ -615,8 +592,8 @@ async def _show_promo_preview_and_confirmation(message_or_callback, state: FSMCo
     elif keyboard_type == "daily":
         kb = InlineKeyboardBuilder()
         kb.button(
-            text=i18n("tarot.open_app_button"),
-            url=f"{settings.web.app_url}?startapp=r-dailycardnotification",
+            text=i18n("app.open_app_button"),
+            url=f"{settings.web.app_url}?startapp=r-dailynotification",
         )
         kb.adjust(1)
         keyboard = kb.as_markup()

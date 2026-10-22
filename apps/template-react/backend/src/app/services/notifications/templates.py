@@ -32,9 +32,9 @@ class ExampleDailyNotification(NotificationTemplate):
         super().__init__()
         self._priority = 50  # Medium priority
         self._message_keys = [
-            "notifications.daily.message_1",
-            "notifications.daily.message_2",
-            "notifications.daily.message_3",
+            "app.notifications.daily.message_1",
+            "app.notifications.daily.message_2",
+            "app.notifications.daily.message_3",
         ]
 
     async def get_message_key(self) -> str:
@@ -71,8 +71,8 @@ class ExampleEngagementNotification(NotificationTemplate):
         super().__init__()
         self._priority = 40  # Lower priority than daily
         self._message_keys = [
-            "notifications.engagement.message_1",
-            "notifications.engagement.message_2",
+            "app.notifications.engagement.message_1",
+            "app.notifications.engagement.message_2",
         ]
 
     async def filter_eligible_users(self, users: list[UserSchema]) -> list[UserSchema]:

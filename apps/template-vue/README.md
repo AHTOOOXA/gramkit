@@ -222,5 +222,5 @@ make test-file file=src/app/tests/webhook/test_demo.py APP=template-vue
 ## References
 
 - [CLAUDE.md](/CLAUDE.md) - Project guide
-- [Vue Best Practices](/.claude/shared/vue-frontend.md)
-- [Backend Patterns](/.claude/shared/backend-patterns.md)
+- [Vue conventions](/.claude/rules/vue.md)
+- [Backend conventions](/.claude/rules/backend.md)

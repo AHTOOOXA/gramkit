@@ -1,5 +1,6 @@
 """Core ARQ worker jobs - generic background jobs for core infrastructure."""
 
+from core.infrastructure.arq.jobs.admin import admin_broadcast_job
 from core.infrastructure.arq.jobs.backup import (
     backup_database_job,
     scheduled_backup_job,
@@ -15,6 +16,7 @@ from core.infrastructure.arq.jobs.subscriptions import (
 )
 
 __all__ = [
+    "admin_broadcast_job",
     "backup_database_job",
     "scheduled_backup_job",
     "morning_notification_job",

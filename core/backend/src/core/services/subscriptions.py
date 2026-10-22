@@ -3,8 +3,18 @@ from uuid import UUID
 
 from core.domain.products import ProductCatalog
 from core.infrastructure.database.models.enums import PaymentProvider, SubscriptionStatus
-from core.infrastructure.database.models.payments import Payment
+from core.infrastructure.database.models.payments import Payment, PaymentStatus
 from core.infrastructure.logging import get_logger
+from core.infrastructure.telegram.admin_messages import (
+    esc,
+    fmt_ago,
+    fmt_date,
+    fmt_money,
+    fmt_money_map,
+    tags,
+    user_ref,
+    user_tag,
+)
 from core.schemas.subscriptions import SubscriptionSchema, SubscriptionWithDetailsSchema
 from core.schemas.users import UpdateUserRequest
 from core.services.base import BaseService
@@ -21,6 +31,21 @@ class SubscriptionsService(BaseService):
         total_seconds = time_delta.total_seconds()
         days = int(total_seconds // 86400)  # 86400 seconds in a day
         return f"{days} days"
+
+    def _product_label(self, product_id: str) -> str:
+        product = self.products.get_product(product_id)
+        return esc(product.name if product else product_id)
+
+    async def _admin_user_context(self, user) -> str:
+        """'joined 3d ago · 2 payments · LTV 798 ₽' — who this customer is, at a glance."""
+        payments = [p for p in await self.repo.payments.get_by_user_id(user.id) if p.status == PaymentStatus.SUCCEEDED]
+        ltv: dict[str, float] = {}
+        for p in payments:
+            ltv[p.currency] = ltv.get(p.currency, 0) + p.amount
+        count = len(payments)
+        return (
+            f"joined {fmt_ago(user.created_at)} · {count} payment{'s' if count != 1 else ''} · LTV {fmt_money_map(ltv)}"
+        )
 
     # TO FRONTEND
     async def get_subscription_for_user(self, user_id: UUID) -> SubscriptionSchema:
@@ -76,8 +101,10 @@ class SubscriptionsService(BaseService):
 
     async def has_active_subscription(self, user_id: UUID) -> bool:
         subscription = await self.repo.subscriptions.get_active_by_user_id(user_id)
-        return subscription is not None and (
-            subscription.status == SubscriptionStatus.ACTIVE or subscription.status == SubscriptionStatus.CANCELED
+        return subscription is not None and subscription.status in (
+            SubscriptionStatus.ACTIVE,
+            SubscriptionStatus.PAST_DUE,
+            SubscriptionStatus.CANCELED,
         )
 
     # INSIDE PAYMENT SERVICE
@@ -87,12 +114,50 @@ class SubscriptionsService(BaseService):
         )
         now = datetime.now(UTC)
         subscription = await self.repo.subscriptions.get_active_by_user_id(user_id)
+        if not subscription:
+            # Fallback: find expired-but-still-ACTIVE subs (e.g., after downtime)
+            # Prevents creating duplicate subs and leaving old ones to be re-charged
+            subscription = await self.repo.subscriptions.get_renewable_by_user_id(user_id)
+
+        # Resurrection backstop for the no-sub-found case: a late auto-renewal can land just after a
+        # canceled sub's end_date, when neither lookup above sees it (get_active filters end_date >
+        # now; get_renewable excludes CANCELED). Without this, the renewal would create a brand-new
+        # ACTIVE sub — resurrecting what the user canceled. Refuse if a recently-canceled sub exists.
+        # (Only auto-renewals carry recurring_details.is_renewal; a deliberate re-purchase is
+        # is_first_recurring and falls through to reactivate normally.)
+        if not subscription and recurring_details.get("is_renewal"):
+            recently_canceled = await self.repo.subscriptions.get_recently_canceled_by_user_id(
+                user_id, now - timedelta(days=45)
+            )
+            if recently_canceled:
+                logger.warning(
+                    f"Ignoring auto-renewal for recently-canceled subscription {recently_canceled.id} "
+                    f"(payment {payment.id}); not resurrecting past end_date"
+                )
+                await self.repo.payments.update(payment.id, {"subscription_id": recently_canceled.id})
+                return recently_canceled
+
         is_renewal = False
 
         # Always use the product_id from the payment record
         actual_product_id = payment.product_id
 
         if subscription:
+            # Resurrection guard: a user-CANCELED subscription that is still inside its paid window
+            # must NOT be flipped back to ACTIVE by a late/in-flight provider auto-renewal (e.g. a
+            # Telegram Star debit that fired before our editUserStarSubscription cancel propagated).
+            # Only block genuine auto-renewals (recurring_details.is_renewal) — a user actively
+            # re-purchasing reuses this same row and SHOULD reactivate it, so it must fall through.
+            # Honoring-vs-refunding the extra charge is a Phase 2 decision; Phase 1 just refuses to
+            # resurrect.
+            if subscription.status == SubscriptionStatus.CANCELED and recurring_details.get("is_renewal"):
+                logger.warning(
+                    f"Ignoring auto-renewal for canceled subscription {subscription.id} "
+                    f"(payment {payment.id}); not resurrecting"
+                )
+                await self.repo.payments.update(payment.id, {"subscription_id": subscription.id})
+                return subscription
+
             is_renewal = True
             current_end_date = max(subscription.end_date, now)
             new_end_date = current_end_date + timedelta(days=duration_days)
@@ -109,6 +174,7 @@ class SubscriptionsService(BaseService):
                     "status": SubscriptionStatus.ACTIVE,
                     "end_date": new_end_date,
                     "recurring_details": merged_details,
+                    "payment_method_id": merged_details.get("payment_method_id") or subscription.payment_method_id,
                 },
             )
         else:
@@ -122,6 +188,7 @@ class SubscriptionsService(BaseService):
                     "start_date": now,
                     "end_date": now + timedelta(days=duration_days),
                     "recurring_details": recurring_details,
+                    "payment_method_id": recurring_details.get("payment_method_id"),
                 },
             )
         await self.repo.payments.update(payment.id, {"subscription_id": subscription.id})
@@ -132,29 +199,65 @@ class SubscriptionsService(BaseService):
             ),
         )  # FOR HANDLING IF PURCHASED BEFORE ONBOARDING FINISHED
 
-        # Get product for logging/admin alert
-        product = self.products.get_product(actual_product_id)
-        product_name = product.name if product else actual_product_id
-
+        amount = esc(fmt_money(payment.amount, payment.currency))
+        context = await self._admin_user_context(user)
         if is_renewal:
             await self.services.messages.queue_admin_broadcast(
-                f"💸💸💸 RENEWAL\n\n"
-                f"User: @{user.username} (ID: {user.id})\n"
-                f"Product: {product_name} (ID: {actual_product_id})\n"
-                f"Amount: {payment.amount} {payment.currency}\n"
-                f"Start date: {subscription.start_date}\n"
-                f"End date: {subscription.end_date}\n"
-                f"Duration: {self._format_days(subscription.end_date - subscription.start_date)}"
+                f"🔁 <b>Renewal · {amount}</b>\n"
+                f"{self._product_label(actual_product_id)} · {user_ref(user)}\n"
+                f"<i>{context} · until {fmt_date(subscription.end_date)}</i>\n"
+                f"{tags('renewal', user_tag(user))}"
             )
         else:
             await self.services.messages.queue_admin_broadcast(
-                f"💰💰💰 PURCHASE\n\n"
-                f"User: @{user.username} (ID: {user.id})\n"
-                f"Product: {product_name} (ID: {actual_product_id})\n"
-                f"Amount: {payment.amount} {payment.currency}"
+                f"💰 <b>Purchase · {amount}</b>\n"
+                f"{self._product_label(actual_product_id)} · {user_ref(user)}\n"
+                f"<i>{context}</i>\n"
+                f"{tags('purchase', user_tag(user))}"
             )
 
         return subscription
+
+    async def gift_subscription(self, user_id: UUID, duration_days: int, gifted_by: UUID | None = None):
+        """Grant (or extend) a free GIFT subscription for ``duration_days``.
+
+        Shared by the Telegram ``/giftsub`` command and the admin web endpoint so the
+        two paths produce identical subscription state:
+        - If the user already has an entitled subscription whose ``end_date`` is in the
+          future, EXTEND it by ``duration_days`` and force it ACTIVE.
+        - Otherwise CREATE a fresh GIFT_SUB/GIFT subscription running from now.
+
+        Also flips ``is_onboarded`` (a gift unblocks onboarding-gated users). Repos use
+        flush() — the transaction commits at the interface layer.
+        """
+        now = datetime.now(UTC)
+        subscription = await self.repo.subscriptions.get_active_by_user_id(user_id)
+
+        if subscription and subscription.end_date > now:
+            new_end_date = subscription.end_date + timedelta(days=duration_days)
+            subscription = await self.repo.subscriptions.update(
+                subscription.id,
+                {
+                    "end_date": new_end_date,
+                    "status": SubscriptionStatus.ACTIVE,
+                },
+            )
+        else:
+            subscription = await self.repo.subscriptions.create(
+                {
+                    "user_id": user_id,
+                    "product_id": "GIFT_SUB",
+                    "provider_id": PaymentProvider.GIFT,
+                    "status": SubscriptionStatus.ACTIVE,
+                    "currency": "RUB",
+                    "start_date": now,
+                    "end_date": now + timedelta(days=duration_days),
+                    "recurring_details": {"gifted_by": str(gifted_by)} if gifted_by else {},
+                }
+            )
+
+        await self.services.users.update_user(user_id, UpdateUserRequest(is_onboarded=True))
+        return SubscriptionSchema.model_validate(subscription)
 
     async def cancel_subscription(self, user_id, reason: str | None = None, feedback: str | None = None):
         subscription = await self.repo.subscriptions.get_active_by_user_id(user_id)
@@ -168,110 +271,47 @@ class SubscriptionsService(BaseService):
                     "cancellation_feedback": feedback,
                 },
             )
+
+            # Best-effort: tell the provider to stop future renewals (Telegram Stars debits on its
+            # own schedule, so a DB-only cancel would keep getting charged). Never let a provider
+            # failure block the user's cancel — the DB row is already CANCELED and the
+            # top_up_subscription resurrection guard protects entitlement if this didn't land.
+            try:
+                await self.services.payments.cancel_provider_subscription(subscription)
+            except Exception as e:
+                logger.error(
+                    f"Failed to cancel subscription {subscription.id} at provider {subscription.provider_id}: {e}",
+                    exc_info=True,
+                )
+                await self.services.messages.queue_admin_broadcast(
+                    f"🚨 <b>Cancel not propagated to {esc(subscription.provider_id)}</b>\n"
+                    f"Subscription <code>{subscription.id}</code> is CANCELED in our DB, but the provider "
+                    f"call failed — check it won't keep charging.\n"
+                    f"<pre>{esc(e)}</pre>\n"
+                    f"{tags('critical', 'cancel')}"
+                )
+
             user = await self.services.users.get_user_by_id(user_id)
 
-            # Get product for logging/admin alert
-            product = self.products.get_product(subscription.product_id)
-            product_name = product.name if product else subscription.product_id
-
-            # Build admin notification message
+            reason_labels = {
+                "tooExpensive": "Too expensive",
+                "notUsing": "Not using",
+                "foundAlternative": "Found alternative",
+                "technicalIssues": "Technical issues",
+                "other": "Other",
+            }
             message = (
-                f"🚫🚫🚫 CANCELED\n\n"
-                f"User: @{user.username} (ID: {user.id})\n"
-                f"Product: {product_name} (ID: {subscription.product_id})\n"
-                f"Start date: {subscription.start_date}\n"
-                f"End date: {subscription.end_date}\n"
-                f"Duration: {self._format_days(subscription.end_date - subscription.start_date)}"
+                f"🚫 <b>Canceled · {self._product_label(subscription.product_id)}</b>\n"
+                f"{user_ref(user)} · subscribed {self._format_days(datetime.now(UTC) - subscription.start_date)}, "
+                f"access until {fmt_date(subscription.end_date)}\n"
+                f"<i>{await self._admin_user_context(user)}</i>"
             )
-
-            # Add cancellation reason if provided
             if reason:
-                # Map reason codes to readable labels
-                reason_labels = {
-                    "tooExpensive": "Too expensive",
-                    "notUsing": "Not using",
-                    "foundAlternative": "Found alternative",
-                    "technicalIssues": "Technical issues",
-                    "other": "Other",
-                }
-                reason_text = reason_labels.get(reason, reason)
-                message += f"\nReason: {reason_text}"
-
-            # Add feedback if provided
+                message += f"\nReason: <b>{esc(reason_labels.get(reason, reason))}</b>"
             if feedback:
-                message += f"\nFeedback: {feedback}"
+                message += f"\n<blockquote>{esc(feedback)}</blockquote>"
+            message += f"\n{tags('cancel', user_tag(user))}"
 
             await self.services.messages.queue_admin_broadcast(message)
             return SubscriptionSchema.model_validate(subscription)
         return SubscriptionSchema.get_mock_subscription(user_id)
-
-    async def charge_expiring_subscriptions(self, days_before: int):
-        expiration_threshold = datetime.now(UTC) + timedelta(days=days_before)
-        expiring_subs = await self.repo.subscriptions.get_expiring_subscriptions(expiration_threshold)
-
-        # Filter out subscriptions that shouldn't be charged manually
-        # - GIFT subscriptions (already excluded)
-        # - TELEGRAM_STARS subscriptions (Telegram manages renewals automatically)
-        manually_charged_subs = [
-            sub
-            for sub in expiring_subs
-            if sub.provider_id not in [PaymentProvider.GIFT, PaymentProvider.TELEGRAM_STARS]
-        ]
-
-        # Separate Telegram Stars subscriptions for different handling
-        telegram_stars_subs = [sub for sub in expiring_subs if sub.provider_id == PaymentProvider.TELEGRAM_STARS]
-
-        logger.info(
-            f"Found {len(expiring_subs)} expiring subscriptions: {len(manually_charged_subs)} manual, {len(telegram_stars_subs)} Telegram Stars managed"
-        )
-
-        # Handle manually charged subscriptions (YooKassa, etc.)
-        if len(manually_charged_subs) > 0:
-            users = [await self.services.users.get_user_by_id(sub.user_id) for sub in manually_charged_subs]
-            users_str = "\n".join([f"@{user.username} (ID: {user.id})\n" for user in users])
-            await self.services.messages.queue_admin_broadcast(
-                f"🔧🔧🔧 CHARGING {len(manually_charged_subs)} expiring subscriptions\n\n{users_str}"
-            )
-
-            for subscription in manually_charged_subs:
-                logger.info(f"Charging subscription {subscription.id} (provider: {subscription.provider_id})")
-                await self.services.payments.charge_subscription(subscription)
-
-            logger.info(f"Charged {len(manually_charged_subs)} expiring subscriptions")
-
-        # Handle Telegram Stars subscriptions (just log, don't charge)
-        if len(telegram_stars_subs) > 0:
-            users = [await self.services.users.get_user_by_id(sub.user_id) for sub in telegram_stars_subs]
-            users_str = "\n".join([f"@{user.username} (ID: {user.id})\n" for user in users])
-            await self.services.messages.queue_admin_broadcast(
-                f"⭐⭐⭐ MONITORING {len(telegram_stars_subs)} expiring Telegram Stars subscriptions (auto-renewed by Telegram)\n\n{users_str}"
-            )
-            logger.info(
-                f"Monitoring {len(telegram_stars_subs)} Telegram Stars subscriptions - renewals managed by Telegram"
-            )
-
-        if len(manually_charged_subs) == 0 and len(telegram_stars_subs) == 0:
-            logger.info("No expiring subscriptions found")
-
-    async def expire_outdated_subscriptions(self):
-        now = datetime.now(UTC)
-        expiring_subs = await self.repo.subscriptions.get_expiring_subscriptions(now)
-        logger.info(f"Expiring {len(expiring_subs)} subscriptions")
-        if len(expiring_subs) > 0:
-            expired_count = await self.repo.subscriptions.expire_outdated_subscriptions(now)
-            logger.info(f"Expired {expired_count} outdated subscriptions")
-
-            users = [await self.services.users.get_user_by_id(sub.user_id) for sub in expiring_subs]
-            user_id_to_username = {user.id: user.username for user in users}
-            admin_message = f"🚫🚫🚫 EXPIRED {len(expiring_subs)} outdated subscriptions\n\n"
-            for subscription in expiring_subs:
-                # TODO: notify users
-
-                # Get product for logging/admin alert
-                product = self.products.get_product(subscription.product_id)
-                product_name = product.name if product else subscription.product_id
-
-                admin_message += f"@{user_id_to_username[subscription.user_id]} - {product_name} (ID: {subscription.product_id}) - {self._format_days(subscription.end_date - subscription.start_date)}\n"
-            await self.services.messages.queue_admin_broadcast(admin_message)
-        else:
-            logger.info("No outdated subscriptions found")

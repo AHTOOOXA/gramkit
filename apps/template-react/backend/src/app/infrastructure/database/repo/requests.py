@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.database.repo.balance import BalanceRepo
 from core.infrastructure.database.repo.groups import GroupMemberRepo, GroupRepo
 from core.infrastructure.database.repo.invites import InviteRepo
+from core.infrastructure.database.repo.notifications import NotificationDeliveryRepo
 from core.infrastructure.database.repo.payments import PaymentEventRepo, PaymentRepo
 from core.infrastructure.database.repo.requests import CoreRequestsRepo
 from core.infrastructure.database.repo.subscriptions import SubscriptionRepo
@@ -68,3 +69,8 @@ class RequestsRepo:
     def subscriptions(self) -> SubscriptionRepo:
         """Subscription repository (from core)."""
         return self._core.subscriptions
+
+    @cached_property
+    def notification_deliveries(self) -> NotificationDeliveryRepo:
+        """Notification delivery log (from core)."""
+        return self._core.notification_deliveries

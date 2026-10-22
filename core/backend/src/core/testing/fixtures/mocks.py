@@ -1,5 +1,7 @@
 """Mock fixtures for external services and internal async operations."""
 
+from types import SimpleNamespace
+
 import pytest
 
 
@@ -19,23 +21,46 @@ def mock_yookassa(monkeypatch):
     from unittest.mock import MagicMock
     from uuid import uuid4
 
-    # Counter for unique IDs
-    call_counter = {"count": 0}
+    # Counter for unique IDs; also records the last idempotency key for assertions. Tests may set
+    # call_counter["status"] (default "pending") and call_counter["cancellation_reason"] (default
+    # None) to drive create()'s outcome — used by the recurring-renewal / dunning tests.
+    # call_counter["raise_exc"] (default None) simulates a transport failure: when set to an
+    # exception instance/class, create() raises it (after counting the call + recording the key) so
+    # the bare-exception branch of the renewal job can be exercised. Unset => existing behavior.
+    call_counter = {
+        "count": 0,
+        "last_key": None,
+        "status": "pending",
+        "cancellation_reason": None,
+        "raise_exc": None,
+    }
 
-    def mock_create(request):
+    def mock_create(request, idempotency_key=None):
         """Mock Payment.create() method with unique IDs"""
         call_counter["count"] += 1
+        call_counter["last_key"] = idempotency_key
+        # Simulate a network/transport failure (e.g. a timeout after the card may have been
+        # charged). The call is counted + the key recorded first so tests can still assert the
+        # provider was reached before it blew up.
+        exc = call_counter.get("raise_exc")
+        if exc is not None:
+            raise exc
         unique_id = f"payment_test_{uuid4().hex[:8]}_{call_counter['count']}"
 
         # Create a mock payment response with unique ID
         mock_payment = MagicMock()
         mock_payment.id = unique_id
-        mock_payment.status = "pending"
+        mock_payment.status = call_counter.get("status") or "pending"
         mock_payment.metadata = {"app_payment_id": "1", "is_recurring": "false"}
+
+        # cancellation_details drives the dunning state machine's hard-decline branch.
+        reason = call_counter.get("cancellation_reason")
+        mock_payment.cancellation_details = MagicMock(reason=reason) if reason else None
 
         # Mock confirmation object
         mock_confirmation = MagicMock()
         mock_confirmation.confirmation_url = f"https://test.yookassa.ru/checkout/{unique_id}"
+        mock_confirmation.confirmation_token = f"ct_test_{unique_id}"
         mock_payment.confirmation = mock_confirmation
 
         # Mock payment method for recurring payments
@@ -50,7 +75,8 @@ def mock_yookassa(monkeypatch):
 
     monkeypatch.setattr(YooKassaPayment, "create", mock_create)
 
-    yield
+    # Expose the counter so tests can assert the idempotency key passed to create().
+    yield call_counter
 
 
 @pytest.fixture
@@ -208,6 +234,9 @@ def mock_yookassa_webhook(monkeypatch):
                 self.payment_method = MockPaymentMethod(obj_data["payment_method"])
             else:
                 self.payment_method = None
+            # Why a canceled payment was canceled, e.g. {"party": "payment_network", "reason": "insufficient_funds"}
+            details = obj_data.get("cancellation_details")
+            self.cancellation_details = SimpleNamespace(**details) if details else None
 
     class MockPaymentMethod:
         """Mock YooKassa payment method object."""
@@ -216,19 +245,34 @@ def mock_yookassa_webhook(monkeypatch):
             self.id = method_data.get("id", "test_method_id")
             self.type = method_data.get("type", "bank_card")
 
+    # Shared state lets tests configure what the re-fetch (find_one) returns independently of the
+    # (untrusted) webhook body — e.g. a forged "succeeded" body while find_one returns "pending".
+    state = {"last_payload": None, "remote_status": None}
+
     class MockFactory:
-        """Mock WebhookNotificationFactory."""
+        """Mock WebhookNotificationFactory that records the last parsed payload."""
 
         def create(self, payload):
+            state["last_payload"] = payload
             return MockNotification(payload)
 
-    # Patch YooKassa WebhookNotificationFactory
-    from yookassa.domain.notification import webhook_notification
+    def mock_find_one(payment_id):
+        """Mock YooKassaPayment.find_one — the authoritative re-fetched payment object.
 
-    original_factory = webhook_notification.WebhookNotificationFactory
-    monkeypatch.setattr(webhook_notification, "WebhookNotificationFactory", MockFactory)
+        Built from the last webhook body, but its status can be overridden via
+        state["remote_status"] so a test can simulate a forged body whose real status differs.
+        """
+        obj = dict((state["last_payload"] or {}).get("object", {}))
+        if state["remote_status"] is not None:
+            obj = {**obj, "status": state["remote_status"]}
+        return MockObject(obj)
 
-    yield
+    # The provider binds these names at import time (`from ... import WebhookNotificationFactory`
+    # and `from yookassa import Payment as YooKassaPayment`), so patch the names bound in the
+    # provider module — patching the SDK submodule would not rebind the already-imported names.
+    import core.services.payments.providers.yookassa as yk_provider
 
-    # Restore original factory
-    monkeypatch.setattr(webhook_notification, "WebhookNotificationFactory", original_factory)
+    monkeypatch.setattr(yk_provider, "WebhookNotificationFactory", MockFactory)
+    monkeypatch.setattr(yk_provider.YooKassaPayment, "find_one", mock_find_one)
+
+    yield state

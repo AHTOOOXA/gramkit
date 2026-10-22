@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
-import { LogIn, Lock } from 'lucide-vue-next'
+import { LogIn, Lock } from '@lucide/vue'
 import ProfileSection from './ProfileSection.vue'
 
 const { t } = useI18n()

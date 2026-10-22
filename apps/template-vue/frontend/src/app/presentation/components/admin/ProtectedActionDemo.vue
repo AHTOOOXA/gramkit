@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Lock, CheckCircle, XCircle } from 'lucide-vue-next';
+import { Lock, CheckCircle, XCircle } from '@lucide/vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDemoProtectedActionAdminDemoActionPost } from '@gen/hooks/useDemoProtectedActionAdminDemoActionPost';

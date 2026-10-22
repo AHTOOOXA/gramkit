@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Globe, Check } from 'lucide-vue-next';
+import { Globe, Check } from '@lucide/vue';
 import { useLanguageService, type SupportedLocale } from '@app/composables/useLanguageService';
 import { Button } from '@/components/ui/button';
 import {

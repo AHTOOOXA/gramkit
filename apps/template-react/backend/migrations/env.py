@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 # Add both core and app to Python path for imports
 workspace_root = Path(__file__).parent.parent.parent.parent.parent
 core_src = workspace_root / "core" / "backend" / "src"
-app_src = workspace_root / "apps" / "template" / "backend" / "src"
+app_src = Path(__file__).parent.parent / "src"  # apps/<app>/backend/src
 
 sys.path.insert(0, str(core_src))
 sys.path.insert(0, str(app_src))

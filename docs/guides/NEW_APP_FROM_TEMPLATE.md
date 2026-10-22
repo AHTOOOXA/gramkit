@@ -101,6 +101,8 @@ volumes:
   cache_myapp:       # Was: cache_template
 ```
 
+Note: Network names (`template-react-network` → `myapp-network`) are handled by the sed commands in Step 3.5.
+
 ### 3.5 Update Other Docker Files (React template)
 
 The React template has multiple Docker files that need updating. Run these from your app directory:
@@ -148,11 +150,13 @@ APP_NAME=myapp
 WEB__API_URL=https://local.gramkit.dev/api/myapp
 WEB__API_ROOT_PATH=/api/myapp
 
-# Database (match docker-compose)
+# Database (match docker-compose container name)
 DB__NAME=myapp
+DB__HOST=myapp-db
 DB__PORT=5456
 
-# Redis (match docker-compose)
+# Redis (match docker-compose container name)
+REDIS__HOST=myapp-redis
 REDIS__PORT=6392
 
 # Frontend
@@ -168,7 +172,22 @@ BOT__TOKEN=your_bot_token_here
 
 ## Step 5: Update Package Metadata
 
-### Backend (optional, metadata only)
+### Backend Settings (required)
+`apps/myapp/backend/src/app/config.py`:
+```python
+class Settings(BaseSettings):
+    """My App application settings."""  # Update docstring
+
+    # App identity
+    app_name: str = "myapp"  # Change from "template" or "template-react"
+```
+
+This is required because `app_name` is used for:
+- Session cookie name (`myapp_session`)
+- Redis key prefix (`myapp:session:`)
+- Bot startup message ("myapp has been started")
+
+### Backend Package (optional, metadata only)
 `apps/myapp/backend/pyproject.toml`:
 ```toml
 [project]
@@ -217,6 +236,42 @@ export const metadata: Metadata = {
 };
 ```
 
+### App Logo & Name (React template only)
+`apps/myapp/frontend/components/shared/logo.tsx`:
+
+The Logo component displays in the header navigation. Update the app name and icon:
+
+```tsx
+import { Ghost } from 'lucide-react';  // Choose your icon from lucide-react
+
+export function Logo({ size = 'md', showText = true }: LogoProps) {
+  // ...
+  return (
+    <Link href="/" className="...">
+      <Ghost className={cn(iconSize, 'text-primary')} />  {/* Change icon */}
+      {showText && (
+        <span className={cn(textSize, 'font-semibold text-foreground')}>
+          My App  {/* Change from 'Template' */}
+        </span>
+      )}
+    </Link>
+  );
+}
+```
+
+Browse available icons at [lucide.dev/icons](https://lucide.dev/icons).
+
+### Frontend Next.js Config (React template only)
+`apps/myapp/frontend/next.config.ts`:
+
+Update the basePath to your app name:
+```typescript
+const nextConfig: NextConfig = {
+  basePath: '/myapp',  // Change from '/template-react'
+  // ...
+};
+```
+
 ### Frontend Kubb Config (required)
 `apps/myapp/frontend/kubb.config.ts`:
 
@@ -239,6 +294,28 @@ input: {
 ```
 
 This is required for `make schema` to generate correct TypeScript types from your API.
+
+### Frontend API Client Config (React template only)
+`apps/myapp/frontend/config/kubb-config.ts`:
+
+**Two updates required:**
+
+**1. Localhost port (line ~55)** - Update to match your app's backend port:
+```typescript
+if (hostname === 'localhost' || hostname === '127.0.0.1') {
+  return 'http://localhost:8004';  // Use your backend port from docker-compose
+}
+```
+
+**2. Nginx fallback path (line ~66)** - Update to your app's API path:
+```typescript
+// 3. Via nginx (domain access fallback)
+return '/api/myapp';  // Change from '/api/template-react'
+```
+
+Both are required to avoid "Network error" messages:
+- Localhost port: for local development via `localhost:3000`
+- Nginx fallback: for domain access via `local.gramkit.dev/myapp`
 
 ### Frontend Dockerfile (React template only)
 `apps/myapp/frontend/Dockerfile.local`:
@@ -319,6 +396,20 @@ uv sync
 
 This is required for pre-commit hooks (import linting, tests) to work.
 
+### Update Root Makefile (required)
+Root `Makefile`:
+
+Add port mapping and color for your app:
+```makefile
+# Near line 10, add port:
+PORT_myapp := 3003  # Use next available port
+
+# In the `up:` target color case statement (around line 47), add:
+myapp) color="\033[1;32m" ;;  # Choose a color
+```
+
+Without this, `make up APP=myapp` won't know which port to use for the frontend.
+
 ### Add Frontend lib/ to .gitignore Exception (required)
 Root `.gitignore`:
 
@@ -332,14 +423,129 @@ The root `.gitignore` has `lib/` which ignores all lib folders (for Python). Add
 
 Without this, the `lib/` folder won't be committed and production builds will fail with missing imports (`cn`, error classes, etc.).
 
+### Test Configuration
+
+**See `.claude/rules/testing.md` for full fixture documentation.**
+
+By default, apps use core's test fixtures. **Most apps don't need any special test setup** - just keep the minimal conftest.py that was copied from template.
+
+#### Default Pattern (most apps - no changes needed)
+
+Your `apps/myapp/backend/src/app/tests/conftest.py` should be minimal:
+
+```python
+from app.infrastructure.database.models.balance import Balance  # noqa: F401
+from app.webhook.routers.demo import _counters
+
+@pytest_asyncio.fixture
+async def client():
+    # ... HTTP client fixture
+```
+
+Core's `db_session`, `postgres_container`, etc. are automatically available.
+
+#### Override Pattern (pgvector or special extensions)
+
+If your app needs **pgvector** or other PostgreSQL extensions, you must override fixtures.
+
+**Create `apps/myapp/backend/conftest.py`** (at backend root, NOT in src/app/tests/):
+
+```python
+"""Root conftest for myapp backend tests.
+
+Overrides core's database fixtures to use pgvector.
+This file is at the backend root level so it's discovered before core's fixtures.
+"""
+
+import pytest
+import pytest_asyncio
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from testcontainers.postgres import PostgresContainer
+
+from core.infrastructure.database.models.base import Base
+
+
+@pytest.fixture(scope="session")
+def postgres_container():
+    """Start a PostgreSQL container with pgvector support."""
+    with PostgresContainer("pgvector/pgvector:pg17") as postgres:
+        yield postgres
+
+
+@pytest_asyncio.fixture
+async def db_engine(postgres_container: PostgresContainer) -> AsyncEngine:
+    """Create async database engine with pgvector extension enabled."""
+    connection_url = postgres_container.get_connection_url().replace("psycopg2", "asyncpg")
+
+    engine = create_async_engine(
+        connection_url,
+        echo=False,
+        future=True,
+        pool_pre_ping=True,
+    )
+
+    async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield engine
+
+    await engine.dispose()
+```
+
+**Keep `apps/myapp/backend/src/app/tests/conftest.py` minimal** (like template-react):
+
+```python
+"""Pytest configuration for myapp app tests."""
+
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
+
+from app.infrastructure.database.models.balance import Balance  # noqa: F401
+from app.webhook.routers.demo import _counters
+
+# Import db_session from core - it uses our overridden db_engine
+from core.testing.fixtures.database import db_session  # noqa: F401
+
+
+@pytest_asyncio.fixture
+async def client():
+    """Create AsyncClient for testing FastAPI endpoints."""
+    from app.webhook.app import app
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def reset_demo_counters():
+    """Reset demo counters before each test."""
+    _counters.clear()
+    yield
+    _counters.clear()
+```
+
+**Why this structure?**
+- Root `backend/conftest.py` is discovered first, overriding core's fixtures
+- App's `src/app/tests/conftest.py` stays minimal like template-react
+- Core tests run with your fixtures when executed from your app
+- `db_session` is imported from core (it uses your overridden `db_engine`)
+
+**Apps that DON'T need special extensions:** Just copy template-react's minimal conftest - no `backend/conftest.py` needed.
+
 ---
 
 ## Step 6: Configure Nginx
 
 Add to `nginx/nginx.conf`:
 
+**Vue template** (frontend runs in Docker):
 ```nginx
-# Frontend
+# Frontend (Docker container)
 location /myapp/ {
     set $myapp_frontend myapp-app:5173;
     proxy_pass http://$myapp_frontend;
@@ -351,7 +557,25 @@ location /myapp/ {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 }
+```
 
+**React template** (frontend runs locally on host):
+```nginx
+# Frontend (local dev server on host machine)
+location /myapp/ {
+    proxy_pass http://host.docker.internal:3003/myapp/;  # Use your PORT from Makefile
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+**Both templates** (backend API + redirects):
+```nginx
 location = /myapp {
     return 301 /myapp/;
 }
@@ -367,6 +591,22 @@ location /api/myapp {
 }
 ```
 
+**Optional: Error pages for graceful degradation**
+```nginx
+# Add error handlers (show friendly message when app is down)
+location @myapp_unavailable {
+    default_type text/html;
+    return 503 '<!DOCTYPE html><html><head><title>MyApp - Starting</title></head><body style="font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#1a1a2e;color:#fff"><div style="text-align:center"><h1>MyApp is starting...</h1><p>Please refresh in a few seconds</p></div></body></html>';
+}
+
+location @myapp_api_unavailable {
+    default_type application/json;
+    return 503 '{"error": "MyApp API is starting up", "retry_after": 5}';
+}
+```
+
+Then add `proxy_intercept_errors on;` and `error_page 502 503 504 = @myapp_unavailable;` to each location block.
+
 Reload nginx after changes:
 ```bash
 docker exec nginx nginx -s reload
@@ -376,8 +616,14 @@ docker exec nginx nginx -s reload
 
 ## Step 6.1: Add to Landing Page
 
-Add your app to `nginx/landing.html` so it appears on the gateway homepage:
+Edit `nginx/landing.html` to add your app to the gateway homepage:
 
+**1. Add CSS variable** (in `<style>` section):
+```css
+--myapp-color: #34D399;  /* Choose your theme color */
+```
+
+**2. Add app card** (in `apps-grid` div):
 ```html
 <div class="app-card">
     <div class="app-header">
@@ -397,7 +643,15 @@ Add your app to `nginx/landing.html` so it appears on the gateway homepage:
 </div>
 ```
 
-Insert before the closing `</div>` of `apps-grid`.
+**3. Add to logs dropdown** (in log viewer select):
+```html
+<option value="myapp">MyApp</option>
+```
+
+**4. Add container class mapping** (in JavaScript containerClasses object):
+```javascript
+'myapp': 'myapp-webhook'
+```
 
 ---
 
@@ -925,9 +1179,10 @@ make schema APP=myapp  # Regenerate frontend types
 | App | Frontend | Backend | Database | Redis |
 |-----|----------|---------|----------|-------|
 | tarot | 5173 | 3779 | 5432 | 6379 |
-| template-vue | 5175 | 8002 | 5454 | 6390 |
-| template-react | 5176 | 8003 | 5455 | 6391 |
-| **Next available** | **5177** | **8004** | **5456** | **6392** |
+| template-vue | 5174 | 8002 | 5454 | 6390 |
+| template-react | 3001 | 8003 | 5455 | 6391 |
+| maxstat | 3002 | - | - | - |
+| **Next available** | **3004** | **8005** | **5457** | **6393** |
 
 ---
 
@@ -963,6 +1218,32 @@ docker rm -f conflicting-container-name
 2. Check `VITE_API_HOST` points to correct path
 3. Verify nginx location block is correct
 
+### Frontend "Network Error" on Localhost (React)
+**Symptoms:** API calls fail with "Network error. Please check your connection" when accessing via localhost.
+
+**Cause:** `config/kubb-config.ts` has hardcoded localhost port from template (8003).
+
+**Solution:** Update the port in `config/kubb-config.ts` to match your app's backend port:
+```typescript
+// Line ~55
+return 'http://localhost:8004';  // Change to your backend port
+```
+
+### Frontend "Network Error" via Domain (React)
+**Symptoms:** API calls fail with "Network error. Please check your connection" when accessing via domain (e.g., `local.gramkit.dev/myapp`), but localhost works fine.
+
+**Cause:** `config/kubb-config.ts` has hardcoded nginx fallback path from template (`/api/template-react` instead of `/api/myapp`).
+
+**Solution:** Update the nginx fallback path in `config/kubb-config.ts`:
+```typescript
+// Line ~66
+return '/api/myapp';  // Change from '/api/template-react'
+```
+
+This fallback is used when:
+1. Not on localhost
+2. No `NEXT_PUBLIC_API_URL` env var is set
+
 ### Hot Reload Not Working
 - Don't restart containers for code changes
 - Check volume mounts in docker-compose.local.yml
@@ -986,6 +1267,24 @@ WORKDIR /workspace/apps/template-react/frontend
 COPY apps/myapp/frontend ./apps/myapp/frontend
 WORKDIR /workspace/apps/myapp/frontend
 ```
+
+### Tests Fail with "relation does not exist" or fixture conflicts
+
+**Symptoms:**
+- Tests fail with `ProgrammingError: relation "objects" does not exist`
+- Tests fail with `extension "vector" is not available`
+- Core tests fail when run from your app but pass when run standalone
+- 41+ errors in `test_base_repo.py` when running full suite
+
+**Cause:** Either:
+1. Your app uses pgvector but you're using core's default `postgres:16-alpine` fixtures
+2. You redefined core's fixtures in `src/app/tests/conftest.py` causing conflicts
+
+**Solution:** See the fixtures table in `.claude/rules/testing.md`.
+
+**Quick fix:**
+- **Most apps:** Keep `src/app/tests/conftest.py` minimal (like template-react). Don't redefine `postgres_container`, `db_engine`, `db_session`.
+- **pgvector apps:** Create `backend/conftest.py` (root level) to override fixtures. Keep `src/app/tests/conftest.py` minimal and import `db_session` from core.
 
 ### Session Cookie Expired (403 on Admin Pages)
 If Playwright tests get 403 errors on admin-only pages, the session cookie may have expired from Redis.

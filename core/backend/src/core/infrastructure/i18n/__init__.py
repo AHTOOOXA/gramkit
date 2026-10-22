@@ -99,18 +99,32 @@ def load_translations():
                     _translations[locale] = app_translations
 
 
+def supported_locale(language: str | None) -> str:
+    """A locale we have translations for: ``ru-RU`` → ``ru``; anything unknown (``uk``, ``de``…) → ``en``.
+
+    ``get_translation`` returns the bare key for an unknown locale, so pick the locale with this first.
+    """
+    if not _translations:
+        load_translations()
+    code = (language or "").lower()
+    for candidate in (code, code.split("-")[0]):
+        if candidate in _translations:
+            return candidate
+    return "en"
+
+
 def get_translation(key: str, locale: str = "en") -> str:
     """
     Get translation by namespaced key.
 
     Examples:
         get_translation("core.user.welcome", "en")  # → "Welcome!"
-        get_translation("tarot.cards.00.name", "en")  # → "The Fool"
+        get_translation("core.payment.success", "en")  # → "Payment successful"
     """
     if not _translations:
         load_translations()
 
-    # Handle nested keys like "core.user.welcome" or "tarot.spreads.daily.request"
+    # Handle nested keys like "core.user.welcome" or "myapp.onboarding.step_1"
     keys = key.split(".")
     value = _translations.get(locale, {})
     for k in keys:
@@ -126,13 +140,13 @@ def t(key: str, locale: str | None = None, **kwargs) -> str:
     Get translation by namespaced key with optional variable interpolation.
 
     Args:
-        key: Namespaced translation key (e.g., "core.user.welcome", "tarot.welcome")
+        key: Namespaced translation key (e.g., "core.user.welcome", "myapp.welcome")
         locale: Target locale (defaults to "en")
         **kwargs: Variables for string formatting
 
     Examples:
         t("core.user.welcome")  # → "Welcome!"
-        t("tarot.welcome_extra_friendly", user_count=1000)  # → "✨ You are our 1000 user..."
+        t("myapp.welcome_back", name="Alex")  # → "Welcome back, Alex!"
     """
     translation = get_translation(key, locale or "en")
 

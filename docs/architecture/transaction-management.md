@@ -219,4 +219,4 @@ async with session.begin():
 
 - `docs/guides/APP_ARCHITECTURE.md` - Entry point patterns
 - `docs/guides/CORE_STRUCTURE.md` - Repository patterns
-- `.claude/shared/backend-patterns.md` - Detailed patterns
+- `.claude/rules/backend.md` - Detailed patterns

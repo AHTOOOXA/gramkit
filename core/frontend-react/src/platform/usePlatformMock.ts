@@ -11,14 +11,24 @@ export interface MockUser {
 }
 
 export interface UsePlatformMockReturn {
+  /** TG-platform mock: report `platform: 'telegram'` instead of web. */
   isMockEnabled: boolean;
   toggleMock: () => void;
+  /** Login-as mock: authenticate as the selected mock user. Independent of TG mock. */
+  isUserMockEnabled: boolean;
+  toggleUserMock: () => void;
   selectedUser: MockUser | null;
   availableUsers: MockUser[];
   setSelectedUser: (user: MockUser | null) => void;
 }
 
+// Two INDEPENDENT debug switches (deliberately decoupled):
+//   STORAGE_KEY   → TG-platform mock: usePlatform() reports platform 'telegram'.
+//   USER_MOCK_KEY → login-as: inject the selected user's initData + send the
+//                   Mock-Platform auth header so the backend authenticates as them.
+// Picking a user enables login-as only — you can be a real user on the web platform.
 const STORAGE_KEY = 'telegram-platform-mock';
+const USER_MOCK_KEY = 'telegram-platform-login-as';
 const USER_STORAGE_KEY = 'telegram-platform-mock-user';
 
 // Injectable mock users (provided from app layer)
@@ -107,8 +117,10 @@ export function getSelectedMockUser(): MockUser | null {
   if (typeof window === 'undefined') return null;
 
   try {
-    const isMockEnabled = localStorage.getItem(STORAGE_KEY) === 'true';
-    if (!isMockEnabled) return null;
+    // The selected user is only relevant when logging in as them (login-as),
+    // which is independent of the TG-platform mock switch.
+    const loginAsEnabled = localStorage.getItem(USER_MOCK_KEY) === 'true';
+    if (!loginAsEnabled) return null;
 
     const stored = localStorage.getItem(USER_STORAGE_KEY);
     if (stored) {
@@ -121,12 +133,26 @@ export function getSelectedMockUser(): MockUser | null {
 }
 
 /**
- * Check if mock mode is enabled
+ * Check if TG-platform mock is enabled (report platform as Telegram).
  */
 export function isMockModeEnabled(): boolean {
   if (typeof window === 'undefined') return false;
   try {
     return localStorage.getItem(STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check if login-as (user mock) is enabled — authenticate as the selected mock
+ * user. Independent of TG-platform mock; gates initData injection + the
+ * Mock-Platform auth header.
+ */
+export function isUserMockEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(USER_MOCK_KEY) === 'true';
   } catch {
     return false;
   }
@@ -146,6 +172,15 @@ export function usePlatformMock(): UsePlatformMockReturn {
     if (typeof window === 'undefined') return false;
     try {
       return localStorage.getItem(STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [isUserMockEnabledState, setIsUserMockEnabled] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return localStorage.getItem(USER_MOCK_KEY) === 'true';
     } catch {
       return false;
     }
@@ -174,6 +209,16 @@ export function usePlatformMock(): UsePlatformMockReturn {
     }
   }, [isMockEnabled]);
 
+  // Persist login-as state to localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(USER_MOCK_KEY, isUserMockEnabledState.toString());
+    } catch (error) {
+      console.warn('Failed to save login-as state to localStorage:', error);
+    }
+  }, [isUserMockEnabledState]);
+
   // Persist selected user to localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -192,6 +237,10 @@ export function usePlatformMock(): UsePlatformMockReturn {
     setIsMockEnabled((prev) => !prev);
   }, []);
 
+  const toggleUserMock = useCallback(() => {
+    setIsUserMockEnabled((prev) => !prev);
+  }, []);
+
   const setSelectedUser = useCallback((user: MockUser | null) => {
     setSelectedUserState(user);
   }, []);
@@ -199,6 +248,8 @@ export function usePlatformMock(): UsePlatformMockReturn {
   return {
     isMockEnabled,
     toggleMock,
+    isUserMockEnabled: isUserMockEnabledState,
+    toggleUserMock,
     selectedUser,
     availableUsers: _mockUsers,
     setSelectedUser,

@@ -100,6 +100,8 @@ export default tseslint.config(
       'kubb.config.ts', // Kubb config
       'eslint.config.mjs', // Config file
       'postcss.config.mjs', // Config file
+      'ios/**', // Capacitor native build
+      'android/**', // Capacitor native build
     ],
   }
 );

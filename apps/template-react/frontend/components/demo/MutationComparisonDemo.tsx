@@ -58,7 +58,7 @@ export function MutationComparisonDemo() {
           const previousData =
             queryClient.getQueryData<CounterResponse>(optimisticQueryKey);
 
-          const params = variables.params as { amount?: number } | undefined;
+          const params = variables.params;
           const amount = params?.amount ?? 1;
           queryClient.setQueryData<CounterResponse>(
             optimisticQueryKey,

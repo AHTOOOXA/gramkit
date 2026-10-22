@@ -10,7 +10,7 @@ Usage:
     python -m app.scripts.runner <script_name> [args...]
 
 Example:
-    python -m app.scripts.runner migrate_questions
+    python -m app.scripts.runner demo_user_stats
     python -m app.scripts.runner cleanup_old_data --days 30
 """
 
@@ -288,8 +288,11 @@ class ScriptRunner:
         """Main entry point for script runner"""
         parser = argparse.ArgumentParser(description="Run scripts with full infrastructure access")
         parser.add_argument("script", help="Name of the script to run (without .py extension)")
-        parser.add_argument("args", nargs="*", help="Additional arguments to pass to the script")
+        parser.add_argument("args", nargs=argparse.REMAINDER, help="Additional arguments to pass to the script")
 
         args = parser.parse_args()
 
-        asyncio.run(self.run_script(args.script, args.args))
+        # Filter out leading '--' separator if present
+        script_args = [a for a in args.args if a != "--"]
+
+        asyncio.run(self.run_script(args.script, script_args))

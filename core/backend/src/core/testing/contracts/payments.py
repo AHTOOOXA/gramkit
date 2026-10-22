@@ -16,6 +16,10 @@ from httpx import AsyncClient
 class BasePaymentTests:
     """Base class for payment/subscription contract tests."""
 
+    # Plans on sale in the app's catalog; an app with other product ids overrides these.
+    MONTHLY_PRODUCT_ID = "MONTH_SUB_V3"
+    SECOND_PRODUCT_ID = "WEEK_SUB_V3"
+
     # =========================================================================
     # Product Listing
     # =========================================================================
@@ -85,7 +89,7 @@ class BasePaymentTests:
         response = await authenticated_client.post(
             "/payments/start_purchase",
             json={
-                "product_id": "MONTH_SUB_V3",
+                "product_id": self.MONTHLY_PRODUCT_ID,
                 "currency": "RUB",
                 "provider_id": "YOOKASSA",
                 "return_url": "https://example.com/return",
@@ -94,8 +98,10 @@ class BasePaymentTests:
 
         assert response.status_code == 200
         data = response.json()
-        assert "confirmation_url" in data
-        assert data["confirmation_url"].startswith("http")
+        # YooKassa now uses the embedded widget: returns a confirmation_token, not a redirect URL.
+        assert "confirmation_token" in data
+        assert data["confirmation_token"]
+        assert data.get("confirmation_url") is None
 
     @pytest.mark.contract
     async def test_yookassa_returns_payment_id(self, authenticated_client: AsyncClient, mock_yookassa):
@@ -103,7 +109,7 @@ class BasePaymentTests:
         response = await authenticated_client.post(
             "/payments/start_purchase",
             json={
-                "product_id": "WEEK_SUB_V3",
+                "product_id": self.SECOND_PRODUCT_ID,
                 "currency": "RUB",
                 "provider_id": "YOOKASSA",
                 "return_url": "https://example.com/return",
@@ -252,4 +258,5 @@ class BasePaymentTests:
         )
 
         assert purchase_response.status_code == 200
-        assert "confirmation_url" in purchase_response.json()
+        # YooKassa embedded widget returns a confirmation_token (not a redirect URL).
+        assert purchase_response.json()["confirmation_token"]

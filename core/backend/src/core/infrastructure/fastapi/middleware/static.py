@@ -42,8 +42,7 @@ class CachedStaticFiles(StaticFiles):
 
                     if should_cache:
                         # Set caching headers
-                        headers.append((b"Cache-Control", f"public, max-age={self.cache_max_age}".encode()))
-                        headers.append((b"Pragma", b"cache"))
+                        headers.append((b"Cache-Control", f"public, max-age={self.cache_max_age}, immutable".encode()))
                     else:
                         # Set no-cache headers
                         headers.append((b"Cache-Control", b"no-store, no-cache, must-revalidate, max-age=0"))

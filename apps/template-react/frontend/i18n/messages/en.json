@@ -1,26 +1,13 @@
 {
-  "welcome": "Welcome",
-  "home": "Home",
-  "settings": "Settings",
-  "friends": "Friends",
-  "language": "Language",
-  "theme": "Theme",
-  "loading": "Loading...",
-  "error": "Error",
-  "save": "Save",
-  "cancel": "Cancel",
   "logout": "Logout",
   "nav": {
     "home": "Home",
     "demo": "Demo",
     "profile": "Profile",
     "admin": "Admin",
-    "features": "Features",
-    "login": "Login",
     "getStarted": "Get Started",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu",
-    "navigation": "Navigation"
+    "closeMenu": "Close menu"
   },
   "app": {
     "name": "Template App"
@@ -31,8 +18,6 @@
   "demo": {
     "title": "Tech Demo",
     "subtitle": "See the stack in action",
-    "ctaText": "Want to see user features?",
-    "ctaLink": "Go to Profile",
     "loading": {
       "title": "Loading States",
       "trigger": "Trigger Load",
@@ -180,18 +165,12 @@
       "optimisticNote": "Instant UI update",
       "resetBoth": "Reset Both",
       "note": "Optimistic updates provide instant feedback while syncing with server"
-    },
-    "resetAll": {
-      "button": "Reset All Demos",
-      "cleared": "Cache Cleared!"
     }
   },
   "profile": {
     "title": "Profile",
     "subtitle": "Your account and features",
     "authRequired": "Login required",
-    "ctaText": "Want to see tech demos?",
-    "ctaLink": "Go to Demo",
     "loading": "Loading...",
     "user": {
       "title": "User Info",
@@ -235,19 +214,6 @@
       "logout": "Logout",
       "loggingOut": "Logging out..."
     },
-    "subscription": {
-      "title": "Subscription",
-      "premium": "Premium",
-      "free": "Free",
-      "todoNote": "Payment flows coming soon. This shows your current subscription status.",
-      "upgrade": "Upgrade",
-      "unlimitedAccess": "Unlimited access to all features",
-      "freeLimit": "5 free actions per day",
-      "expires": "Expires",
-      "daysLeft": "days left",
-      "premiumAction": "Premium Action",
-      "premiumRequired": "This action requires a premium subscription"
-    },
     "friends": {
       "title": "Friends",
       "count": "{count} friends",
@@ -280,51 +246,6 @@
       "alertMessage": "Hello from Telegram Mini App!",
       "webOnlyMessage": "These actions are only available when running inside Telegram."
     },
-    "details": {
-      "defaultName": "User",
-      "premium": "Premium",
-      "notPremium": "Not Premium",
-      "verified": "Verified",
-      "notSet": "Not set",
-      "male": "Male",
-      "female": "Female",
-      "days": "days",
-      "loggingOut": "Logging out...",
-      "telegramNotLinked": "Telegram account is not linked.",
-      "emailNotLinked": "Email is not linked to your account.",
-      "sections": {
-        "telegram": "Telegram Account",
-        "email": "Email Account",
-        "appProfile": "App Profile",
-        "activity": "Activity"
-      },
-      "fields": {
-        "telegramId": "Telegram ID",
-        "name": "Name",
-        "username": "Username",
-        "telegramLanguage": "Language",
-        "premiumStatus": "Premium Status",
-        "email": "Email",
-        "verifiedAt": "Verified on",
-        "lastLogin": "Last Login",
-        "appUsername": "App Username",
-        "language": "Language",
-        "timezone": "Timezone",
-        "gender": "Gender",
-        "birthday": "Birthday",
-        "referralCode": "Referral Code",
-        "currentStreak": "Current Streak",
-        "bestStreak": "Best Streak",
-        "totalDays": "Total Active Days",
-        "memberSince": "Member Since"
-      },
-      "actions": {
-        "linkTelegram": "Link Telegram",
-        "addEmail": "Add Email",
-        "editProfile": "Edit Profile",
-        "logout": "Logout"
-      }
-    },
     "linkTelegram": {
       "title": "Link Telegram Account",
       "description": "Link your Telegram account to access this app from Telegram",
@@ -355,13 +276,6 @@
     "title": "Sign In",
     "description": "Choose how you'd like to sign in",
     "or": "or",
-    "useTelegramCode": "Having trouble? Use code instead",
-    "email": {
-      "loginTab": "Login",
-      "signupTab": "Sign Up",
-      "loginDescription": "Enter your email and password to login.",
-      "signupDescription": "Create a new account with your email."
-    },
     "telegram": {
       "continueWith": "Continue with Telegram",
       "openButton": "Continue with Telegram",
@@ -385,161 +299,9 @@
       "submit": "Verify",
       "back": "Back",
       "resend": "Resend code"
-    },
-    "errors": {
-      "sendFailed": "Failed to send code. Please try again.",
-      "verifyFailed": "Invalid code. Please try again.",
-      "networkError": "Network error. Please check your connection."
     }
-  },
-  "payment": {
-    "redirecting": "Redirecting you to payment page...",
-    "redirected": "Payment page opened",
-    "redirectedMessage": "You should have been redirected to the payment page. If not, click the button below.",
-    "backToApp": "Back to App",
-    "error": "Payment failed. Please try again.",
-    "errorTitle": "Payment Failed",
-    "errorMessage": "We couldn't process your payment. Please try again later.",
-    "success": {
-      "title": "Payment Successful",
-      "message": "Your payment has been processed successfully. Thank you!",
-      "button": "Go to App!"
-    }
-  },
-  "paywall": {
-    "unlockPremiumAccess": "Unlock Premium Access",
-    "title": "Unlock All Secrets of Your Destiny!",
-    "caption": "Get answers to all your questions",
-    "skip": "Skip for now",
-    "slides": {
-      "all_in_one": {
-        "title": "Everything You Need in One Place",
-        "bullet1": "Unlimited spreads to find answers anytime",
-        "bullet2": "Exclusive predictions available only to subscribers",
-        "bullet3": "Personal chat with AI tarot reader (soon)",
-        "bullet4": "Access to wiki, quizzes, and lessons (soon)"
-      },
-      "uncertainty": {
-        "title": "Uncertainty Wearing You Down?",
-        "bullet1": "Hard to make decisions while anxiety keeps growing",
-        "bullet2": "While you wait, life passes you by",
-        "bullet3": "Thousands already find answers through Tarot"
-      },
-      "stuck": {
-        "title": "Don't Know What to Do Next?",
-        "bullet1": "Everything is confusing, and fear of mistakes holds you back",
-        "bullet2": "Tarot helps see the situation from a new angle",
-        "bullet3": "Users are already making decisions with confidence"
-      },
-      "lost": {
-        "title": "Feeling Lost?",
-        "bullet1": "Feels like no one understands you",
-        "bullet2": "Cards help you look inside and find peace",
-        "bullet3": "People find support and answers in Tarot"
-      },
-      "relationships": {
-        "title": "Relationships Became Unclear?",
-        "bullet1": "You don't know what your partner feels",
-        "bullet2": "Don't wait - learn how to act now",
-        "bullet3": "Many restored harmony by following the cards' advice"
-      },
-      "life": {
-        "title": "Life Feels Stuck?",
-        "bullet1": "Seems like everything is going wrong",
-        "bullet2": "Don't waste time - find your path",
-        "bullet3": "Tarot helps find clarity and motivation"
-      }
-    }
-  },
-  "subscription": {
-    "title": "Subscription",
-    "popular": "Most popular",
-    "subscribe": "Subscribe",
-    "WEEK_SUB": "1 week",
-    "MONTH_SUB": "1 month",
-    "YEAR_SUB": "1 year",
-    "WEEK_SUB_V2": "1 week",
-    "MONTH_SUB_V2": "1 month",
-    "YEAR_SUB_V2": "1 year",
-    "WEEK_SUB_V3": "1 week",
-    "MONTH_SUB_V3": "1 month",
-    "YEAR_SUB_V3": "1 year",
-    "save": "Save {percent}%",
-    "perWeek": "/week",
-    "perMonth": "/month",
-    "perYear": "/year",
-    "saveValue": "{percent}% better value",
-    "bestValue": "Best Value",
-    "active": "Active",
-    "activeUntil": "Active until {date}",
-    "cancel": "Cancel Subscription",
-    "canceled": "Subscription Canceled, but we already miss you!",
-    "renew": "Renew Subscription",
-    "manage": "Manage Subscription",
-    "plan": "Plan",
-    "price": "Price",
-    "change": "Change Subscription",
-    "viewReceipts": "View Receipts",
-    "supportMessages": {
-      "changeRequest": "I would like to change my subscription plan.",
-      "receiptsRequest": "I would like to get my subscription receipts.",
-      "renewRequest": "I would like to renew my subscription."
-    }
-  },
-  "cancelConfirm": {
-    "title": "Are you sure?",
-    "message": "We'll miss you! Remember, you can keep using premium features until the end of your billing period.",
-    "keepButton": "Keep My Subscription",
-    "confirmButton": "Yes, Cancel"
-  },
-  "cancelReason": {
-    "title": "We're sad to see you go",
-    "caption": "What's the main reason for canceling?",
-    "options": {
-      "tooExpensive": {
-        "label": "Too expensive for me",
-        "emoji": "money"
-      },
-      "notUsing": {
-        "label": "Not using it enough",
-        "emoji": "clock"
-      },
-      "poorQuality": {
-        "label": "Quality doesn't meet expectations",
-        "emoji": "frown"
-      },
-      "foundAlternative": {
-        "label": "Found a better alternative",
-        "emoji": "refresh"
-      },
-      "technicalIssues": {
-        "label": "Technical issues",
-        "emoji": "wrench"
-      },
-      "other": {
-        "label": "Other reason",
-        "emoji": "note"
-      }
-    },
-    "continue": "Continue"
-  },
-  "cancelFeedback": {
-    "title": "Help us improve",
-    "caption": "What could we change to keep you as a subscriber?",
-    "placeholder": "Your feedback...",
-    "button": "Submit & Cancel",
-    "skip": "Skip"
-  },
-  "cancelSuccess": {
-    "title": "Subscription Cancelled",
-    "message": "Your subscription has been successfully cancelled. You can continue using premium features until the end of your billing period.",
-    "button": "Back to Profile"
   },
   "homePage": {
-    "welcomeTitle": "Welcome, {name}!",
-    "user": "User",
-    "subtitle": "This is your home screen",
-    "placeholder": "This is a placeholder home screen. Add your app-specific content here.",
     "badge": "Production-Ready Template",
     "title": "React Template",
     "heroSubtitle": "Production-ready web app template with mobile-first design and Telegram Mini App support",
@@ -711,92 +473,92 @@
     },
     "claudeCode": {
       "title": "Built for Claude Code",
-      "subtitle": "4-layer orchestration architecture — context-efficient, parallel-ready",
+      "subtitle": "Rules, hooks, skills and agents — conventions load on their own, the never-rules are enforced",
       "orchestration": {
-        "title": "Orchestration-First Architecture",
-        "layer0": "CLAUDE.md → orchestration rules, quick reference",
-        "layer1": "commands/ → /develop, /create-task, /execute-task, /review",
-        "layer2": "skills/ → auto-invoked procedures (task creation, execution)",
-        "layer3": "agents/ → developer-agent, testing-polish-agent"
+        "title": "How the Setup Is Layered",
+        "layer0": "CLAUDE.md → monorepo guide: how to work, commands, never-rules",
+        "layer1": "rules/ → layer conventions, auto-loaded by file path",
+        "layer2": "hooks/ → block the never-rules and explain the fix",
+        "layer3": "skills/ + agents/ → project workflows, developer-agent, qa"
       },
       "slashCommands": {
         "title": "Slash Commands",
         "items": {
-          "createTask": {
-            "cmd": "/create-task",
-            "desc": "PRD → phases → parallel enrichment"
+          "codeReview": {
+            "cmd": "/code-review",
+            "desc": "Review the diff; --fix applies the findings"
           },
-          "executeTask": {
-            "cmd": "/execute-task",
-            "desc": "Phase-by-phase with auto-commits"
+          "codeReviewUltra": {
+            "cmd": "/code-review ultra",
+            "desc": "Deep multi-agent review in the cloud"
           },
-          "develop": {
-            "cmd": "/develop",
-            "desc": "Quick delegation to developer-agent"
+          "simplify": {
+            "cmd": "/simplify",
+            "desc": "Reuse, simplification and efficiency cleanups"
           },
-          "design": {
-            "cmd": "/design",
-            "desc": "Research approaches, compare options"
+          "securityReview": {
+            "cmd": "/security-review",
+            "desc": "Security pass over pending changes"
           },
-          "review": {
-            "cmd": "/review",
-            "desc": "Deep code review with questions"
+          "loop": {
+            "cmd": "/loop",
+            "desc": "Repeat a prompt or command on an interval"
           },
-          "addTesting": {
-            "cmd": "/add-testing",
-            "desc": "Add test phases to existing task"
+          "init": {
+            "cmd": "/init",
+            "desc": "Write a CLAUDE.md for a new app"
           }
         }
       },
       "structuredTasks": {
-        "title": "Structured Task System",
-        "description": "Auto-detects difficulty. Simple tasks: inline enrichment. Hard tasks: hub-and-spoke parallel agents with shared ARCHITECTURE.md to prevent conflicts."
+        "title": "Task Docs",
+        "description": "Bigger work is planned in a free-form doc in docs/tasks/{name}/: brief → decisions → slices. A HANDOFF.md lets the next session pick it up."
       },
       "developerAgent": {
         "title": "Developer Agent",
-        "intro": "Reads pattern docs before every task. Returns summaries, not code dumps.",
+        "intro": "Takes a self-contained slice in its own context. Returns a summary, not code dumps.",
         "items": [
-          "Mandatory reads: critical-rules.md + domain-specific doc",
+          "Loads the layer rules for the files it touches",
           "After changes: make test, make lint, make schema",
-          "Commits: follows conventional format per phase"
+          "Commits: conventional format, its own paths only"
         ]
       },
       "patternDocs": {
-        "title": "10 Pattern Docs in .claude/shared/",
+        "title": "10 Layer Rules in .claude/rules/",
         "docs": [
-          "backend-patterns.md",
-          "react-frontend.md",
-          "vue-frontend.md",
-          "testing-patterns.md",
-          "monorepo-structure.md",
-          "error-handling.md",
-          "critical-rules.md",
-          "playwright-testing.md",
-          "react-animations.md",
-          "adding-packages.md"
+          "analytics.md",
+          "backend.md",
+          "errors.md",
+          "frontend-api.md",
+          "packages.md",
+          "prod-scripts.md",
+          "react.md",
+          "seen-features.md",
+          "testing.md",
+          "vue.md"
         ]
       },
       "example": {
         "title": "Example: Adding a Feature",
-        "createTask": {
-          "cmd": "/create-task",
+        "plan": {
+          "cmd": "Plan agent",
           "desc": "\"add user notifications\"",
-          "result": "→ Creates PRD, detects HARD, launches parallel enrichment agents"
-        },
-        "executeTask": {
-          "cmd": "/execute-task",
-          "desc": "Delegates each phase to developer-agent",
-          "result": "→ Reads CONTEXT.md, resumes if interrupted"
+          "result": "→ Writes the design to docs/tasks/notifications/"
         },
         "developerAgent": {
           "cmd": "developer-agent",
-          "desc": "Reads backend-patterns.md, implements, runs tests",
-          "result": "→ Returns summary with file:line refs"
+          "desc": "Builds one slice end to end, runs tests",
+          "result": "→ Returns a summary with file:line refs"
+        },
+        "qa": {
+          "cmd": "qa agent",
+          "desc": "Checks the changed screens in the browser",
+          "result": "→ Reports what it saw, with screenshots"
         },
         "review": {
-          "cmd": "/review",
-          "desc": "Deep architectural review",
-          "result": "→ Questions design decisions, not just style"
+          "cmd": "/code-review",
+          "desc": "Reviews the diff before the PR",
+          "result": "→ Findings ranked by severity"
         }
       }
     },
@@ -855,7 +617,7 @@
             "code": "Remove demo code, add your features"
           }
         ],
-        "seeDetails": "See .claude/shared/monorepo-structure.md for details"
+        "seeDetails": "See CLAUDE.md for details"
       }
     },
     "testing": {
@@ -897,24 +659,6 @@
       "text": "React Template",
       "vueLink": "Vue version also available"
     }
-  },
-  "profilePage": {
-    "noUsername": "No username",
-    "userInformation": "User Information",
-    "userId": "User ID",
-    "premium": "Premium",
-    "yes": "Yes",
-    "no": "No"
-  },
-  "settingsPage": {
-    "preferences": "Preferences",
-    "preferencesDescription": "Manage your app preferences",
-    "selectLanguage": "Select language",
-    "themeDescription": "Choose your preferred theme",
-    "about": "About",
-    "version": "Version",
-    "framework": "Framework",
-    "uiLibrary": "UI Library"
   },
   "auth": {
     "email": {

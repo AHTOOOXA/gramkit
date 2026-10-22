@@ -2,14 +2,68 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Template API",
-    "version": "0.1.0"
+    "version": "unknown"
   },
   "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Health Check",
+        "description": "Liveness probe endpoint.\n\nAlways returns 200 if the process is alive. This endpoint should be used\nfor Kubernetes liveness probes to detect if the application is responsive.\n\nAlso says which build is live — ``version`` (the app version passed to create_api,\nthe same one Sentry gets) and ``started_at`` — so a rollout is one request to check.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Readiness Check",
+        "description": "Readiness probe endpoint for load balancers and Kubernetes.\n\nReturns 200 during normal operation and 503 during shutdown.\nDuring shutdown, this signals to load balancers and K8s to stop\nsending new traffic to this instance.",
+        "operationId": "readiness_check_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Ping",
+        "description": "Simple ping endpoint to verify API is responding.\nReturns immediately with pong response.",
+        "operationId": "ping_ping_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/logout": {
       "post": {
         "tags": ["authentication"],
         "summary": "Logout",
-        "description": "Logout endpoint that destroys the user's session.\n\nUses session manager from app.state.session_manager to handle\nsession destruction and cookie clearing.",
+        "description": "Logout endpoint that destroys the user's session.\n\nUses SessionService for session destruction (business logic) and\nsession cookie functions for cookie clearing (HTTP concern).",
         "operationId": "logout_auth_logout_post",
         "responses": {
           "200": {
@@ -25,12 +79,12 @@
         }
       }
     },
-    "/auth/telegram/send-code": {
+    "/auth/login/telegram/code/send": {
       "post": {
         "tags": ["authentication"],
         "summary": "Send Verification Code",
         "description": "Send 6-digit verification code to user's Telegram DM.",
-        "operationId": "send_verification_code_auth_telegram_send_code_post",
+        "operationId": "send_verification_code_auth_login_telegram_code_send_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -65,12 +119,12 @@
         }
       }
     },
-    "/auth/telegram/verify-code": {
+    "/auth/login/telegram/code/verify": {
       "post": {
         "tags": ["authentication"],
         "summary": "Verify Code And Login",
-        "description": "Verify 6-digit code and create authenticated session.\n\nUses session manager from app.state.session_manager to create\nsession and set cookie after successful verification.",
-        "operationId": "verify_code_and_login_auth_telegram_verify_code_post",
+        "description": "Verify 6-digit code and create authenticated session.\n\nUses SessionService for session creation (business logic) and\nsession cookie functions for cookie setting (HTTP concern).",
+        "operationId": "verify_code_and_login_auth_login_telegram_code_verify_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -88,6 +142,748 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VerifyCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/telegram/deeplink/start": {
+      "post": {
+        "tags": ["authentication"],
+        "summary": "Start Deeplink Login",
+        "description": "Start Telegram deep link login flow.\n\nReturns a token and bot URL. User should be redirected to bot URL.\nFrontend should then poll /poll endpoint.",
+        "operationId": "start_deeplink_login_auth_login_telegram_deeplink_start_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeeplinkLoginStartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/telegram/deeplink/poll": {
+      "get": {
+        "tags": ["authentication"],
+        "summary": "Poll Deeplink Login",
+        "description": "Check status of deep link login token.\n\nFrontend should poll this endpoint after redirecting user to Telegram.\nWhen status is \"verified\", session cookie is set and user is logged in.",
+        "operationId": "poll_deeplink_login_auth_login_telegram_deeplink_poll_get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeeplinkLoginPollResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/email/check": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Check Email",
+        "description": "Check if email is already registered.\n\nReturns whether the email exists in the system.",
+        "operationId": "check_email_auth_email_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup/email/start": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Start Signup",
+        "description": "Start email signup flow.\n\nSends verification code to provided email address.\nReturns signup token for subsequent requests.",
+        "operationId": "start_signup_auth_signup_email_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSignupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSignupResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup/email/complete": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Complete Signup",
+        "description": "Complete email signup.\n\nVerifies code, validates password, creates user account.\nSets session cookie on success.",
+        "operationId": "complete_signup_auth_signup_email_complete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSignupCompleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSignupCompleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Token expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/email": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Login",
+        "description": "Login with email or username and password.\n\nSets session cookie on success.",
+        "operationId": "login_auth_login_email_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailLoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Account locked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/link/email/start": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Start Link",
+        "description": "Start email linking flow for authenticated Telegram users.\n\nSends verification code to provided email address.",
+        "operationId": "start_link_auth_link_email_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailLinkResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/link/email/complete": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Complete Link",
+        "description": "Complete email linking flow.\n\nVerifies code and sets password for email login.",
+        "operationId": "complete_link_auth_link_email_complete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailLinkCompleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailLinkCompleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Code expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/reset/start": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Start Reset",
+        "description": "Start password reset flow.\n\nSends verification code to provided email address.\nReturns reset token for subsequent requests.",
+        "operationId": "start_reset_auth_password_reset_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordResetStartResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/reset/complete": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Complete Reset",
+        "description": "Complete password reset.\n\nVerifies code and sets new password.",
+        "operationId": "complete_reset_auth_password_reset_complete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetCompleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordResetCompleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid code or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Token expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup/email/resend": {
+      "post": {
+        "tags": ["email-auth"],
+        "summary": "Resend Code",
+        "description": "Resend verification code.\n\nFor signup flow: provide signup_token.\nFor link flow: requires authentication (uses current user_id).",
+        "operationId": "resend_code_auth_signup_email_resend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailResendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailResendResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Token expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/link/telegram/start": {
+      "post": {
+        "tags": ["account-linking"],
+        "summary": "Start Link",
+        "description": "Start Telegram account linking flow.\n\nGenerates a link token and returns bot URL with deep link.\nUser should open the bot URL to complete linking.",
+        "operationId": "start_link_auth_link_telegram_start_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramLinkStartResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Already linked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/link/telegram/poll": {
+      "get": {
+        "tags": ["account-linking"],
+        "summary": "Poll Link Status",
+        "description": "Poll link token status.\n\nFrontend polls this endpoint to detect when linking completes.\nReturns status: \"pending\" | \"completed\" | \"expired\"",
+        "operationId": "poll_link_status_auth_link_telegram_poll_get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramLinkStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -152,6 +948,47 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/StartPurchaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{payment_id}/status": {
+      "get": {
+        "tags": ["payments"],
+        "summary": "Get Payment Status",
+        "description": "Get the current status of a payment (owner-only).\n\nReconciles live with the provider when non-final.\nReturns 404 for not-found OR not-owned (no existence leak).",
+        "operationId": "get_payment_status_payments__payment_id__status_get",
+        "parameters": [
+          {
+            "name": "payment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Payment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentStatusResponse"
                 }
               }
             }
@@ -287,23 +1124,22 @@
         }
       }
     },
-    "/users/{user_id}": {
-      "get": {
+    "/users/me/seen-features": {
+      "patch": {
         "tags": ["users"],
-        "summary": "Get User By Id",
-        "description": "Get user profile by ID.",
-        "operationId": "get_user_by_id_users__user_id__get",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "User Id"
+        "summary": "Mark Seen Features",
+        "description": "Merge feature-seen flags into the current user's `seen_features` map.\n\nBody is a shallow `feature_key -> value` map (see SeenFeaturesPatch), merged\nvia JSONB `||`. Returns the updated user so clients refresh the /users/me cache.",
+        "operationId": "mark_seen_features_users_me_seen_features_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeenFeaturesPatch"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -348,7 +1184,7 @@
     "/telegram-stars/webhook": {
       "post": {
         "summary": "Telegram Stars Webhook",
-        "description": "Webhook endpoint for Telegram Stars payment confirmations from web interface.\n\nThis endpoint receives payment notifications from Telegram when payments\nare made through the web interface and processes them through the unified\npayment system.\n\nReturns:\n    - 200 OK: Webhook processed successfully\n    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors\n    - 500 Internal Error: Transient business errors, unknown errors\n    - 503 Service Unavailable: Infrastructure errors (DB, Redis)",
+        "description": "Webhook endpoint for Telegram Stars payment confirmations from web interface.\n\nDORMANT (kept intentionally): the live Telegram Stars path is the aiogram bot — pre-checkout\nand successful_payment arrive as bot updates and are handled in\n``core/infrastructure/telegram/handlers/payments.py`` (the bot long-polls). Nothing currently\nPOSTs to this HTTP endpoint. It is retained — not deleted — because it is a thin, correct-by-\nconstruction adapter: it routes the same payload contract through the unified\n``services.payments.process_callback(..., TELEGRAM_STARS)`` as the bot handler, so a future\nweb/non-Telegram Stars flow can light it up without re-implementing payment finalization. If\nthat future never materializes, this and its router registration can be removed wholesale.\n\nReturns:\n    - 200 OK: Webhook processed successfully\n    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors\n    - 500 Internal Error: Transient business errors, unknown errors\n    - 503 Service Unavailable: Infrastructure errors (DB, Redis)",
         "operationId": "telegram_stars_webhook_telegram_stars_webhook_post",
         "responses": {
           "200": {
@@ -394,7 +1230,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "format": "uuid",
               "title": "Friend Id"
             }
           }
@@ -478,18 +1315,18 @@
         }
       }
     },
-    "/admin/is_admin": {
+    "/admin/stats": {
       "get": {
         "tags": ["admin"],
-        "summary": "Is Admin",
-        "operationId": "is_admin_admin_is_admin_get",
+        "summary": "Get Stats",
+        "operationId": "get_stats_admin_stats_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdminStatusResponse"
+                  "$ref": "#/components/schemas/AdminStatsResponse"
                 }
               }
             }
@@ -497,11 +1334,466 @@
         }
       }
     },
-    "/admin/trigger_backend_error": {
+    "/admin/me": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Get My Permissions",
+        "operationId": "get_my_permissions_admin_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPermissionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/demo-action": {
       "post": {
         "tags": ["admin"],
-        "summary": "Trigger Backend Error",
-        "operationId": "trigger_backend_error_admin_trigger_backend_error_post",
+        "summary": "Demo Protected Action",
+        "operationId": "demo_protected_action_admin_demo_action_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoActionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/slow": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Slow Endpoint",
+        "description": "Endpoint with artificial delay for loading state demo.\n\nArgs:\n    delay_ms: Delay in milliseconds (100-10000, default 2000)",
+        "operationId": "slow_endpoint_demo_slow_get",
+        "parameters": [
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 100,
+              "default": 2000,
+              "title": "Delay Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlowResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/unreliable": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Unreliable Endpoint",
+        "description": "Endpoint that randomly fails for error handling demo.\n\nArgs:\n    fail_rate: Probability of failure (0-1, default 0.5)",
+        "operationId": "unreliable_endpoint_demo_unreliable_get",
+        "parameters": [
+          {
+            "name": "fail_rate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0,
+              "default": 0.5,
+              "title": "Fail Rate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreliableResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/counter": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Counter",
+        "description": "Get current counter value for cache demo.\n\nArgs:\n    counter_id: Unique counter ID (default: \"default\"). Use different IDs\n               to avoid conflicts between users/sessions.",
+        "operationId": "get_counter_demo_counter_get",
+        "parameters": [
+          {
+            "name": "counter_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default",
+              "title": "Counter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/counter/increment": {
+      "post": {
+        "tags": ["demo"],
+        "summary": "Increment Counter",
+        "description": "Increment counter for optimistic update demo.\n\nArgs:\n    counter_id: Unique counter ID (default: \"default\")\n    amount: Amount to increment (1-100, default 1)\n    should_fail: If true, fails after delay (for rollback demo)",
+        "operationId": "increment_counter_demo_counter_increment_post",
+        "parameters": [
+          {
+            "name": "counter_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default",
+              "title": "Counter Id"
+            }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 1,
+              "title": "Amount"
+            }
+          },
+          {
+            "name": "should_fail",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Should Fail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/counter/reset": {
+      "post": {
+        "tags": ["demo"],
+        "summary": "Reset Counter",
+        "description": "Reset counter to 0.\n\nArgs:\n    counter_id: Unique counter ID (default: \"default\")",
+        "operationId": "reset_counter_demo_counter_reset_post",
+        "parameters": [
+          {
+            "name": "counter_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default",
+              "title": "Counter Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/notify": {
+      "post": {
+        "tags": ["demo"],
+        "summary": "Schedule Notification",
+        "description": "Schedule a delayed Telegram notification for demo.\n\nRequires Telegram authentication (guest users not supported).\n\nArgs:\n    delay_seconds: Delay before sending (1-60 seconds)",
+        "operationId": "schedule_notification_demo_notify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/items": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Paginated Items",
+        "description": "Paginated items endpoint for infinite scroll demo.\n\nArgs:\n    cursor: Starting index (default 0)\n    limit: Items per page (1-50, default 10)\n    delay_ms: Artificial delay in milliseconds (0-3000, default 500)",
+        "operationId": "get_paginated_items_demo_items_get",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 500,
+              "title": "Delay Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/items/{item_id}": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Item Detail",
+        "description": "Item detail endpoint for prefetch demo.\n\nArgs:\n    item_id: Item ID (1-100)\n    delay_ms: Artificial delay in milliseconds (0-3000, default 300)",
+        "operationId": "get_item_detail_demo_items__item_id__get",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          },
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 300,
+              "title": "Delay Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/time": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Server Time",
+        "description": "Server time endpoint for polling demo.\nReturns current server timestamp.",
+        "operationId": "get_server_time_demo_time_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerTimeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/stream": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Stream Demo",
+        "description": "SSE streaming endpoint for AI demo.\n\nReturns Server-Sent Events (SSE) with character-by-character text.\nFrontend parses lines starting with 'data: ' and stops at '[DONE]'.\n\nExample client:\n```typescript\nconst res = await apiFetch('/demo/stream');\nconst reader = res.body?.getReader();\nconst decoder = new TextDecoder();\n\nwhile (reader) {\n  const { done, value } = await reader.read();\n  if (done) break;\n\n  const chunk = decoder.decode(value);\n  for (const line of chunk.split('\\n')) {\n    if (line.startsWith('data: ') && !line.includes('[DONE]')) {\n      console.log(line.slice(6)); // Extract content after \"data: \"\n    }\n  }\n}\n```",
+        "operationId": "stream_demo_demo_stream_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -514,18 +1806,53 @@
         }
       }
     },
-    "/admin/trigger_worker_error": {
-      "post": {
-        "tags": ["admin"],
-        "summary": "Trigger Worker Error",
-        "operationId": "trigger_worker_error_admin_trigger_worker_error_post",
+    "/demo/weather": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Weather",
+        "description": "Mock weather data for parallel queries demo.",
+        "operationId": "get_weather_demo_weather_get",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Moscow",
+              "title": "City"
+            }
+          },
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 800,
+              "title": "Delay Ms"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WorkerErrorResponse"
+                  "$ref": "#/components/schemas/WeatherResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -533,19 +1860,228 @@
         }
       }
     },
-    "/admin/reset_user": {
-      "post": {
-        "tags": ["admin"],
-        "summary": "Reset User",
-        "description": "Debug-only endpoint to hard delete a user and all their data.\nSimulates a brand new user registration for testing onboarding flows.\n\nIMPORTANT: This endpoint is ONLY available when DEBUG=true.\n\nDatabase CASCADE constraints automatically delete:\n- readings, chat_sessions, payments, subscriptions\n- friendships (both directions), group_invites, group_members, groups\n- balance, trainer_progress, user_question_answers, mastered_questions",
-        "operationId": "reset_user_admin_reset_user_post",
+    "/demo/stock": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Stock",
+        "description": "Mock stock data for parallel queries demo.",
+        "operationId": "get_stock_demo_stock_get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DEMO",
+              "title": "Symbol"
+            }
+          },
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 600,
+              "title": "Delay Ms"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResetUserResponse"
+                  "$ref": "#/components/schemas/StockResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/news": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get News",
+        "description": "Mock news data for parallel queries demo.",
+        "operationId": "get_news_demo_news_get",
+        "parameters": [
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 700,
+              "title": "Delay Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/error/{status_code}": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Trigger Error",
+        "description": "Trigger specific HTTP error for error handling demo.\n\nArgs:\n    status_code: HTTP status code to return (400-599)\n    delay_ms: Optional delay before returning error",
+        "operationId": "trigger_error_demo_error__status_code__get",
+        "parameters": [
+          {
+            "name": "status_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Status Code"
+            }
+          },
+          {
+            "name": "delay_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 3000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Delay Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/rbac/me": {
+      "get": {
+        "tags": ["demo"],
+        "summary": "Get Rbac Me",
+        "description": "Get your current role and permissions for RBAC demo.",
+        "operationId": "get_rbac_me_demo_rbac_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RbacMeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/rbac/set-role": {
+      "post": {
+        "tags": ["demo"],
+        "summary": "Set Demo Role",
+        "description": "Change your role for demo purposes (debug mode only).\n\nThis allows testing different permission levels without\nneeding actual admin access.",
+        "operationId": "set_demo_role_demo_rbac_set_role_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetRoleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo/rbac/protected-action": {
+      "post": {
+        "tags": ["demo"],
+        "summary": "Demo Protected Action",
+        "description": "Demo endpoint that requires owner role.\n\nUse this to test permission checks - only owners can execute this action.",
+        "operationId": "demo_protected_action_demo_rbac_protected_action_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtectedActionResponse"
                 }
               }
             }
@@ -556,16 +2092,23 @@
   },
   "components": {
     "schemas": {
-      "AdminStatusResponse": {
+      "AdminStatsResponse": {
         "properties": {
-          "is_admin": {
-            "type": "boolean",
-            "title": "Is Admin"
+          "total_users": {
+            "type": "integer",
+            "title": "Total Users"
+          },
+          "users_by_role": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Users By Role"
           }
         },
         "type": "object",
-        "required": ["is_admin"],
-        "title": "AdminStatusResponse"
+        "required": ["total_users", "users_by_role"],
+        "title": "AdminStatsResponse"
       },
       "CancelSubscriptionRequest": {
         "properties": {
@@ -597,6 +2140,394 @@
         },
         "type": "object",
         "title": "CancelSubscriptionRequest"
+      },
+      "CounterResponse": {
+        "properties": {
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          },
+          "counter_id": {
+            "type": "string",
+            "title": "Counter Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": ["value", "counter_id", "timestamp"],
+        "title": "CounterResponse"
+      },
+      "DeeplinkLoginPollResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["pending", "verified", "expired"],
+            "title": "Status"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "DeeplinkLoginPollResponse",
+        "description": "Response for checking deep link login status."
+      },
+      "DeeplinkLoginStartResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "bot_url": {
+            "type": "string",
+            "title": "Bot Url"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "default": 300
+          }
+        },
+        "type": "object",
+        "required": ["token", "bot_url"],
+        "title": "DeeplinkLoginStartResponse",
+        "description": "Response for starting deep link login."
+      },
+      "DemoActionResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "required_role": {
+            "type": "string",
+            "title": "Required Role"
+          }
+        },
+        "type": "object",
+        "required": ["success", "message", "required_role"],
+        "title": "DemoActionResponse"
+      },
+      "EmailCheckRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": ["email"],
+        "title": "EmailCheckRequest"
+      },
+      "EmailCheckResponse": {
+        "properties": {
+          "exists": {
+            "type": "boolean",
+            "title": "Exists"
+          }
+        },
+        "type": "object",
+        "required": ["exists"],
+        "title": "EmailCheckResponse"
+      },
+      "EmailLinkCompleteRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6,
+            "pattern": "^\\d{6}$",
+            "title": "Code"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": ["code", "password"],
+        "title": "EmailLinkCompleteRequest",
+        "description": "Request to complete email linking."
+      },
+      "EmailLinkCompleteResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Email linked successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "EmailLinkCompleteResponse",
+        "description": "Response for successful email linking."
+      },
+      "EmailLinkRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": ["email"],
+        "title": "EmailLinkRequest",
+        "description": "Request to start email linking for Telegram users."
+      },
+      "EmailLinkResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Verification code sent"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": ["expires_in"],
+        "title": "EmailLinkResponse",
+        "description": "Response for starting email link flow."
+      },
+      "EmailLoginRequest": {
+        "properties": {
+          "email_or_username": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Email Or Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": ["email_or_username", "password"],
+        "title": "EmailLoginRequest",
+        "description": "Request to login with email or username."
+      },
+      "EmailLoginResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Login successful"
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "username", "email"],
+        "title": "EmailLoginResponse",
+        "description": "Response for successful login."
+      },
+      "EmailResendRequest": {
+        "properties": {
+          "signup_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signup Token"
+          }
+        },
+        "type": "object",
+        "title": "EmailResendRequest",
+        "description": "Request to resend verification code."
+      },
+      "EmailResendResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Verification code sent"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": ["expires_in"],
+        "title": "EmailResendResponse",
+        "description": "Response for code resend."
+      },
+      "EmailSignupCompleteRequest": {
+        "properties": {
+          "signup_token": {
+            "type": "string",
+            "title": "Signup Token"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 6,
+            "minLength": 6,
+            "pattern": "^\\d{6}$",
+            "title": "Code"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "title": "Username"
+          },
+          "language_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language Code"
+          }
+        },
+        "type": "object",
+        "required": ["signup_token", "code", "password", "username"],
+        "title": "EmailSignupCompleteRequest",
+        "description": "Request to complete email signup."
+      },
+      "EmailSignupCompleteResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Account created successfully"
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "username", "email"],
+        "title": "EmailSignupCompleteResponse",
+        "description": "Response for successful signup completion."
+      },
+      "EmailSignupRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": ["email"],
+        "title": "EmailSignupRequest",
+        "description": "Request to start email signup flow."
+      },
+      "EmailSignupResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "signup_token": {
+            "type": "string",
+            "title": "Signup Token"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "default": 600
+          }
+        },
+        "type": "object",
+        "required": ["message", "signup_token"],
+        "title": "EmailSignupResponse",
+        "description": "Response for signup initiation."
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "type": "string",
+            "title": "Error"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["error", "message"],
+        "title": "ErrorResponse",
+        "description": "Standard error response."
       },
       "GroupSchema": {
         "properties": {
@@ -652,6 +2583,33 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ItemDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details"
+          },
+          "fetched_at": {
+            "type": "string",
+            "title": "Fetched At"
+          }
+        },
+        "type": "object",
+        "required": ["id", "title", "description", "details", "fetched_at"],
+        "title": "ItemDetailResponse"
+      },
       "LogoutResponse": {
         "properties": {
           "message": {
@@ -663,10 +2621,231 @@
         "required": ["message"],
         "title": "LogoutResponse"
       },
+      "MyPermissionsResponse": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "is_owner_in_config": {
+            "type": "boolean",
+            "title": "Is Owner In Config"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          }
+        },
+        "type": "object",
+        "required": ["role", "is_owner_in_config", "permissions"],
+        "title": "MyPermissionsResponse"
+      },
+      "NewsResponse": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "fetched_at": {
+            "type": "string",
+            "title": "Fetched At"
+          }
+        },
+        "type": "object",
+        "required": ["headline", "source", "fetched_at"],
+        "title": "NewsResponse"
+      },
+      "NotifyRequest": {
+        "properties": {
+          "delay_seconds": {
+            "type": "integer",
+            "title": "Delay Seconds",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "title": "NotifyRequest"
+      },
+      "NotifyResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "delay_seconds": {
+            "type": "integer",
+            "title": "Delay Seconds"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "title": "Scheduled At"
+          }
+        },
+        "type": "object",
+        "required": ["message", "delay_seconds", "scheduled_at"],
+        "title": "NotifyResponse"
+      },
+      "PaginatedItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": ["id", "title", "description"],
+        "title": "PaginatedItem"
+      },
+      "PaginatedResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PaginatedItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": ["items", "next_cursor", "has_more", "total"],
+        "title": "PaginatedResponse"
+      },
+      "PasswordResetCompleteRequest": {
+        "properties": {
+          "reset_token": {
+            "type": "string",
+            "title": "Reset Token"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": ["reset_token", "code", "new_password"],
+        "title": "PasswordResetCompleteRequest"
+      },
+      "PasswordResetCompleteResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "PasswordResetCompleteResponse"
+      },
+      "PasswordResetStartRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": ["email"],
+        "title": "PasswordResetStartRequest"
+      },
+      "PasswordResetStartResponse": {
+        "properties": {
+          "reset_token": {
+            "type": "string",
+            "title": "Reset Token"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": ["reset_token", "expires_in"],
+        "title": "PasswordResetStartResponse"
+      },
       "PaymentProvider": {
         "type": "string",
         "enum": ["YOOKASSA", "TELEGRAM_STARS", "GIFT"],
         "title": "PaymentProvider"
+      },
+      "PaymentStatus": {
+        "type": "string",
+        "enum": [
+          "CREATED",
+          "WAITING_FOR_ACTION",
+          "SUCCEEDED",
+          "FAILED",
+          "CANCELED",
+          "REFUNDED"
+        ],
+        "title": "PaymentStatus"
+      },
+      "PaymentStatusResponse": {
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "title": "Payment Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          }
+        },
+        "type": "object",
+        "required": ["payment_id", "status"],
+        "title": "PaymentStatusResponse"
+      },
+      "ProductPriceSchema": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          }
+        },
+        "type": "object",
+        "required": ["currency", "amount"],
+        "title": "ProductPriceSchema"
       },
       "ProductSchema": {
         "properties": {
@@ -693,6 +2872,14 @@
           "is_recurring": {
             "type": "boolean",
             "title": "Is Recurring"
+          },
+          "prices": {
+            "items": {
+              "$ref": "#/components/schemas/ProductPriceSchema"
+            },
+            "type": "array",
+            "title": "Prices",
+            "default": []
           }
         },
         "type": "object",
@@ -706,21 +2893,84 @@
         ],
         "title": "ProductSchema"
       },
-      "ResetUserResponse": {
+      "ProtectedActionResponse": {
         "properties": {
-          "status": {
-            "type": "string",
-            "const": "User reset successfully",
-            "title": "Status"
+          "success": {
+            "type": "boolean",
+            "title": "Success"
           },
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "your_role": {
+            "type": "string",
+            "title": "Your Role"
           }
         },
         "type": "object",
-        "required": ["status", "user_id"],
-        "title": "ResetUserResponse"
+        "required": ["success", "message", "your_role"],
+        "title": "ProtectedActionResponse",
+        "description": "Response from protected action."
+      },
+      "RbacMeResponse": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
+          }
+        },
+        "type": "object",
+        "required": ["role", "permissions"],
+        "title": "RbacMeResponse",
+        "description": "Your current role and permissions."
+      },
+      "SeenFeaturesPatch": {
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "type": "object"
+            }
+          ]
+        },
+        "type": "object",
+        "title": "SeenFeaturesPatch",
+        "description": "Body for PATCH /users/me/seen-features.\n\nA shallow `feature_key -> value` map, merged into `users.seen_features` via\nJSONB `||` (top-level keys only). Hardened because it is user-writable:\nkeys must be dotted lowercase identifiers, the map is bounded, and values\nare at most one level deep."
       },
       "SendCodeRequest": {
         "properties": {
@@ -747,6 +2997,80 @@
         "type": "object",
         "required": ["message", "expires_in"],
         "title": "SendCodeResponse"
+      },
+      "ServerTimeResponse": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "unix_ms": {
+            "type": "integer",
+            "title": "Unix Ms"
+          },
+          "formatted": {
+            "type": "string",
+            "title": "Formatted"
+          }
+        },
+        "type": "object",
+        "required": ["timestamp", "unix_ms", "formatted"],
+        "title": "ServerTimeResponse"
+      },
+      "SetRoleRequest": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": ["role"],
+        "title": "SetRoleRequest",
+        "description": "Request to change your role (demo only)."
+      },
+      "SetRoleResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "old_role": {
+            "type": "string",
+            "title": "Old Role"
+          },
+          "new_role": {
+            "type": "string",
+            "title": "New Role"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["success", "old_role", "new_role", "message"],
+        "title": "SetRoleResponse",
+        "description": "Response after changing role."
+      },
+      "SlowResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "delay_ms": {
+            "type": "integer",
+            "title": "Delay Ms"
+          }
+        },
+        "type": "object",
+        "required": ["message", "timestamp", "delay_ms"],
+        "title": "SlowResponse"
       },
       "StartData": {
         "properties": {
@@ -780,7 +3104,7 @@
       },
       "StartMode": {
         "type": "string",
-        "enum": ["draw", "keygo"],
+        "enum": ["draw"],
         "title": "StartMode"
       },
       "StartParamsRequest": {
@@ -860,12 +3184,30 @@
             "default": "YOOKASSA"
           },
           "return_url": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Return Url"
+          },
+          "locale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locale"
           }
         },
         "type": "object",
-        "required": ["product_id", "return_url"],
+        "required": ["product_id"],
         "title": "StartPurchaseRequest"
       },
       "StartPurchaseResponse": {
@@ -874,8 +3216,26 @@
             "type": "string",
             "title": "Payment Id"
           },
+          "confirmation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmation Token"
+          },
           "confirmation_url": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Confirmation Url"
           },
           "amount": {
@@ -888,8 +3248,31 @@
           }
         },
         "type": "object",
-        "required": ["payment_id", "confirmation_url", "amount", "currency"],
+        "required": ["payment_id", "amount", "currency"],
         "title": "StartPurchaseResponse"
+      },
+      "StockResponse": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "change": {
+            "type": "number",
+            "title": "Change"
+          },
+          "fetched_at": {
+            "type": "string",
+            "title": "Fetched At"
+          }
+        },
+        "type": "object",
+        "required": ["symbol", "price", "change", "fetched_at"],
+        "title": "StockResponse"
       },
       "SubscriptionSchema": {
         "properties": {
@@ -899,7 +3282,8 @@
             "title": "Id"
           },
           "user_id": {
-            "type": "integer",
+            "type": "string",
+            "format": "uuid",
             "title": "User Id"
           },
           "product_id": {
@@ -974,7 +3358,14 @@
       },
       "SubscriptionStatus": {
         "type": "string",
-        "enum": ["NONE", "PENDING", "ACTIVE", "CANCELED", "EXPIRED"],
+        "enum": [
+          "NONE",
+          "PENDING",
+          "ACTIVE",
+          "PAST_DUE",
+          "CANCELED",
+          "EXPIRED"
+        ],
         "title": "SubscriptionStatus"
       },
       "SubscriptionWithDetailsSchema": {
@@ -985,7 +3376,8 @@
             "title": "Id"
           },
           "user_id": {
-            "type": "integer",
+            "type": "string",
+            "format": "uuid",
             "title": "User Id"
           },
           "product_id": {
@@ -1072,106 +3464,32 @@
         ],
         "title": "SubscriptionWithDetailsSchema"
       },
-      "UpdateUserRequest": {
+      "TelegramLinkStartResponse": {
         "properties": {
-          "app_username": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "App Username"
+          "link_token": {
+            "type": "string",
+            "title": "Link Token"
           },
-          "app_language_code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "App Language Code"
+          "bot_url": {
+            "type": "string",
+            "title": "Bot Url"
           },
-          "male": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Male"
-          },
-          "birth_date": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Birth Date"
-          },
-          "is_onboarded": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Onboarded"
-          },
-          "is_terms_accepted": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Terms Accepted"
-          },
-          "timezone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Timezone"
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "default": 300
           }
         },
         "type": "object",
-        "title": "UpdateUserRequest"
+        "required": ["link_token", "bot_url"],
+        "title": "TelegramLinkStartResponse",
+        "description": "Response for starting Telegram link flow."
       },
-      "UserSchema": {
+      "TelegramLinkStatusResponse": {
         "properties": {
-          "user_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "User Id"
-          },
-          "user_type": {
-            "$ref": "#/components/schemas/UserType",
-            "default": "REGISTERED"
+          "status": {
+            "type": "string",
+            "title": "Status"
           },
           "telegram_id": {
             "anyOf": [
@@ -1184,7 +3502,7 @@
             ],
             "title": "Telegram Id"
           },
-          "first_name": {
+          "telegram_username": {
             "anyOf": [
               {
                 "type": "string"
@@ -1193,9 +3511,9 @@
                 "type": "null"
               }
             ],
-            "title": "First Name"
+            "title": "Telegram Username"
           },
-          "last_name": {
+          "error": {
             "anyOf": [
               {
                 "type": "string"
@@ -1204,7 +3522,45 @@
                 "type": "null"
               }
             ],
-            "title": "Last Name"
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "TelegramLinkStatusResponse",
+        "description": "Response for checking Telegram link status."
+      },
+      "UnreliableResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "attempt_succeeded": {
+            "type": "boolean",
+            "title": "Attempt Succeeded"
+          }
+        },
+        "type": "object",
+        "required": ["message", "timestamp", "attempt_succeeded"],
+        "title": "UnreliableResponse"
+      },
+      "UpdateUserRequest": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
           },
           "username": {
             "anyOf": [
@@ -1217,16 +3573,16 @@
             ],
             "title": "Username"
           },
-          "is_bot": {
+          "avatar_url": {
             "anyOf": [
               {
-                "type": "boolean"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Is Bot"
+            "title": "Avatar Url"
           },
           "language_code": {
             "anyOf": [
@@ -1239,40 +3595,7 @@
             ],
             "title": "Language Code"
           },
-          "is_premium": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Premium"
-          },
-          "added_to_attachment_menu": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Added To Attachment Menu"
-          },
-          "allows_write_to_pm": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Allows Write To Pm"
-          },
-          "photo_url": {
+          "timezone": {
             "anyOf": [
               {
                 "type": "string"
@@ -1281,40 +3604,7 @@
                 "type": "null"
               }
             ],
-            "title": "Photo Url"
-          },
-          "app_username": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "App Username"
-          },
-          "app_language_code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "App Language Code"
-          },
-          "male": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Male"
+            "title": "Timezone"
           },
           "birth_date": {
             "anyOf": [
@@ -1327,6 +3617,17 @@
               }
             ],
             "title": "Birth Date"
+          },
+          "male": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Male"
           },
           "is_onboarded": {
             "anyOf": [
@@ -1349,55 +3650,34 @@
               }
             ],
             "title": "Is Terms Accepted"
-          },
-          "timezone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Timezone"
-          },
-          "referal_code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Referal Code"
-          },
-          "current_streak": {
-            "type": "integer",
-            "title": "Current Streak",
-            "default": 0
-          },
-          "best_streak": {
-            "type": "integer",
-            "title": "Best Streak",
-            "default": 0
-          },
-          "last_activity_date": {
+          }
+        },
+        "type": "object",
+        "title": "UpdateUserRequest",
+        "description": "Request schema for updating user profile fields"
+      },
+      "UserSchema": {
+        "properties": {
+          "id": {
             "anyOf": [
               {
                 "type": "string",
-                "format": "date"
+                "format": "uuid"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Last Activity Date"
+            "title": "Id"
           },
-          "total_active_days": {
-            "type": "integer",
-            "title": "Total Active Days",
-            "default": 0
+          "user_type": {
+            "$ref": "#/components/schemas/UserType",
+            "default": "REGISTERED"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "user"
           },
           "created_at": {
             "anyOf": [
@@ -1422,10 +3702,317 @@
               }
             ],
             "title": "Updated At"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language Code"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Date"
+          },
+          "male": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Male"
+          },
+          "telegram_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Id"
+          },
+          "tg_first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg First Name"
+          },
+          "tg_last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Last Name"
+          },
+          "tg_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Username"
+          },
+          "tg_language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Language Code"
+          },
+          "tg_is_premium": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Is Premium"
+          },
+          "tg_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Photo Url"
+          },
+          "tg_is_bot": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Is Bot"
+          },
+          "tg_added_to_attachment_menu": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Added To Attachment Menu"
+          },
+          "tg_allows_write_to_pm": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tg Allows Write To Pm"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "email_verified": {
+            "type": "boolean",
+            "title": "Email Verified",
+            "default": false
+          },
+          "email_verified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Verified At"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "current_streak": {
+            "type": "integer",
+            "title": "Current Streak",
+            "default": 0
+          },
+          "best_streak": {
+            "type": "integer",
+            "title": "Best Streak",
+            "default": 0
+          },
+          "total_active_days": {
+            "type": "integer",
+            "title": "Total Active Days",
+            "default": 0
+          },
+          "last_activity_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity Date"
+          },
+          "is_onboarded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Onboarded"
+          },
+          "is_terms_accepted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Terms Accepted"
+          },
+          "referral_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referral Code"
+          },
+          "bot_blocked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Blocked At"
+          },
+          "seen_features": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Seen Features",
+            "default": {}
           }
         },
         "type": "object",
-        "title": "UserSchema"
+        "title": "UserSchema",
+        "description": "User schema for API responses - NEVER expose password_hash"
       },
       "UserType": {
         "type": "string",
@@ -1455,6 +4042,13 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",
@@ -1490,17 +4084,28 @@
         "required": ["user", "message"],
         "title": "VerifyCodeResponse"
       },
-      "WorkerErrorResponse": {
+      "WeatherResponse": {
         "properties": {
-          "status": {
+          "city": {
             "type": "string",
-            "const": "Worker task triggered",
-            "title": "Status"
+            "title": "City"
+          },
+          "temperature": {
+            "type": "integer",
+            "title": "Temperature"
+          },
+          "condition": {
+            "type": "string",
+            "title": "Condition"
+          },
+          "fetched_at": {
+            "type": "string",
+            "title": "Fetched At"
           }
         },
         "type": "object",
-        "required": ["status"],
-        "title": "WorkerErrorResponse"
+        "required": ["city", "temperature", "condition", "fetched_at"],
+        "title": "WeatherResponse"
       }
     }
   }

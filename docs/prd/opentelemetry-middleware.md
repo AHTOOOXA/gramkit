@@ -4,7 +4,7 @@
 >
 > After analysis, Sentry covers all our observability needs (errors, tracing, logs, metrics, uptime, replay).
 > No need for separate OpenTelemetry setup at MVP/indie scale.
-> See [Issue #102](https://github.com/AHTOOOXA/tarot/issues/102) for Sentry enhancements instead.
+> See the issue tracker for Sentry enhancements instead.
 
 ## Goal
 
@@ -48,7 +48,7 @@ opentelemetry-instrument python -m app.webhook.main
 
 Or via environment (preferred for Docker):
 ```bash
-OTEL_SERVICE_NAME=tarot-api \
+OTEL_SERVICE_NAME=my-app-api \
 OTEL_TRACES_EXPORTER=otlp \
 OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317 \
 opentelemetry-instrument python -m app.webhook.main
@@ -109,7 +109,7 @@ Add to `ObservabilitySettings`:
 
 | Variable | Example |
 |----------|---------|
-| `OTEL_SERVICE_NAME` | `tarot-api` |
+| `OTEL_SERVICE_NAME` | `my-app-api` |
 | `OTEL_TRACES_EXPORTER` | `otlp` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://otel-collector:4317` |
 | `OTEL_PYTHON_FASTAPI_EXCLUDED_URLS` | `/health,/ready` |

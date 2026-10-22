@@ -4,6 +4,7 @@ Defines the contract that app-specific product implementations must satisfy.
 Uses Protocol for structural subtyping - no inheritance required.
 """
 
+from collections.abc import Awaitable, Callable
 from typing import Any, Protocol
 from uuid import UUID
 
@@ -33,6 +34,31 @@ class PaymentProduct(Protocol):
     async def reward(self, user_id: UUID, payment: Any, recurring_details: dict, subscriptions_service: Any) -> None:
         """Execute reward logic after successful payment."""
         ...
+
+
+# Optional product members. They aren't on PaymentProduct, so a product without them still satisfies
+# it; core reads them only through these accessors (one place, typed):
+#   invoice_text(locale) -> (title, description) | None   the Telegram Stars invoice wording
+#   daily_purchase_limit: int | None                       purchases per user per 24 h, shared by all
+#                                                          limited products
+#   async take_back(payment, subscriptions_service) -> str | None
+#                                                          what a refund takes back (returns the note
+#                                                          for the owner); None = the subscription period
+
+
+def product_invoice_text(product: PaymentProduct | None, locale: str | None) -> tuple[str, str] | None:
+    invoice_text: Callable[[str | None], tuple[str, str] | None] | None = getattr(product, "invoice_text", None)
+    return invoice_text(locale) if invoice_text is not None else None
+
+
+def product_daily_purchase_limit(product: PaymentProduct | None) -> int | None:
+    limit: int | None = getattr(product, "daily_purchase_limit", None)
+    return limit
+
+
+async def product_take_back(product: PaymentProduct | None, payment: Any, subscriptions_service: Any) -> str | None:
+    take_back: Callable[[Any, Any], Awaitable[str | None]] | None = getattr(product, "take_back", None)
+    return await take_back(payment, subscriptions_service) if take_back is not None else None
 
 
 class ProductCatalog(Protocol):

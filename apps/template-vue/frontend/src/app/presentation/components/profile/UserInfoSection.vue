@@ -18,7 +18,7 @@ import {
   Calendar,
   Check,
   Plus
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import LinkTelegramModal from './LinkTelegramModal.vue'
 import AddEmailModal from './AddEmailModal.vue'
 import type { UserSchema } from '@/gen/models'

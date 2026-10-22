@@ -23,48 +23,9 @@ def create_notification_keyboard(key: str, startapp_param: str, locale: str | No
     return kb.as_markup()
 
 
-# Daily Card Notification
-def daily_card_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.daily_card", "r-dailycardnotification", locale)
-
-
-# Premium Notification
-def premium_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.premium", "r-premium", locale)
-
-
-# Self Discovery Journey Notification
-def self_discovery_journey_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.self_discovery", "r-selfdiscovery", locale)
-
-
-# Teasing Notification
-def teasing_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.teasing", "r-teasing", locale)
-
-
-# Emotional Wellness Notification
-def emotional_wellness_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.emotional_wellness", "r-emotionalwellness", locale)
-
-
-# Lapsed Recovery Notification
-def lapsed_recovery_notification_kb(locale: str | None = None):
-    return create_notification_keyboard("notification_buttons.welcome_back", "r-lapsedrecovery", locale)
-
-
-# Out of Readings Follow Up Notification
-def out_of_readings_follow_up_kb(locale: str | None = None):
-    return create_notification_keyboard(
-        "notification_buttons.out_of_readings_follow_up", "r-outofreadingsfollowup", locale
-    )
-
-
-# Out of Readings Follow Up 2 Notification
-def out_of_readings_follow_up_2_kb(locale: str | None = None):
-    return create_notification_keyboard(
-        "notification_buttons.out_of_readings_follow_up_2", "r-outofreadingsfollowup2", locale
-    )
+# Example notification keyboard (see ExampleDailyNotification.get_keyboard_func)
+def daily_notification_kb(locale: str | None = None):
+    return create_notification_keyboard("app.open_app_button", "r-dailynotification", locale)
 
 
 # Promotional Broadcast Main Keyboard - Worker Safe Version

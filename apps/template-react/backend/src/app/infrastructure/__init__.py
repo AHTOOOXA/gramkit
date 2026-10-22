@@ -1,5 +1,5 @@
 """
-Centralized infrastructure setup for the tarot application.
+Centralized infrastructure setup for the application.
 
 This module provides:
 1. Instantiation of all infrastructure components
@@ -38,8 +38,8 @@ from core.infrastructure.redis import RedisClient
 # ============================================================================
 
 # Get the absolute path to the src directory
-# This file: apps/template/backend/src/app/infrastructure/__init__.py
-# Parent: apps/template/backend/src/app/
+# This file: apps/<app>/backend/src/app/infrastructure/__init__.py
+# Parent: apps/<app>/backend/src/app/
 _SRC_PATH = Path(__file__).parent.parent
 
 # ============================================================================

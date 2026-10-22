@@ -234,7 +234,7 @@ make test-file file=src/app/tests/webhook/test_demo.py APP=template-react
 ## References
 
 - [CLAUDE.md](/CLAUDE.md) - Project guide
-- [React Best Practices](/.claude/shared/react-frontend.md)
-- [Backend Patterns](/.claude/shared/backend-patterns.md)
+- [React conventions](/.claude/rules/react.md)
+- [Backend conventions](/.claude/rules/backend.md)
 - [ROUTING.md](ROUTING.md) - Routing quick reference
 - [SIMPLIFIED-ARCHITECTURE.md](SIMPLIFIED-ARCHITECTURE.md) - Architecture details

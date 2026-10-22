@@ -7,13 +7,22 @@ The routes are generic and can work with any payment provider configured
 in the app's payment service.
 """
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from core.infrastructure.fastapi.dependencies import get_services, get_user
 from core.infrastructure.fastapi.rate_limiter import HARD_LIMIT, SOFT_LIMIT, limiter
 from core.infrastructure.logging import get_logger
-from core.schemas.payments import ProductSchema, StartPurchaseRequest, StartPurchaseResponse
+from core.schemas.payments import (
+    PaymentStatusResponse,
+    ProductPriceSchema,
+    ProductSchema,
+    StartPurchaseRequest,
+    StartPurchaseResponse,
+)
 from core.schemas.users import UserSchema
+from core.services.payments.types import PurchaseLimitError
 from core.services.requests import CoreRequestsService
 
 router = APIRouter(prefix="/payments", tags=["payments"])
@@ -47,6 +56,10 @@ async def get_products(
                 currency=product_data["currency"],
                 duration_days=product_data["duration_days"],
                 is_recurring=product_data["recurring"],
+                prices=[
+                    ProductPriceSchema(currency=pr["currency"], amount=pr["amount"])
+                    for pr in product_data.get("prices", [])
+                ],
             )
         )
     return products
@@ -73,8 +86,34 @@ async def start_purchase(
             currency=purchase_request.currency,
             provider_id=purchase_request.provider_id,
             return_url=purchase_request.return_url,
+            locale=purchase_request.locale,
         )
         return StartPurchaseResponse(**return_data)
+    except PurchaseLimitError as e:
+        raise HTTPException(status_code=429, detail={"code": "DailyPurchaseLimitError", "message": str(e)})
     except ValueError as e:
         logger.warning(f"Invalid payment request from user {user.id}: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/{payment_id}/status", response_model=PaymentStatusResponse)
+@limiter.limit(HARD_LIMIT)
+async def get_payment_status(
+    request: Request,
+    payment_id: str,
+    user: UserSchema = Depends(get_user),
+    services: CoreRequestsService = Depends(get_services),
+) -> PaymentStatusResponse:
+    """Get the current status of a payment (owner-only).
+
+    Reconciles live with the provider when non-final.
+    Returns 404 for not-found OR not-owned (no existence leak).
+    """
+    try:
+        pid = UUID(payment_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    payment = await services.payments.get_payment_status(user_id=user.id, payment_id=pid)
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    return PaymentStatusResponse(payment_id=str(payment.id), status=payment.status)

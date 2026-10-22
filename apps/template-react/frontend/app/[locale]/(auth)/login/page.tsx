@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Loader2, Send } from 'lucide-react';
@@ -103,7 +103,7 @@ export default function LoginPage() {
   };
 
   // Email flow handlers
-  const handleEmailContinue = async (e: FormEvent) => {
+  const handleEmailContinue = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmailError(null);
     setEmailFlow('checking');
@@ -125,7 +125,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleEmailLogin = async (e: FormEvent) => {
+  const handleEmailLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmailError(null);
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleCompleteSignup = async (e: FormEvent) => {
+  const handleCompleteSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmailError(null);
 
@@ -162,7 +162,7 @@ export default function LoginPage() {
   };
 
   // Password reset handlers
-  const handleStartReset = async (e: FormEvent) => {
+  const handleStartReset = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await passwordReset.start(resetEmail);
@@ -172,7 +172,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleCompleteReset = async (e: FormEvent) => {
+  const handleCompleteReset = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await passwordReset.complete(resetCode, resetPassword);

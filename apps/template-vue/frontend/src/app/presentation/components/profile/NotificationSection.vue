@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useScheduleNotificationDemoNotifyPost } from '@/gen/hooks'
 import ProfileSection from './ProfileSection.vue'
 import { Button } from '@/components/ui/button'
-import { Check } from 'lucide-vue-next'
+import { Check } from '@lucide/vue'
 
 const { t } = useI18n()
 

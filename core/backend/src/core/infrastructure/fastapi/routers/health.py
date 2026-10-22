@@ -6,18 +6,26 @@ from fastapi import APIRouter, Request, Response
 
 router = APIRouter(tags=["health"])
 
+# Import time ≈ process start: a deploy that restarted this container shows a new value.
+_STARTED_AT = datetime.now(UTC)
+
 
 @router.get("/health")
-async def health_check():
+async def health_check(request: Request):
     """
     Liveness probe endpoint.
 
     Always returns 200 if the process is alive. This endpoint should be used
     for Kubernetes liveness probes to detect if the application is responsive.
+
+    Also says which build is live — ``version`` (the app version passed to create_api,
+    the same one Sentry gets) and ``started_at`` — so a rollout is one request to check.
     """
     return {
         "status": "healthy",
         "timestamp": datetime.now(UTC).isoformat(),
+        "version": request.app.version,
+        "started_at": _STARTED_AT.isoformat(),
     }
 
 

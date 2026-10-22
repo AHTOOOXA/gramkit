@@ -43,12 +43,44 @@ export function DebugPanel() {
     }
   };
 
+  // Login-as mock: authenticate as the selected user. Independent of TG mock —
+  // we never touch the platform cookie here, so you can be a real user on web.
+  const handleToggleUserMock = () => {
+    if (typeof window === 'undefined') return;
+    const newState = !platformMock.isUserMockEnabled;
+
+    // Persist to localStorage BEFORE reload (useEffect won't run in time).
+    localStorage.setItem('telegram-platform-login-as', newState.toString());
+
+    if (newState) {
+      // Turning login-as on: inject the selected user's initData so boot
+      // authenticates as them.
+      const user = platformMock.selectedUser ?? platformMock.availableUsers[0] ?? null;
+      if (user) injectMockInitData(user);
+    } else {
+      // Turning login-as off: drop the injected mock initData so we stop
+      // authenticating as the mock user.
+      const win = window as { Telegram?: { WebApp?: { initData?: string } } };
+      if (win.Telegram?.WebApp?.initData) {
+        delete win.Telegram.WebApp.initData;
+      }
+    }
+
+    window.location.reload();
+  };
+
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const userId = parseInt(e.target.value);
     const selectedUser =
       platformMock.availableUsers.find((u) => u.user_id === userId) ?? null;
 
-    if (selectedUser) {
+    if (selectedUser && typeof window !== 'undefined') {
+      // Picking a user means "log in as" them — enable login-as ONLY. We never
+      // touch TG mock / the platform cookie, so you can be a real user on the
+      // web platform. Write localStorage directly (useEffect won't flush before
+      // reload).
+      localStorage.setItem('telegram-platform-login-as', 'true');
+
       // Update selected user in storage
       platformMock.setSelectedUser(selectedUser);
       // Inject new mock data
@@ -68,7 +100,7 @@ export function DebugPanel() {
 
   return (
     <div className="fixed top-2 md:top-16 left-2 z-[9999] flex flex-col gap-1 text-xs opacity-30 transition-opacity hover:opacity-100">
-      {/* Mock toggle button */}
+      {/* TG-platform mock: telegram vs web. Independent of login-as. */}
       <button
         onClick={handleToggleMock}
         className={`cursor-pointer rounded px-2 py-1 font-medium shadow transition-colors ${
@@ -80,14 +112,25 @@ export function DebugPanel() {
         {platformMock.isMockEnabled ? '📱 TG ON' : '🌐 TG OFF'}
       </button>
 
+      {/* Login-as mock: authenticate as the selected user. Independent of TG mock. */}
+      <button
+        onClick={handleToggleUserMock}
+        className={`cursor-pointer rounded px-2 py-1 font-medium shadow transition-colors ${
+          platformMock.isUserMockEnabled
+            ? 'bg-green-500 text-white hover:bg-green-600'
+            : 'bg-yellow-500 text-black hover:bg-yellow-600'
+        }`}
+      >
+        {platformMock.isUserMockEnabled ? '👤 Login-as ON' : '👤 Login-as OFF'}
+      </button>
+
       {/* Platform detection debug info */}
       <div className="rounded bg-purple-600 px-2 py-1 font-mono text-white shadow">
         {isTelegram ? `TG:${tgPlatform}` : 'Web'} | {isTelegramMobile ? 'mob' : isTelegramDesktop ? 'desk' : 'web'}
       </div>
 
-      {/* User selector (only when mock is enabled) */}
-      {platformMock.isMockEnabled &&
-        platformMock.availableUsers.length > 0 && (
+      {/* User selector — always available; picking a user logs you in as them. */}
+      {platformMock.availableUsers.length > 0 && (
           <select
             value={platformMock.selectedUser?.user_id ?? ''}
             onChange={handleUserChange}

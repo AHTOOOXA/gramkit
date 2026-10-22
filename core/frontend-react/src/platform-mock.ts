@@ -20,5 +20,6 @@ export {
   createMockInitDataString,
   getSelectedMockUser,
   isMockModeEnabled,
+  isUserMockEnabled,
 } from './platform/usePlatformMock';
 export type { MockUser, UsePlatformMockReturn } from './platform/usePlatformMock';

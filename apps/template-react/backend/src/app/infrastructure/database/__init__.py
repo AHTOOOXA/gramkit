@@ -1,4 +1,4 @@
-"""Tarot application database infrastructure."""
+"""Application database infrastructure."""
 
 from app.infrastructure.database.repo.requests import RequestsRepo
 

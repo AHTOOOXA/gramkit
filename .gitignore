@@ -2,6 +2,12 @@
 # MONOREPO-SPECIFIC IGNORES
 # ============================================================================
 
+# SEO tooling (see docs/seo/README.md)
+.seo-data/
+.gsc-service-account.json
+.gsc-oauth-client.json
+.gsc-token.json*
+
 # App-specific ignores (each app has its own)
 apps/*/.env
 apps/*/.venv/
@@ -118,6 +124,7 @@ venv.bak/
 .pyre/
 .idea/
 .env
+scripts/.env
 cache/
 ngrok.yml
 
@@ -137,10 +144,15 @@ frontend-old/
 # TEST & DEVELOPMENT ARTIFACTS
 # ============================================================================
 
+# MLflow local tracking (experiment data)
+mlruns/
+
 # LLM testing
 blackbox.json
 llm_test_results.txt
 llm_test_results/
+
+# Prompt/model benchmark content-keyed store + rendered reports
 
 # Database backups
 db_backup/
@@ -157,3 +169,13 @@ backups/
 .pnpm-store/
 .run/
 .next/standalone
+
+# Capacitor native build directories
+apps/*/frontend/ios/
+apps/*/frontend/android/
+
+# Paper-design visual QA screenshots (scripts/paper-qa.mjs)
+.paper-qa/
+
+# Claude Code worktrees (claude -w, subagent isolation)
+.claude/worktrees/

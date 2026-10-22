@@ -1,5 +1,6 @@
 """Core service aggregator using lazy loading pattern."""
 
+from collections.abc import Collection
 from functools import cached_property
 from typing import Any
 
@@ -69,6 +70,7 @@ class CoreRequestsService:
         redis=None,
         arq: ArqRedis = None,
         products: ProductCatalog = None,
+        internal_referal_ids: Collection[str] = (),
     ):
         self.repo = repo
         self.producer = producer
@@ -76,6 +78,8 @@ class CoreRequestsService:
         self.redis = redis
         self.arq = arq
         self.products = products
+        # The app's own re-engagement link codes — see StartService.
+        self.internal_referal_ids = internal_referal_ids
 
     @cached_property
     def users(self) -> UserService:
@@ -120,7 +124,7 @@ class CoreRequestsService:
     @cached_property
     def start(self) -> StartService:
         """Start service for handling bot startup and initialization."""
-        return StartService(self.repo, self.producer, self, self.bot)
+        return StartService(self.repo, self.producer, self, self.bot, self.internal_referal_ids)
 
     @cached_property
     def messages(self) -> MessageService:

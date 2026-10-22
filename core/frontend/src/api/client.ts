@@ -17,15 +17,16 @@ function getPlatformConfig() {
   const platform = usePlatform();
   const platformMock = usePlatformMock();
 
-  // Check if mock mode is enabled (debug mode only)
-  const isMockMode = import.meta.env.VITE_DEBUG === 'true' && platformMock.isMockEnabled.value;
+  // The Mock-Platform header gates the backend's mock-user auth, so it's tied to
+  // login-as (which user), NOT TG-platform mock (telegram vs web).
+  const isUserMock = import.meta.env.VITE_DEBUG === 'true' && platformMock.isUserMockEnabled.value;
 
   const headers: Record<string, string> = {
     initData: platform.webAppInitData || '',
   };
 
-  // Add mock platform header when in mock mode
-  if (isMockMode) {
+  // Tell the backend to accept the mock user carried in initData.
+  if (isUserMock) {
     headers['Mock-Platform'] = 'true';
   }
 

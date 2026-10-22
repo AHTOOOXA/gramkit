@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Loader2 } from 'lucide-vue-next';
+import { Loader2 } from '@lucide/vue';
 import { computed } from 'vue';
 import { cn } from '@/lib/utils';
 

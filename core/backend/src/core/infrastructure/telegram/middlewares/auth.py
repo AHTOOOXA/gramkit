@@ -4,9 +4,13 @@ from collections.abc import Awaitable, Callable
 from typing import Any, Protocol
 
 from aiogram import BaseMiddleware
-from aiogram.types import CallbackQuery, Message, Update
+from aiogram.enums import ChatType
+from aiogram.types import CallbackQuery, Message, TelegramObject, Update
 
+from core.infrastructure.logging import get_logger
 from core.schemas.users import UserSchema, UserType
+
+logger = get_logger(__name__)
 
 # Deep link prefixes that should skip user creation
 # These handlers manage their own user lookup/creation logic
@@ -58,6 +62,43 @@ def _should_skip_user_creation(event: Message | CallbackQuery | Update) -> bool:
     return any(args.startswith(prefix) for prefix in SKIP_USER_CREATION_PREFIXES)
 
 
+def _is_user_creating_event(event: TelegramObject) -> bool:
+    """Whether this event should CREATE a user (vs. just be observed).
+
+    Only genuine interactions where the bot has a private chat it can reply in
+    may create a user: a private-chat message, a callback query, or a payment
+    query. Service / membership / observation updates (``my_chat_member``,
+    ``chat_member``, ``chat_join_request``, ``message_reaction``,
+    ``poll_answer``, …) merely reference a user the bot *sees* — they do not mean
+    the user ever started the bot. Persisting those mints "ghost" users who never
+    engaged and cannot be messaged (Telegram forbids bot-initiated DMs), polluting
+    user counts and DAU/MAU. For those we observe but never insert.
+    """
+    # Direct event types (when the middleware is registered per-event-type)
+    if isinstance(event, CallbackQuery):
+        return True
+    if isinstance(event, Message):
+        return event.chat.type == ChatType.PRIVATE
+
+    # Update object (registered as dp.update.outer_middleware): inspect the
+    # populated sub-update and only accept real interactions.
+    if isinstance(event, Update):
+        message = event.message or event.edited_message
+        if message is not None:
+            return message.chat.type == ChatType.PRIVATE
+        return (
+            event.callback_query is not None or event.pre_checkout_query is not None or event.shipping_query is not None
+        )
+    return False
+
+
+def _event_label(event: TelegramObject) -> str:
+    """Short label for logging which update type was skipped."""
+    if isinstance(event, Update):
+        return event.event_type
+    return type(event).__name__
+
+
 class AuthMiddleware(BaseMiddleware):
     """
     Middleware that authenticates Telegram users.
@@ -78,6 +119,14 @@ class AuthMiddleware(BaseMiddleware):
         """Authenticate user and inject into handler data."""
         # Skip user creation for specific deep link commands
         if _should_skip_user_creation(event):
+            return await handler(event, data)
+
+        # Only persist users for genuine interactions (private message, callback,
+        # payment query). Service/membership updates (my_chat_member, reactions,
+        # etc.) reference users who never started the bot — creating them mints
+        # ghost users that pollute stats and can't be messaged. Observe, don't insert.
+        if not _is_user_creating_event(event):
+            logger.debug("AuthMiddleware: skipping user creation for non-interaction update '%s'", _event_label(event))
             return await handler(event, data)
 
         services: RequestsServiceProtocol | None = data.get("services")

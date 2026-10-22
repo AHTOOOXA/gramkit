@@ -12,6 +12,7 @@ from core.infrastructure.config import settings
 from core.infrastructure.database.setup import create_engine, create_session_pool
 from core.infrastructure.dependencies import Dependencies
 from core.infrastructure.logging import get_logger
+from core.infrastructure.telegram.admin_messages import announce_start
 
 logger = get_logger(__name__)
 
@@ -146,6 +147,7 @@ def create_worker_settings(
     cron_jobs: list | None = None,
     max_jobs: int = 10,
     job_timeout: int = 600,
+    version: str | None = None,
 ):
     """
     Create ARQ WorkerSettings with standard infrastructure.
@@ -170,6 +172,7 @@ def create_worker_settings(
         cron_jobs: List of cron job definitions (optional)
         max_jobs: Maximum concurrent jobs (default: 10)
         job_timeout: Job timeout in seconds (default: 600)
+        version: App version; when given, the worker announces its start to the owners (prod only)
 
     Returns:
         WorkerSettings class for ARQ
@@ -214,6 +217,8 @@ def create_worker_settings(
 
         # Initialize long-lived clients
         ctx["bot"] = Bot(token=bot_config.token)
+        if version:
+            await announce_start("worker", version, ctx["bot"])
 
         # Create dependencies (arq, redis, producer)
         ctx["arq"] = await dependencies.get_arq()

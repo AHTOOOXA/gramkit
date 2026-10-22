@@ -35,22 +35,35 @@ class TestStartHandlerPartial:
 
     def test_start_handler_has_menu_key(self):
         """Start handler is configured with menu i18n key."""
-        from app.tgbot.handlers.start import tarot_start_handler
+        from app.tgbot.handlers.start import app_start_handler
 
         # The partial function should have keywords set
-        assert tarot_start_handler.keywords.get("menu_i18n_key") is not None
+        assert app_start_handler.keywords.get("menu_i18n_key") is not None
+
+    def test_start_handler_menu_key_is_translated(self):
+        """Menu i18n key exists in every app locale (not echoed back as the bare key)."""
+        from pathlib import Path
+
+        import app
+        from app.tgbot.handlers.start import app_start_handler
+        from core.infrastructure.i18n import get_translation, init_i18n
+
+        init_i18n(Path(app.__file__).parent / "i18n" / "locales")
+        key = app_start_handler.keywords["menu_i18n_key"]
+        for locale in ("en", "ru"):
+            assert get_translation(key, locale) != key
 
     def test_start_handler_has_keyboard_factory(self):
         """Start handler is configured with keyboard factory."""
-        from app.tgbot.handlers.start import tarot_start_handler
+        from app.tgbot.handlers.start import app_start_handler
 
-        assert tarot_start_handler.keywords.get("keyboard_factory") is not None
+        assert app_start_handler.keywords.get("keyboard_factory") is not None
 
     def test_start_handler_has_posthog_event(self):
         """Start handler is configured with PostHog event."""
-        from app.tgbot.handlers.start import tarot_start_handler
+        from app.tgbot.handlers.start import app_start_handler
 
-        assert tarot_start_handler.keywords.get("posthog_event") is not None
+        assert app_start_handler.keywords.get("posthog_event") is not None
 
 
 @pytest.mark.contract
@@ -59,20 +72,20 @@ class TestRefHandlerPartial:
 
     def test_ref_handler_has_bot_url(self):
         """Ref handler is configured with bot URL."""
-        from app.tgbot.handlers.start import tarot_ref_handler
+        from app.tgbot.handlers.start import app_ref_handler
 
-        assert tarot_ref_handler.keywords.get("bot_url") is not None
+        assert app_ref_handler.keywords.get("bot_url") is not None
 
     def test_ref_handler_has_web_app_path(self):
         """Ref handler is configured with web app path."""
-        from app.tgbot.handlers.start import tarot_ref_handler
+        from app.tgbot.handlers.start import app_ref_handler
 
-        assert tarot_ref_handler.keywords.get("web_app_path") is not None
+        assert app_ref_handler.keywords.get("web_app_path") is not None
 
     def test_ref_handler_has_referral_prefix(self):
         """Ref handler is configured with referral prefix."""
-        from app.tgbot.handlers.start import tarot_ref_handler
+        from app.tgbot.handlers.start import app_ref_handler
 
-        prefix = tarot_ref_handler.keywords.get("referral_prefix")
+        prefix = app_ref_handler.keywords.get("referral_prefix")
         assert prefix is not None
         assert prefix.startswith("r-")

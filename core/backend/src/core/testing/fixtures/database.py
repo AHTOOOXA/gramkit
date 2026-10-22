@@ -13,7 +13,7 @@ from collections.abc import AsyncGenerator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 from core.infrastructure.database.models.base import Base
 

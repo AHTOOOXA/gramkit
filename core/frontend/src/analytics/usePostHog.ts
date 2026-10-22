@@ -3,7 +3,15 @@ import posthog from 'posthog-js';
 let isInitialized = false;
 let hasWarned = false;
 
+const noopPosthog = new Proxy({} as typeof posthog, {
+  get: () => () => {},
+});
+
 export function usePostHog() {
+  if (import.meta.env.SSR) {
+    return { posthog: noopPosthog };
+  }
+
   const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
   const posthogHost = import.meta.env.VITE_POSTHOG_HOST;
 
@@ -23,6 +31,12 @@ export function usePostHog() {
         return properties;
       },
     });
+    // Same super property as the backend's events, so both split by release. Set by the app's
+    // vite.config (package.json version); absent in apps that don't define it.
+    const appVersion = import.meta.env.VITE_APP_VERSION;
+    if (appVersion) {
+      posthog.register({ $app_version: appVersion });
+    }
     isInitialized = true;
   } else if (!posthogKey && !hasWarned) {
     console.warn(

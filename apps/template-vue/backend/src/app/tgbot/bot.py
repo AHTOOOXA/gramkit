@@ -1,4 +1,4 @@
-"""Tarot Telegram bot application."""
+"""Telegram bot application."""
 
 import asyncio
 
@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 async def on_startup(bot, owner_ids: list[int]):
     for owner_id in owner_ids:
         try:
-            await bot.send_message(owner_id, "Bot has been started")
+            await bot.send_message(owner_id, f"{settings.app_name} has been started")
         except Exception as e:
             logger.warning(f"Could not send startup message to owner {owner_id}: {e}")
 

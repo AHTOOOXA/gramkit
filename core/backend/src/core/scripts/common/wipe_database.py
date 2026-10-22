@@ -8,7 +8,7 @@ Common script available to all apps.
 
 Usage:
     make script name=wipe_database APP=template
-    make script name=wipe_database APP=tarot
+    make script name=wipe_database APP=<app>
     make script name=wipe_database APP=template-react
 """
 

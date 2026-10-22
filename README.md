@@ -16,8 +16,10 @@ Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 | **Mobile-First** | Responsive layouts, bottom navigation, Telegram Mini App detection |
 | **Type-Safe API** | Auto-generated TypeScript hooks from OpenAPI schema (Kubb) |
 | **i18n + Theming** | Multi-language support, dark/light mode out of the box |
-| **Payments** | YooKassa integration, Telegram Stars, subscription billing |
-| **Background Jobs** | ARQ for async tasks, email sending, scheduled jobs |
+| **Payments** | YooKassa (cards, embedded widget, auto-renewal) and Telegram Stars (one-time + subscriptions), refunds, hardened money path |
+| **Bot Notifications** | Scheduled per-user-local-time sends with a delivery log and blocked-bot detection |
+| **Admin Alerts** | Purchase / renewal / cancel / failure alerts and deploy announcements in Telegram, with tappable hashtags |
+| **Background Jobs** | ARQ for async tasks, email sending, scheduled jobs, nightly backups |
 
 > Telegram features are opt-in. Leave `BOT__TOKEN` empty and you have a standard web app.
 
@@ -27,51 +29,64 @@ Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 
 | Template | Stack | Best For | Demo |
 |----------|-------|----------|------|
-| **React** | Next.js 16 + Turbopack + Zustand | SSR, React 19, larger ecosystem | [react.antonchaynik.ru](https://react.antonchaynik.ru) |
-| **Vue** | Vue.js 3 + Vite + Pinia | Lighter bundle, simpler state | [vue.antonchaynik.ru](https://vue.antonchaynik.ru) |
+| **React** | Next.js 16 + React 19 + Turbopack | SSR, larger ecosystem | [react.antonchaynik.ru](https://react.antonchaynik.ru) |
+| **Vue** | Vue 3 + Vite + Pinia | Lighter bundle, simpler state | [vue.antonchaynik.ru](https://vue.antonchaynik.ru) |
 
 Both include:
 - **5 production pages** — Home, demos, profile, admin, auth flows
 - **17 tech demos** — Caching, mutations, infinite scroll, streaming, suspense
 - **Full auth system** — Email+OTP, Telegram OAuth, password reset, session management
-- **Tailwind CSS + shadcn** — Consistent design system, dark mode
+- **Tailwind CSS v4 + shadcn** — Consistent design system, dark mode
+- **Dev debug panel** — "TG Mock" (pretend to run inside Telegram) and "Login as" (switch mock users), independently
 
 ### Shared Core
 
 ```
 core/
-├── backend/          # FastAPI, SQLAlchemy, auth, payments, email
-├── frontend/         # Vue.js shared components
-└── frontend-react/   # React shared components
+├── backend/          # FastAPI, SQLAlchemy, auth, payments, notifications, bot, worker
+├── frontend/         # Vue.js shared code (platform, errors, analytics)
+└── frontend-react/   # React shared code (platform, errors, analytics)
 ```
 
 Write once in `core/`, import into any app. No copy-paste between projects.
+
+What core gives every app:
+
+- **Payments** — one `PaymentsService` over YooKassa and Telegram Stars.
+  - YooKassa: idempotency keys on every charge, the webhook re-fetches the payment instead of trusting the body, at most one live subscription per user (DB-enforced), a dunning state machine for failed renewals (`PAST_DUE` with grace and daily retries), refund webhooks, and an owner alert when a webhook fails.
+  - Telegram Stars: one-time purchases and Stars subscriptions that renew and cancel correctly, plus Stars refunds.
+  - PostHog events for payment success/failure, including how the user paid and why it failed.
+- **Notifications engine** — templates sent in morning/evening slots in each user's local time; a `notification_deliveries` log (one row per attempt) for caps; users who blocked the bot (`users.bot_blocked_at`) are skipped and un-skipped when they come back. Templates can send text, photos or native polls.
+- **`seen_features`** — a per-user JSONB map plus `PATCH /users/me/seen-features` (atomic merge) for one-time reveals, coachmarks, "what's new" and capped nudges, so each new one is frontend-only.
+- **Telegram admin messages** — one sender (HTML with escaping, optional rich body, plain-text fallback so an alert never drops), contextual purchase/renewal/cancel alerts with customer context, `#hashtags` for tap-to-filter, and a silent `🚀 <app> <version> · webhook started` announcement when each process starts in production.
+- **Ops** — `GET /health` returns `version` and `started_at`, so a rollout is one request to check; nightly database backups to the owners in Telegram and an owner-only `/backup` command (a failed `pg_dump` is reported, never sent as an empty file); `make backup-db` / `make restore-db` (restores older dumps and fast-forwards migrations).
+- **Errors** — API errors reach the UI as an `ApiError` with the backend's `message` and `code`, for object details and 422 validation errors alike.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
 | Backend | Python 3.14+, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic |
-| Frontend (Vue) | Vue.js 3, Vite, TanStack Query, Pinia, shadcn-vue |
-| Frontend (React) | Next.js 16, Turbopack, TanStack Query, Zustand, shadcn/ui |
+| Frontend (Vue) | Vue 3, Vite, TanStack Query, Pinia, shadcn-vue |
+| Frontend (React) | Next.js 16, React 19, Turbopack, TanStack Query, shadcn/ui |
 | Database | PostgreSQL, Redis |
-| Styling | Tailwind CSS 3, CSS variables theming |
+| Styling | Tailwind CSS v4, CSS variables theming |
 | Type Generation | OpenAPI → Kubb → TypeScript hooks |
+| Observability | Sentry, Logfire, PostHog (all optional) |
 | Optional | aiogram 3.x (Telegram Bot), Cloudflare Tunnel |
 
 ## Two Development Modes
 
 ### Direct Localhost (Recommended)
 
-Native Turbopack — fastest iteration, no Docker overhead for frontend.
+The frontend dev server runs natively on your machine; the backend runs in Docker.
 
 ```
 http://localhost:3001/template-react
-http://localhost:5174/template-vue
+http://localhost:5174/template-vue/
 ```
 
-- ~10x faster warm starts with Turbopack cache
-- Frontend runs natively on your machine
+- Fast warm starts (Turbopack / Vite)
 - Direct API calls (CORS enabled in dev)
 
 ### Tunnel Mode
@@ -79,8 +94,8 @@ http://localhost:5174/template-vue
 Via nginx + Cloudflare tunnel — for Telegram Mini App testing.
 
 ```
-https://local.gramkit.dev/template-react
-https://local.gramkit.dev/template-vue
+https://local.<your-domain>/template-react
+https://local.<your-domain>/template-vue
 ```
 
 - HTTPS with valid certificate
@@ -94,75 +109,47 @@ https://local.gramkit.dev/template-vue
 git clone https://github.com/AHTOOOXA/gramkit.git
 cd gramkit
 
-# Choose template
-cd apps/template-vue    # Vue.js
-cd apps/template-react  # React/Next.js
+# Shared config (Cloudflare tunnel token is optional)
+cp .env.example .env
 
-# Setup
-cp .env.example .env    # Edit with your settings
+# App config — pick a template
+cp apps/template-vue/.env.example apps/template-vue/.env        # Vue.js
+cp apps/template-react/.env.example apps/template-react/.env    # React/Next.js
 
-# Start
+# Start (backend in Docker + frontend dev server)
 make up APP=template-vue    # or APP=template-react
 
 # Open
-# Localhost: http://localhost:3001/template-react or http://localhost:5174/template-vue
-# Tunnel: https://local.gramkit.dev/template-react
+# http://localhost:5174/template-vue/ or http://localhost:3001/template-react
 ```
 
 ### Create Your Own App
 
+See [docs/guides/NEW_APP_FROM_TEMPLATE.md](docs/guides/NEW_APP_FROM_TEMPLATE.md). In short:
+
 ```bash
 cp -r apps/template-react apps/myapp
-# Update: package.json, docker-compose.yml, .env
+# Update: package.json, docker-compose*.yml, .env, ports
 make upgrade APP=myapp
 make up APP=myapp
 ```
 
+Core has no migrations of its own: each app's Alembic history covers core's models too, so a core model
+change needs `make migration APP=<app>` in every app.
+
 ## Built for Claude Code
 
-4-layer orchestration architecture — context-efficient, parallel-ready.
-
 ```
-Layer 0: CLAUDE.md           → Orchestration rules, quick reference
-Layer 1: .claude/commands/   → /develop, /create-task, /execute-task, /review
-Layer 2: .claude/skills/     → Auto-invoked procedures
-Layer 3: .claude/agents/     → developer-agent, testing-polish-agent
-```
-
-### Slash Commands
-
-| Command | What It Does |
-|---------|--------------|
-| `/create-task` | PRD → phases → parallel enrichment agents |
-| `/execute-task` | Phase-by-phase execution with auto-commits |
-| `/develop` | Quick delegation to developer-agent |
-| `/design` | Research approaches, compare options |
-| `/review` | Deep architectural review |
-| `/add-testing` | Add test phases to existing task |
-
-### Pattern Docs
-
-10 docs in `.claude/shared/` that agents read before coding:
-
-```
-backend-patterns.md    react-frontend.md    vue-frontend.md
-testing-patterns.md    monorepo-structure.md    error-handling.md
-critical-rules.md    playwright-testing.md    react-animations.md
-adding-packages.md
+CLAUDE.md          → always-on rules, conventions, make workflow
+.claude/rules/     → layer conventions, auto-loaded by path (backend, testing, vue, react, errors, ...)
+.claude/hooks/     → hard stops for the "never" rules (git add -A, --no-verify, raw pytest, editing gen/)
+.claude/agents/    → qa (change-aware visual QA in Chrome)
+.mcp.json          → Chrome DevTools MCP servers for the qa agent
 ```
 
-### Structured Task System
-
-Auto-detects difficulty. Simple tasks: inline. Hard tasks: parallel agents.
-
-```
-docs/tasks/user-settings/
-├── README.md           # PRD
-├── ARCHITECTURE.md     # Contracts between phases
-├── CONTEXT.md          # Current state, resumable
-├── 01-models.md        # Phase with file:line refs
-└── 02-api.md
-```
+Generic work leans on Claude Code's built-ins: `/code-review`, `/security-review`, `/deep-research`,
+the `Plan` / `Explore` agents and the `Workflow` tool for multi-agent fan-out. Parallel sessions run in
+worktrees (`claude -w <name>`); `.worktreeinclude` copies the `.env` files in.
 
 ## Testing
 
@@ -177,11 +164,12 @@ docs/tasks/user-settings/
 | respx | HTTP mocking (LLM, payments) |
 
 ```bash
-make test APP=myapp       # Full parallel suite
+make test APP=myapp       # Full parallel suite (app + core)
 make test-quick APP=myapp # Incremental — sub-second feedback
 ```
 
-Each test runs in isolated transaction with automatic rollback.
+Each test runs in an isolated transaction with automatic rollback. Core ships reusable contract suites
+(`core/testing/contracts/`) that apps subclass.
 
 ## Commands Reference
 
@@ -189,17 +177,24 @@ All make commands require `APP=<name>`:
 
 ```bash
 # Docker
-make up APP=template-vue       # Start services
+make up APP=template-vue       # Start services + frontend dev server
 make down APP=template-vue     # Stop services
 make logs APP=template-vue     # View logs
 make shell-webhook APP=template-vue  # Backend shell
 
 # Backend
 make test APP=template-vue     # Run tests
-make lint APP=template-vue     # Ruff + type checks
+make lint APP=template-vue     # Ruff + import-linter
+make typecheck APP=template-vue  # Pyright
 make migration msg="..." APP=template-vue  # Create migration
 make upgrade APP=template-vue  # Apply migrations
 make schema APP=template-vue   # Generate TypeScript types
+make backup-db APP=template-vue                 # Dump the local DB to ./backups/
+make restore-db file=<dump> APP=template-vue    # Install a dump (wipe + restore + migrate)
+
+# Release (optional): bump, push dev, then merge to main and tag
+make release-dev APP=template-vue BUMP=patch
+make release-main APP=template-vue
 
 # Frontend
 cd apps/template-vue/frontend
@@ -213,19 +208,19 @@ pnpm typecheck                 # Type checking
 ```
 gramkit/
 ├── .claude/
-│   ├── commands/        # Slash commands
-│   ├── skills/          # Auto-invoked procedures
-│   ├── agents/          # Subagents (developer, testing)
-│   └── shared/          # Pattern docs
+│   ├── rules/           # Layer conventions, auto-loaded by path
+│   ├── hooks/           # Guard + session-start hooks
+│   └── agents/          # Subagents (qa)
 ├── core/
 │   ├── backend/         # Shared Python (FastAPI, SQLAlchemy)
-│   ├── frontend/        # Shared Vue.js components
-│   └── frontend-react/  # Shared React components
+│   ├── frontend/        # Shared Vue.js code
+│   └── frontend-react/  # Shared React code
 ├── apps/
 │   ├── template-vue/    # Vue.js template
 │   └── template-react/  # React/Next.js template
-├── docs/                # Documentation
+├── docs/                # Guides, architecture notes
 ├── nginx/               # Gateway configuration
+├── scripts/             # release.sh, template sync checks
 └── Makefile             # Unified commands
 ```
 
@@ -233,12 +228,13 @@ gramkit/
 
 - Docker & Docker Compose
 - Node.js 20+ & pnpm
-- Python 3.14+
+- Python 3.14+ & uv
 - Make
 
 **Optional:**
 - Telegram Bot Token (from @BotFather)
 - Cloudflare Tunnel (for TMA testing)
+- YooKassa shop credentials (card payments)
 
 ## Why gramkit?
 
@@ -246,8 +242,13 @@ gramkit/
 - **Type-safe end-to-end** — Change backend, frontend types update automatically
 - **Monorepo done right** — Shared core without dependency hell
 - **Escape hatches** — Every feature can be disabled or swapped
-- **Claude Code native** — Orchestration architecture for AI-assisted development
+- **Claude Code native** — Rules, hooks and a QA agent tuned to this codebase
 - **Two frameworks** — Same patterns in Vue and React, pick your preference
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Upgrading from an earlier sync? Read its **Breaking** section first:
+several releases add core columns that need a migration in every app.
 
 ## Contributing
 
@@ -256,7 +257,6 @@ gramkit/
 3. Make changes and test: `make test APP=template-vue`
 4. Commit: `git commit -m "feat: your feature"`
 5. Push and open a Pull Request
-
 
 ## License
 

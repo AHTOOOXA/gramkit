@@ -1,4 +1,4 @@
-.PHONY: up down build rebuild logs logs-service logs-frontend restart-frontend shell-webhook shell-bot migration upgrade downgrade clean clean-build bump-patch bump-minor bump-major release test test-snapshots test-snapshots-update test-file lint schema status script script-list up-shared down-shared restart-shared reload-nginx status-all all-up all-down sync sync-env
+.PHONY: up down build rebuild logs logs-service logs-frontend restart-frontend shell-webhook shell-bot migration upgrade downgrade clean clean-build bump-patch bump-minor bump-major release release-dev release-main test test-snapshots test-snapshots-update test-file lint schema status script script-list backup-db restore-db up-shared down-shared restart-shared reload-nginx status-all all-up all-down sync sync-env
 
 # Directory for frontend logs
 FRONTEND_RUN_DIR := .run
@@ -348,6 +348,42 @@ script-list:
 	$(check_app)
 	@cd $(APP_DIR) && $(MAKE) script-list
 
+# Database backup / restore (see docs/guides/DATABASE_BACKUP.md)
+# Create a compressed dump and copy it out of the container to ./backups/.
+backup-db:
+	$(check_app)
+	@name="$(APP)_$$(date -u +%Y%m%d_%H%M%S)"; \
+	$(MAKE) script name=backup_database args="$$name" APP=$(APP); \
+	mkdir -p backups; \
+	if docker cp "$(APP)-webhook:/tmp/$$name.sql.gz" "backups/$$name.sql.gz" 2>/dev/null; then \
+		echo "✓ Saved backups/$$name.sql.gz"; \
+	else \
+		echo "⚠ Backup is in $(APP)-webhook:/tmp/$$name.sql.gz but copying it out failed"; \
+	fi
+
+# Install a dump onto the local DB. Wipes & recreates the database (so an older
+# dump installs cleanly over more-migrated local schema), restores it, then runs
+# `alembic upgrade head` to fast-forward to your local migrations.
+# Accepts .sql, .sql.gz, or .dump. Pass recreate=false to load in place.
+restore-db:
+	$(check_app)
+	@if [ -z "$(file)" ]; then \
+		echo "Usage: make restore-db file=<path-to-dump> APP=$(APP) [recreate=false]"; \
+		echo "  Wipes & recreates the DB, restores the dump, then fast-forwards migrations."; \
+		echo "  recreate=false loads in place (only safe when schemas already match)."; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(file)" ]; then echo "Error: file not found: $(file)"; exit 1; fi
+	@base=$$(basename "$(file)"); \
+	echo "Copying $$base into $(APP)-webhook:/tmp/ ..."; \
+	docker cp "$(file)" "$(APP)-webhook:/tmp/$$base"; \
+	$(MAKE) script name=restore_database args="/tmp/$$base --confirm $(if $(filter false,$(recreate)),--no-recreate,)" APP=$(APP)
+	@echo ""
+	@echo "Fast-forwarding migrations to local head..."
+	@$(MAKE) upgrade APP=$(APP)
+	@echo "✓ restore-db complete."
+
+
 # Docker cleanup
 clean:
 	$(check_app)
@@ -400,58 +436,34 @@ bump-major:
 	@echo "Bumping major version for $(APP)..."
 	@cd $(APP_DIR) && $(MAKE) bump-major
 
-# Release workflow (per-app)
+# Release workflow (per-app) — scripts/release.sh. dev is pushed and built first, main second,
+# so the server never builds both at once. Nothing is stashed or checked out in this tree.
+#   make release-dev APP=<app> BUMP=patch   bump (patch|minor|major|none), uv lock, commit, push dev
+#   make release-main APP=<app>             merge origin/dev into main (temp worktree), tag, push
+#   make release APP=<app> [BUMP=patch]     both, pausing for the dev build (asks BUMP if unset)
+release-dev:
+	$(check_app)
+	@[ -n "$(BUMP)" ] || { echo "Usage: make release-dev APP=$(APP) BUMP=patch|minor|major|none"; exit 1; }
+	@./scripts/release.sh dev $(APP) $(BUMP)
+
+release-main:
+	$(check_app)
+	@./scripts/release.sh main $(APP)
+
 release:
 	$(check_app)
-	@echo "Starting release process for $(APP)..."
-	@CURRENT_BRANCH=$$(git branch --show-current); \
-	if [ "$$CURRENT_BRANCH" != "dev" ]; then \
-		echo "Error: Must be on dev branch for release. Current branch: $$CURRENT_BRANCH"; \
-		exit 1; \
+	@set -e; \
+	BUMP="$(BUMP)"; \
+	if [ -z "$$BUMP" ]; then \
+		if [ ! -t 0 ]; then echo "Non-interactive: run make release-dev APP=$(APP) BUMP=..., wait for the dev build, then make release-main APP=$(APP)"; exit 1; fi; \
+		read -p "Version bump (patch/minor/major/none): " BUMP; \
 	fi; \
-	read -p "Do you want to bump the version? (y/n): " bump; \
-	if [ "$$bump" = "y" ] || [ "$$bump" = "Y" ]; then \
-		echo "Select version bump type:"; \
-		echo "  1) patch (x.x.X)"; \
-		echo "  2) minor (x.X.0)"; \
-		echo "  3) major (X.0.0)"; \
-		read -p "Enter choice (1-3): " choice; \
-		case $$choice in \
-			1) BUMP_TYPE=patch ;; \
-			2) BUMP_TYPE=minor ;; \
-			3) BUMP_TYPE=major ;; \
-			*) echo "Invalid choice. Aborting."; exit 1 ;; \
-		esac; \
-		echo "Bumping $(APP) version ($$BUMP_TYPE)..."; \
-		cd $(APP_DIR) && python3 bump_version.py $$BUMP_TYPE; \
-		VERSION=$$(python3 -c "import json; print(json.load(open('$(APP_DIR)/frontend/package.json'))['version'])"); \
-		echo "New $(APP) version: $$VERSION"; \
-		echo "Committing version bump..."; \
-		git add .; \
-		git commit -m "chore($(APP)): bump version to $$VERSION"; \
+	./scripts/release.sh dev $(APP) $$BUMP; \
+	if [ -t 0 ]; then \
+		read -p "Press Enter once the dev build is done (Ctrl+C to stop here)... " _; \
+		./scripts/release.sh main $(APP); \
 	else \
-		VERSION="current"; \
-	fi; \
-	echo "Switching to main branch..."; \
-	git checkout main; \
-	echo "Merging dev into main..."; \
-	git merge dev --no-edit; \
-	if [ "$$VERSION" != "current" ]; then \
-		echo "Creating git tag $(APP)-v$$VERSION..."; \
-		git tag -a "$(APP)-v$$VERSION" -m "Release $(APP) v$$VERSION"; \
-	fi; \
-	echo "Pushing main to origin..."; \
-	git push origin main; \
-	if [ "$$VERSION" != "current" ]; then \
-		echo "Pushing tag $(APP)-v$$VERSION..."; \
-		git push origin "$(APP)-v$$VERSION"; \
-	fi; \
-	echo "Switching back to dev..."; \
-	git checkout dev; \
-	if [ "$$VERSION" != "current" ]; then \
-		echo "✓ Release $(APP) v$$VERSION completed successfully!"; \
-	else \
-		echo "✓ Release $(APP) completed successfully!"; \
+		echo "Non-interactive: stopping after dev. Once the dev build is done: make release-main APP=$(APP)"; \
 	fi
 
 # Help command

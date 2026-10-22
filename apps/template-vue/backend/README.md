@@ -1,4 +1,4 @@
-# Tarot Backend
+# Template Backend
 
 Backend services for the web application template.
 
@@ -35,60 +35,56 @@ class RequestsService:
         return UserService(self.repo._core, self.producer, self, self.bot)
 ```
 
-**Key Pattern:** Core services are re-instantiated (not delegated) to receive full `RequestsService` context. This allows core services to call tarot-specific services (e.g., `services.messages.queue_admin_broadcast`).
+**Key Pattern:** Core services are re-instantiated (not delegated) to receive full `RequestsService` context. This allows core services to call app-specific services (e.g., `services.messages.queue_admin_broadcast`).
 
 ## Repositories
 
 ### Core Repos (8) - Delegated from CoreRequestsRepo
 
 - `users` - User management
-- `balance` - Balance tracking
 - `groups` - Group management
 - `members` - Group membership
 - `invites` - Invitation system
 - `payments` - Payment processing
 - `payment_events` - Payment event tracking
 - `subscriptions` - Subscription management
+- `notification_deliveries` - Notification delivery log
 
-### Tarot Repos (6) - App-specific
+### App Repos - App-specific
 
-- `readings` - Tarot reading management
-- `chat_sessions` - Chat message storage
-- `trainer_progress` - Learning progress tracking
-- `cards` - Tarot card data (in-memory)
-- `promotional_broadcasts` - Marketing broadcasts
-- `user_question_answers` - User quiz answers
+- `balance` - Balance tracking (extends core)
+
+Add your own repositories in `src/app/infrastructure/database/repo/` and expose them on `RequestsRepo`.
 
 ## Services
 
-### Core Services (5) - Re-instantiated with full context
+### Core Services - Re-instantiated with full context
 
 - `users` - User business logic
 - `groups` - Group business logic
 - `invites` - Invitation business logic
 - `payments` - Payment business logic
 - `subscriptions` - Subscription business logic
-
-### Tarot Services (12) - App-specific
-
-- `readings` - Tarot reading orchestration
-- `chat` - Chat conversation handling
-- `trainer` - Learning system
-- `statistics` - Analytics and reporting
+- `auth` / `telegram_auth` - Authentication
+- `sessions` - Web sessions
+- `telegram_link` - Linking a Telegram account to a web account
 - `messages` - Message queueing and broadcasting
-- `notifications` - User notifications
-- `telegram_auth` - Telegram authentication
-- `balance` - Balance operations (extends core)
 - `start` - Bot startup and initialization
-- `llm` - AI/LLM interaction
-- `tarot` - Tarot card management
 - `worker` - Background job management
+
+### App Services - App-specific
+
+- `balance` - Balance operations (extends core)
+- `statistics` - Analytics and reporting
+- `notifications` - User notifications
+
+Add your own services in `src/app/services/` and expose them on `RequestsService`.
 
 ## Testing
 
 ```bash
 # Run all tests
-cd apps/template/backend
+cd apps/template-vue/backend
 uv run pytest -v
 
 # Run contract tests only (80%)
@@ -124,7 +120,7 @@ make downgrade
 
 ```bash
 # Add dependency
-cd apps/template/backend
+cd apps/template-vue/backend
 uv add package-name
 
 # Add dev dependency
@@ -147,7 +143,7 @@ make schema
 - Better documentation
 
 **Re-instantiation Pattern (for services):**
-- Core services can call tarot services
+- Core services can call app services
 - Full context propagation
 - Cross-service communication works
 - No circular dependency issues

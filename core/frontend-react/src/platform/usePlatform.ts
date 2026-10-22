@@ -1,5 +1,5 @@
 import { useTelegram } from './useTelegram';
-import { usePlatformMock } from './usePlatformMock';
+import { usePlatformMock, createMockInitDataString } from './usePlatformMock';
 
 /** Telegram platform values from WebApp.platform */
 export type TelegramPlatform = 'android' | 'ios' | 'tdesktop' | 'macos' | 'weba' | 'web' | 'unknown';
@@ -22,22 +22,23 @@ export function usePlatform(): UsePlatformReturn {
   const telegram = useTelegram();
   const platformMock = usePlatformMock();
 
-  // Check if mock mode is enabled (development mode only)
-  // Mock mode is controlled via debug panel and stored in localStorage
-  const isMockMode = platformMock.isMockEnabled;
+  // Two INDEPENDENT debug switches (decoupled on purpose), stored in localStorage:
+  //   tgMock   → report platform as Telegram, regardless of who you are.
+  //   userMock → authenticate as the selected mock user, regardless of platform.
+  // So you can log in as a real user while staying on the web platform.
+  const tgMock = platformMock.isMockEnabled;
+  const userMock = platformMock.isUserMockEnabled;
 
   let isTelegram: boolean;
   let isWeb: boolean;
   let platform: 'telegram' | 'web';
   let initData: string;
 
-  if (isMockMode) {
-    // Mock mode enabled - treat as Telegram platform
+  // --- Platform: driven by TG mock only ---
+  if (tgMock) {
     isTelegram = true;
     isWeb = false;
     platform = 'telegram';
-    // Use mock initData from the selected mock user
-    initData = telegram.initData || '';
   } else {
     // Normal platform detection based on Telegram SDK
     // Check if we have initData - this indicates real Telegram environment
@@ -45,6 +46,13 @@ export function usePlatform(): UsePlatformReturn {
     isTelegram = hasInitData;
     isWeb = !hasInitData;
     platform = isTelegram ? 'telegram' : 'web';
+  }
+
+  // --- Auth (initData): driven by login-as only ---
+  if (userMock && platformMock.selectedUser) {
+    // Authenticate as the selected mock user (works on web or telegram platform).
+    initData = createMockInitDataString(platformMock.selectedUser);
+  } else {
     initData = telegram.initData;
   }
 

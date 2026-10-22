@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { User, LogOut, LogIn } from 'lucide-vue-next';
+import { User, LogOut, LogIn } from '@lucide/vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import { useGetCurrentUserUsersMeGet } from '@/gen/hooks';

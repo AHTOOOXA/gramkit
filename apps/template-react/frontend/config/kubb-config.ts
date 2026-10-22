@@ -8,7 +8,7 @@
  * 3. /api/template-react (via nginx when accessed through domain)
  */
 import { axiosInstance, setConfig } from '@kubb/plugin-client/clients/axios';
-import { isMockModeEnabled } from '@tma-platform/core-react/platform';
+import { isUserMockEnabled } from '@tma-platform/core-react/platform';
 import {
   classifyHttpError,
   classifyNetworkError,
@@ -30,12 +30,14 @@ function getAuthHeaders(): AuthHeaders {
           .Telegram?.WebApp?.initData ?? '')
       : '';
 
-  const isMockMode =
-    process.env.NEXT_PUBLIC_DEBUG === 'true' && isMockModeEnabled();
+  // The Mock-Platform header gates the backend's mock-user auth, so it's tied to
+  // login-as (which user), NOT TG-platform mock (telegram vs web).
+  const isUserMock =
+    process.env.NEXT_PUBLIC_DEBUG === 'true' && isUserMockEnabled();
 
   return {
     initData,
-    ...(isMockMode ? { 'Mock-Platform': 'true' } : {}),
+    ...(isUserMock ? { 'Mock-Platform': 'true' } : {}),
   };
 }
 

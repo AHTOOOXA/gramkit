@@ -10,15 +10,31 @@ const selectedUserId = ref(platformMock.selectedUser.value?.user_id || platformM
 function onUserChange() {
   const selectedUser = platformMock.availableUsers.find(user => user.user_id === selectedUserId.value);
   if (selectedUser) {
+    // Picking a user means "log in as" them — enable login-as ONLY. We never
+    // touch TG mock here, so you can be a real user on the web platform.
+    platformMock.isUserMockEnabled.value = true;
     platformMock.setSelectedUser(selectedUser);
-    // Inject mock data before reload
+    // Inject mock initData before reload so boot authenticates as this user.
     injectMockInitData(selectedUser);
   }
   window.location.reload();
 }
 
+// TG-platform mock: report platform as Telegram. Independent of who you are.
 function onToggleMock() {
   platformMock.toggleMock();
+  window.location.reload();
+}
+
+// Login-as mock: authenticate as the selected user. Independent of TG mock.
+function onToggleUserMock() {
+  platformMock.toggleUserMock();
+  // Turning login-as on must inject the chosen user's initData before reload.
+  if (platformMock.isUserMockEnabled.value) {
+    const selectedUser = platformMock.availableUsers.find(user => user.user_id === selectedUserId.value)
+      ?? platformMock.selectedUser.value;
+    if (selectedUser) injectMockInitData(selectedUser);
+  }
   window.location.reload();
 }
 
@@ -33,7 +49,7 @@ const isDev = import.meta.env.VITE_DEBUG === 'true';
       debug mode
     </div>
 
-    <!-- Mock toggle button -->
+    <!-- TG-platform mock: telegram vs web. Independent of login-as. -->
     <button
       class="cursor-pointer rounded px-2 py-1 font-medium shadow transition-colors"
       :class="platformMock.isMockEnabled.value
@@ -44,9 +60,20 @@ const isDev = import.meta.env.VITE_DEBUG === 'true';
       {{ platformMock.isMockEnabled.value ? '📱 TG Mock ON' : '🌐 TG Mock OFF' }}
     </button>
 
-    <!-- User selector (only when mock is enabled) -->
+    <!-- Login-as mock: authenticate as the selected user. Independent of TG mock. -->
+    <button
+      class="cursor-pointer rounded px-2 py-1 font-medium shadow transition-colors"
+      :class="platformMock.isUserMockEnabled.value
+        ? 'bg-green-500 text-white hover:bg-green-600'
+        : 'bg-yellow-500 text-black hover:bg-yellow-600'"
+      @click="onToggleUserMock()"
+    >
+      {{ platformMock.isUserMockEnabled.value ? '👤 Login-as ON' : '👤 Login-as OFF' }}
+    </button>
+
+    <!-- User selector — always available; picking a user logs you in as them. -->
     <select
-      v-if="platformMock.isMockEnabled.value && platformMock.availableUsers.length > 0"
+      v-if="platformMock.availableUsers.length > 0"
       v-model="selectedUserId"
       class="cursor-pointer rounded bg-blue-500 px-2 py-1 font-medium text-white shadow outline-none hover:bg-blue-600"
       @change="onUserChange"

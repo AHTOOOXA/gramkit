@@ -177,7 +177,7 @@ def callback_query_factory(message_factory):
 
     Usage:
         def test_callback(callback_query_factory):
-            callback = callback_query_factory(data="spread_type:THREE_CARD")
+            callback = callback_query_factory(data="action:confirm")
             await callback_handler(callback)
     """
 
@@ -192,7 +192,7 @@ def callback_query_factory(message_factory):
         """Create a test CallbackQuery object.
 
         Args:
-            data: Callback data (e.g., "spread_type:SINGLE_CARD")
+            data: Callback data (e.g., "menu:settings")
             user_id: Telegram user ID
             username: Telegram username
             message_text: Original message text

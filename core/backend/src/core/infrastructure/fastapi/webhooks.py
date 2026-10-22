@@ -5,6 +5,7 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.infrastructure.database.models.webhooks import FailedWebhook
+from core.infrastructure.telegram.admin_messages import alert_owners, esc, tags
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +40,12 @@ async def alert_webhook_failure(payload: dict, error: Exception, severity: str) 
         logger.critical(f"CRITICAL webhook failure: {alert_message}")
     else:
         logger.error(f"Webhook failure: {alert_message}")
+
+    # Alert, don't just log: a failed webhook in the logs alone goes unnoticed.
+    event = payload.get("event") or payload.get("type") or "?"
+    await alert_owners(
+        f"🚨 <b>Payment webhook failed</b> · {esc(event)}\n"
+        f"<code>{esc(alert_message['payment_id'] or '—')}</code>: {esc(str(error)[:300])}\n"
+        "<i>Stored in failed_webhooks; the provider may retry.</i>\n"
+        f"{tags('webhook', 'critical' if severity == 'critical' else 'error')}"
+    )

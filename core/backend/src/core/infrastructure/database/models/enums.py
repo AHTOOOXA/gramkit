@@ -21,11 +21,12 @@ class PaymentStatus(StrEnum):
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
     CANCELED = "CANCELED"
+    REFUNDED = "REFUNDED"  # fully refunded after SUCCEEDED (the only transition out of a final state)
 
     @property
     def is_final(self) -> bool:
         """Check if this is a final payment state that should not be overwritten."""
-        return self in {self.SUCCEEDED, self.FAILED, self.CANCELED}
+        return self in {self.SUCCEEDED, self.FAILED, self.CANCELED, self.REFUNDED}
 
 
 class PaymentEventType(StrEnum):
@@ -35,12 +36,14 @@ class PaymentEventType(StrEnum):
     PAYMENT_SUCCEEDED = "PAYMENT_SUCCEEDED"
     PAYMENT_FAILED = "PAYMENT_FAILED"
     PAYMENT_CANCELED = "PAYMENT_CANCELED"
+    PAYMENT_REFUNDED = "PAYMENT_REFUNDED"
 
 
 class SubscriptionStatus(StrEnum):
     NONE = "NONE"
     PENDING = "PENDING"
     ACTIVE = "ACTIVE"
+    PAST_DUE = "PAST_DUE"  # renewal failing, in grace — still entitled, retried daily by dunning
     CANCELED = "CANCELED"
     EXPIRED = "EXPIRED"
 
@@ -48,6 +51,14 @@ class SubscriptionStatus(StrEnum):
 class NotificationTimeSlot(StrEnum):
     MORNING = "MORNING"
     EVENING = "EVENING"
+
+
+class NotificationSlot(StrEnum):
+    """When a logged notification went out (`notification_deliveries.slot`)."""
+
+    MORNING = "morning"
+    EVENING = "evening"
+    OTHER = "other"
 
 
 class UserType(StrEnum):

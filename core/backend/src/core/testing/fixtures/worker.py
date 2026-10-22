@@ -50,6 +50,7 @@ class MockBot:
     Attributes:
         messages: List of CapturedMessage objects from send_message calls
         photos: List of CapturedMessage objects from send_photo calls
+        rich_messages: List of CapturedMessage objects from send_rich_message calls (text = rich html)
 
     Usage:
         async def test_notification(worker_ctx, mock_bot):
@@ -62,11 +63,17 @@ class MockBot:
     def __init__(self):
         self.messages: list[CapturedMessage] = []
         self.photos: list[CapturedMessage] = []
+        self.rich_messages: list[CapturedMessage] = []
 
     async def send_message(self, chat_id: int, text: str, **kwargs):
         """Capture send_message call and return mock result."""
         self.messages.append(CapturedMessage(chat_id, text=text, **kwargs))
         return MagicMock(message_id=len(self.messages))
+
+    async def send_rich_message(self, chat_id: int, rich_message, **kwargs):
+        """Capture send_rich_message call (Bot API 10.1 rich messages) and return mock result."""
+        self.rich_messages.append(CapturedMessage(chat_id, text=rich_message.html or rich_message.markdown, **kwargs))
+        return MagicMock(message_id=len(self.rich_messages))
 
     async def send_photo(self, chat_id: int, photo: str, caption: str = None, **kwargs):
         """Capture send_photo call and return mock result."""

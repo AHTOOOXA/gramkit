@@ -3,7 +3,7 @@
 import { type PropsWithChildren, useEffect } from 'react';
 import {
   getSelectedMockUser,
-  isMockModeEnabled,
+  isUserMockEnabled,
   injectMockInitData,
 } from './usePlatformMock';
 import { getHeaderColorForScheme } from './theme-colors';
@@ -25,9 +25,11 @@ export function SDKProvider({ children }: PropsWithChildren) {
     const isDebugMode = process.env.NEXT_PUBLIC_DEBUG === 'true';
     const hasRealTelegramData = !!tg?.initData;
 
-    // Step 1: Inject mock data for development (before anything else)
-    const mockEnabled = isMockModeEnabled() && !hasRealTelegramData && isDebugMode;
-    if (mockEnabled) {
+    // Step 1: Inject mock data for development (before anything else).
+    // Gated on login-as (which user) — NOT TG-platform mock — so you can
+    // authenticate as a mock user while staying on the web platform.
+    const loginAsEnabled = isUserMockEnabled() && !hasRealTelegramData && isDebugMode;
+    if (loginAsEnabled) {
       const mockUser = getSelectedMockUser();
       if (mockUser) {
         injectMockInitData(mockUser);

@@ -1,8 +1,9 @@
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import and_, exists, extract, func, or_, select, text, update
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import and_, case, cast, exists, extract, func, literal, literal_column, or_, select, text, update
+from sqlalchemy.dialects.postgresql import JSONB, insert
 
 from core.infrastructure.database.models import Friendship, User
 from core.infrastructure.database.repo.base import BaseRepo
@@ -86,6 +87,28 @@ class UserRepo(BaseRepo):
         await self.session.refresh(user)
         return user
 
+    async def merge_seen_features(self, user_id: UUID, patch: dict) -> User:
+        """Atomically merge `patch` into users.seen_features via JSONB `||`.
+
+        The merge happens in a single UPDATE (the current column value is read and
+        written server-side), so concurrent writes to *different* top-level keys
+        never lose updates; same-key writes are last-writer-wins. Record-valued
+        keys are merged wholesale — callers send the full value.
+
+        Transaction commits at dependency layer.
+        """
+        stmt = (
+            update(User)
+            .where(User.id == user_id)
+            .values(seen_features=User.seen_features.op("||")(cast(patch, JSONB)))
+            .returning(User)
+        )
+        result = await self.session.execute(stmt)
+        user = result.scalar_one()
+        self.session.add(user)
+        await self.session.refresh(user)
+        return user
+
     async def get_user_by_id(self, user_id: UUID) -> User | None:
         stmt = select(User).where(User.id == user_id)
         result = await self.session.execute(stmt)
@@ -109,10 +132,50 @@ class UserRepo(BaseRepo):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    @staticmethod
+    def _notifiable():
+        """Users a scheduled notification may go to: reachable in Telegram, bot not blocked."""
+        return and_(User.telegram_id.is_not(None), User.bot_blocked_at.is_(None), User.timezone.is_not(None))
+
     async def get_users_by_local_time(self, hour: int) -> list[User]:
-        query = select(User).where(extract("hour", func.timezone(User.timezone, func.now())) == hour)
+        """Notifiable users whose local time (``users.timezone``) is currently ``hour``.
+
+        Postgres ``timezone()`` raises on an unknown zone name, which would fail the query for every
+        user. Writes are validated (``is_valid_timezone``); this guards rows stored before that: an
+        unknown zone is never passed to ``timezone()`` (CASE) and those users are left out.
+        """
+        known_zone = User.timezone.in_(select(literal_column("name")).select_from(text("pg_timezone_names")))
+        safe_zone = case((known_zone, User.timezone), else_=literal("UTC"))
+        query = select(User).where(
+            self._notifiable(), known_zone, extract("hour", func.timezone(safe_zone, func.now())) == hour
+        )
         result = await self.session.execute(query)
         return result.scalars().all()
+
+    async def get_notifiable_users(self) -> Sequence[User]:
+        """All users ``get_users_by_local_time`` can return, whatever their local hour."""
+        result = await self.session.execute(select(User).where(self._notifiable()))
+        return result.scalars().all()
+
+    async def mark_bot_blocked(self, telegram_id: int, at: datetime) -> bool:
+        """Flag the user as having blocked the bot. Keeps the first timestamp and ``updated_at``."""
+        stmt = (
+            update(User)
+            .where(User.telegram_id == telegram_id, User.bot_blocked_at.is_(None))
+            .values(bot_blocked_at=at, updated_at=User.updated_at)
+            .returning(User.id)
+        )
+        return (await self.session.execute(stmt)).first() is not None
+
+    async def clear_bot_blocked(self, user_id: UUID) -> bool:
+        """Drop the blocked flag (the user is back: /start or app open). Keeps ``updated_at``."""
+        stmt = (
+            update(User)
+            .where(User.id == user_id, User.bot_blocked_at.is_not(None))
+            .values(bot_blocked_at=None, updated_at=User.updated_at)
+            .returning(User.id)
+        )
+        return (await self.session.execute(stmt)).first() is not None
 
     async def get_users_count(self) -> int:
         stmt = select(func.count()).select_from(User)

@@ -6,14 +6,16 @@
 import {
   initPlatformMock,
   injectMockInitData,
-  isMockModeEnabled,
+  isUserMockEnabled,
   getSelectedMockUser,
 } from '@tma-platform/core-react/platform-mock';
 import { MOCK_USERS } from '@/config/mock-users';
 
-// Initialize mock IMMEDIATELY before any SDK imports
+// Initialize mock IMMEDIATELY before any SDK imports.
+// Injection is gated on login-as (which user), NOT TG-platform mock — so you
+// can authenticate as a mock user while staying on the web platform.
 initPlatformMock(MOCK_USERS);
-if (isMockModeEnabled()) {
+if (isUserMockEnabled()) {
   let selectedUser = getSelectedMockUser();
   if (!selectedUser?.user_id || !selectedUser.username) {
     console.warn('[Mock] Invalid user in localStorage, using default');

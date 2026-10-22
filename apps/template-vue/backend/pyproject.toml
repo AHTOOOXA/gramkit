@@ -7,7 +7,7 @@ package-dir = { "" = "src" }
 
 [project]
 name = "template-backend"
-version = "0.1.0"
+version = "1.0.0"
 description = "TMA Platform Template - Backend"
 requires-python = ">=3.14"
 classifiers = [

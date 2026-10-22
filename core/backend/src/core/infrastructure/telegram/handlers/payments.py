@@ -9,6 +9,7 @@ from aiogram.types import Message, PreCheckoutQuery
 
 from core.infrastructure.database.models.enums import PaymentProvider
 from core.infrastructure.logging import get_logger
+from core.services.payments.types import PurchaseLimitError
 
 logger = get_logger(__name__)
 
@@ -80,6 +81,19 @@ async def handle_pre_checkout_query(pre_checkout_query: PreCheckoutQuery, servic
             await pre_checkout_query.answer(ok=False, error_message="Unauthorized payment")
             return
 
+        # The daily cap again, right before the charge: invoices opened ahead and paid later.
+        try:
+            await services.payments.check_purchase_allowed(payment.user_id, payment.product_id)
+        except PurchaseLimitError:
+            ru = (pre_checkout_query.from_user.language_code or "").startswith("ru")
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="На сегодня хватит — завтра снова можно."
+                if ru
+                else "That's enough for today — try again tomorrow.",
+            )
+            return
+
         # Process the pre-checkout callback through payments service
         payload = {
             "pre_checkout_query": {
@@ -103,6 +117,32 @@ async def handle_pre_checkout_query(pre_checkout_query: PreCheckoutQuery, servic
         await pre_checkout_query.answer(ok=False, error_message="Payment processing error")
 
 
+@router.message(F.refunded_payment)
+async def handle_refunded_payment(message: Message, services):
+    """Telegram reports a refunded Star charge: ours (refundStarPayment from the admin panel, which
+    has already marked the payment REFUNDED, so this is a no-op) or one made on Telegram's side.
+    The payment becomes REFUNDED and the owner is told; access is left to them."""
+    refunded = message.refunded_payment
+    logger.info(
+        f"Refunded payment received for user {message.from_user.id}: {refunded.invoice_payload}, "
+        f"charge_id={refunded.telegram_payment_charge_id}"
+    )
+    payload = {
+        "refunded_payment": {
+            "currency": refunded.currency,
+            "total_amount": refunded.total_amount,
+            "invoice_payload": refunded.invoice_payload,
+            "telegram_payment_charge_id": refunded.telegram_payment_charge_id,
+            "provider_payment_charge_id": refunded.provider_payment_charge_id,
+        },
+        "payload": refunded.invoice_payload,
+    }
+    try:
+        await services.payments.process_callback(payload, PaymentProvider.TELEGRAM_STARS.value)
+    except Exception as e:
+        logger.error(f"Error handling refunded payment {refunded.telegram_payment_charge_id}: {e}", exc_info=True)
+
+
 @router.message(F.successful_payment)
 async def handle_successful_payment(message: Message, services):
     """
@@ -117,13 +157,15 @@ async def handle_successful_payment(message: Message, services):
 
     Flow:
         1. Extract payment ID from invoice payload
-        2. Check if this is a subscription renewal (recurring_used flag)
+        2. Forward Telegram's subscription flags (is_recurring / is_first_recurring) so the provider
+           can distinguish the initial charge from an auto-renewal
         3. Process successful payment callback via payment service
-        4. Service handles: payment status update, subscription creation, balance updates
+        4. Service handles: payment status update, subscription creation/renewal, balance updates
 
     Payload format:
         successful_payment.invoice_payload: "payment_{uuid}"
-        successful_payment.recurring_used: bool (True for auto-renewals)
+        successful_payment.is_recurring: bool (True for every subscription charge)
+        successful_payment.is_first_recurring: bool (True only for the first charge)
     """
     try:
         successful_payment = message.successful_payment
@@ -150,9 +192,13 @@ async def handle_successful_payment(message: Message, services):
             logger.error(f"Could not parse payment ID from payload: {successful_payment.invoice_payload} - {e}")
             return
 
-        # Check if this is a renewal payment
-        # Telegram sends recurring_used flag for subscription renewals
-        is_renewal = getattr(successful_payment, "recurring_used", False)
+        # Forward Telegram's authoritative subscription flags so the provider can tell an initial
+        # charge from an auto-renewal. NOTE: the Bot API field is ``is_recurring`` (true on EVERY
+        # subscription charge) + ``is_first_recurring`` (true only on the first one) — NOT the
+        # non-existent ``recurring_used`` the old code read via getattr (which silently defaulted
+        # False, so renewals were never recognised and the sub lapsed after month 1).
+        is_recurring = bool(getattr(successful_payment, "is_recurring", False))
+        is_first_recurring = bool(getattr(successful_payment, "is_first_recurring", False))
 
         # Process the successful payment callback through payments service
         payload = {
@@ -162,18 +208,21 @@ async def handle_successful_payment(message: Message, services):
                 "invoice_payload": successful_payment.invoice_payload,
                 "telegram_payment_charge_id": successful_payment.telegram_payment_charge_id,
                 "provider_payment_charge_id": successful_payment.provider_payment_charge_id,
-                "recurring_used": is_renewal,  # Include renewal flag
+                "subscription_expiration_date": getattr(successful_payment, "subscription_expiration_date", None),
+                "is_recurring": is_recurring,
+                "is_first_recurring": is_first_recurring,
             },
             "payload": successful_payment.invoice_payload,
             "from_user": message.from_user.model_dump(),
-            "recurring_used": is_renewal,  # Also at top level for easier access
+            "is_recurring": is_recurring,
+            "is_first_recurring": is_first_recurring,
         }
 
         await services.payments.process_callback(payload, PaymentProvider.TELEGRAM_STARS.value)
 
         # TODO: Make better confirmation message to user
         # # Send appropriate confirmation message based on payment type
-        # if is_renewal:
+        # if is_recurring and not is_first_recurring:  # auto-renewal
         #     confirmation_msg = (
         #         "🔄 Subscription renewed! Your Telegram Stars subscription has been automatically renewed.\n\n"
         #         "Thank you for continuing to use our service! ⭐"

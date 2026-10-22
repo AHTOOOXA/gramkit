@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { usePlatform } from '@core/platform';
 import AppNav from './AppNav.vue';
 import { layoutConfig } from '@/config/layout';
@@ -17,11 +18,14 @@ const variantClasses = {
   full: 'w-full',
 } as const;
 
+const route = useRoute();
 const { isTelegramMobile } = usePlatform();
 const { mobileLayout } = layoutConfig;
 
+const showBottomNav = computed(() => route.meta?.layout === 'tabs' && mobileLayout === 'bottom-tabs');
+
 const useMobilePadding = computed(() =>
-  isTelegramMobile && mobileLayout === 'bottom-tabs'
+  isTelegramMobile && showBottomNav.value
 );
 
 const containerClass = computed(() => variantClasses[props.variant]);
@@ -32,8 +36,9 @@ const containerClass = computed(() => variantClasses[props.variant]);
     <AppNav />
     <main
 :class="[
-      'flex-1 w-full mx-auto px-[var(--page-padding-x)] py-[var(--page-padding-y)] pb-[var(--bottom-nav-height)] md:pb-[var(--page-padding-y)]',
+      'flex-1 w-full mx-auto px-[var(--page-padding-x)] py-[var(--page-padding-y)] md:pb-[var(--page-padding-y)]',
       containerClass,
+      showBottomNav ? 'pb-[var(--bottom-nav-height)]' : 'pb-[var(--page-padding-y)]',
       useMobilePadding && 'pt-2'
     ]">
       <slot />

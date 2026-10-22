@@ -21,6 +21,7 @@ class PostHogWrapper:
         self._enabled = False
         self._api_key = None
         self._host = None
+        self._super_properties: dict[str, Any] = {}
         # Don't setup client immediately - do it lazily on first use
 
     def _setup_client(self, api_key: str = None, host: str = None) -> None:
@@ -71,7 +72,8 @@ class PostHogWrapper:
             return False
 
         try:
-            return _posthog.capture(distinct_id=distinct_id, event=event, properties=properties, **kwargs)
+            merged = {**self._super_properties, **(properties or {})}
+            return _posthog.capture(distinct_id=distinct_id, event=event, properties=merged, **kwargs)
         except Exception as e:
             logger.error(f"PostHog capture failed for event '{event}': {e}")
             return False
@@ -115,7 +117,9 @@ posthog = PostHogWrapper()
 
 # For backward compatibility
 @lru_cache
-def setup_posthog(api_key: str, host: str) -> None:
+def setup_posthog(api_key: str, host: str, app_version: str = "") -> None:
     """Initialize PostHog client with configuration."""
     # Force initialization now instead of waiting for first use
     posthog._setup_client(api_key=api_key, host=host)
+    if app_version:
+        posthog._super_properties["$app_version"] = app_version

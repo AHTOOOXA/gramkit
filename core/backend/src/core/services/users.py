@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
@@ -9,6 +9,42 @@ from core.schemas.users import UpdateUserRequest, UserSchema
 from core.services.base import BaseService
 
 logger = get_logger(__name__)
+
+MAX_REFERRAL_CODE_LENGTH = 40  # matches users.referral_code String(40)
+
+DEFAULT_TIMEZONE = "Europe/Moscow"
+STREAK_DAY_START_HOUR = 5  # a "day" starts at 05:00 local, so late-night use counts for the evening before
+
+
+def user_zoneinfo(timezone: str | None) -> ZoneInfo:
+    """The user's timezone; Moscow when unset or invalid."""
+    try:
+        return ZoneInfo(timezone or DEFAULT_TIMEZONE)
+    except Exception:
+        logger.warning(f"Invalid timezone '{timezone}', using {DEFAULT_TIMEZONE}")
+        return ZoneInfo(DEFAULT_TIMEZONE)
+
+
+def is_valid_timezone(timezone: str | None) -> bool:
+    """An IANA zone name we can resolve. ``get_users_by_local_time`` feeds it to Postgres ``timezone()``,
+    which raises on an unknown name — for the whole hourly query, i.e. for every user."""
+    if not timezone:
+        return False
+    try:
+        ZoneInfo(timezone)
+    except Exception:
+        return False
+    return True
+
+
+def get_streak_day(timezone: str | None, at: datetime) -> date:
+    """The streak day ``at`` falls on in the user's timezone (days start at 05:00 local).
+
+    The one definition of "a day" for ``users.last_activity_date``: anything compared with it
+    (e.g. the notification lifecycle stages) must use this.
+    """
+    local = at.astimezone(user_zoneinfo(timezone))
+    return (local - timedelta(hours=STREAK_DAY_START_HOUR)).date()
 
 
 class UserService(BaseService):
@@ -82,8 +118,18 @@ class UserService(BaseService):
         return UserSchema.model_validate(user) if user else None
 
     async def get_users_by_local_time(self, hour: int) -> list[UserSchema]:
+        """Notifiable users (Telegram, bot not blocked) whose local hour is ``hour``."""
         users = await self.repo.users.get_users_by_local_time(hour)
         return [UserSchema.model_validate(user) for user in users]
+
+    async def get_notifiable_users(self) -> list[UserSchema]:
+        """Every user a scheduled notification may reach, whatever their local hour."""
+        users = await self.repo.users.get_notifiable_users()
+        return [UserSchema.model_validate(user) for user in users]
+
+    async def clear_bot_blocked(self, user_id: UUID) -> bool:
+        """The user is back (/start or app open): scheduled notifications may reach them again."""
+        return await self.repo.users.clear_bot_blocked(user_id)
 
     async def get_users_count(self):
         return await self.repo.users.get_users_count()
@@ -105,9 +151,12 @@ class UserService(BaseService):
 
     async def update_user(self, user_id: UUID, user_data: UpdateUserRequest) -> UserSchema:
         update_data = user_data.model_dump(exclude_unset=True)
+        if "timezone" in update_data and not is_valid_timezone(update_data["timezone"]):
+            logger.warning(f"User {user_id}: ignoring invalid timezone {update_data['timezone']!r}")
+            del update_data["timezone"]
         if "is_onboarded" in update_data:
             posthog.capture(
-                distinct_id=user_id,
+                distinct_id=str(user_id),
                 event="user_onboarded",
             )
         # Get current user to verify existence
@@ -124,12 +173,37 @@ class UserService(BaseService):
         user = await self.repo.users.get_by_telegram_id(telegram_id)
         return UserSchema.model_validate(user) if user else None
 
+    async def merge_seen_features(self, user_id: UUID, patch: dict) -> UserSchema:
+        """Merge feature-seen flags into the user's `seen_features` map.
+
+        Generic primitive for one-time reveals / coachmarks / "what's new" /
+        capped nudges — gating state only, written via the dedicated endpoint.
+        """
+        updated = await self.repo.users.merge_seen_features(user_id, patch)
+        return UserSchema.model_validate(updated)
+
     async def is_friend(self, user_id1: UUID, user_id2: UUID) -> bool:
         friendship = await self.repo.users.get_friendship(user_id1, user_id2)
         return friendship is not None and friendship.is_active
 
     async def process_referral(self, referral_id: str, user_id: UUID) -> None:
         """Save referral code for user acquisition tracking."""
+        # Guard against empty/whitespace payloads (e.g. bare /start).
+        referral_id = referral_id.strip() if referral_id else ""
+        if not referral_id:
+            return None
+        # Guard against over-long payloads. The /start deep-link payload allows
+        # up to 64 chars, but referral_code is String(40); storing a longer
+        # value raises StringDataRightTruncationError and crashes the handler.
+        # Legit codes are short (e.g. "r-123456"), so an over-long value is
+        # garbage/abuse — skip storing it and let onboarding proceed normally.
+        if len(referral_id) > MAX_REFERRAL_CODE_LENGTH:
+            logger.warning(
+                f"User {user_id}: referral code too long "
+                f"({len(referral_id)} > {MAX_REFERRAL_CODE_LENGTH}), skipping: {referral_id[:64]!r}"
+            )
+            return None
+
         user = await self.repo.users.get_user_by_id(user_id)
         if not user:
             logger.warning(f"User {user_id} not found")
@@ -156,24 +230,13 @@ class UserService(BaseService):
             logger.error(f"User {user_id} not found for streak update")
             return None
 
-        # Get user's timezone, default to Moscow time if not set
-        user_timezone = user.timezone or "Europe/Moscow"
-        try:
-            tz = ZoneInfo(user_timezone)
-        except Exception:
-            # Fallback to Moscow time if timezone is invalid
-            tz = ZoneInfo("Europe/Moscow")
-            logger.warning(f"Invalid timezone '{user_timezone}' for user {user_id}, using Europe/Moscow")
+        # Opening the app means the user is reachable again (see bot_blocked_at)
+        if user.bot_blocked_at is not None:
+            await self.repo.users.clear_bot_blocked(user_id)
 
-        # Calculate the "streak day" (day starts at 5 AM)
-        now_utc = datetime.now(ZoneInfo("UTC"))
-        now_user_tz = now_utc.astimezone(tz)
-
-        # If it's before 5 AM, consider it as the previous day
-        if now_user_tz.hour < 5:
-            streak_day = (now_user_tz - timedelta(hours=5)).date()
-        else:
-            streak_day = now_user_tz.date()
+        user_timezone = user.timezone or DEFAULT_TIMEZONE
+        now_user_tz = datetime.now(UTC).astimezone(user_zoneinfo(user.timezone))
+        streak_day = get_streak_day(user.timezone, now_user_tz)
 
         # Fix legacy users with streak 0
         if user.current_streak == 0:
@@ -244,7 +307,7 @@ class UserService(BaseService):
         # Log streak milestones for analytics
         if new_current_streak in [3, 7, 14, 30, 100]:
             posthog.capture(
-                distinct_id=user_id,
+                distinct_id=str(user_id),
                 event="streak_milestone_reached",
                 properties={
                     "streak_days": new_current_streak,
@@ -273,22 +336,7 @@ class UserService(BaseService):
             logger.info(f"User {user_id} already has streak {user.current_streak}, skipping reset")
             return UserSchema.model_validate(user)
 
-        # Get user's timezone for proper date calculation
-        user_timezone = user.timezone or "Europe/Moscow"
-        try:
-            tz = ZoneInfo(user_timezone)
-        except Exception:
-            tz = ZoneInfo("Europe/Moscow")
-
-        # Calculate current streak day
-
-        now_utc = datetime.now(ZoneInfo("UTC"))
-        now_user_tz = now_utc.astimezone(tz)
-
-        if now_user_tz.hour < 5:
-            streak_day = (now_user_tz - timedelta(hours=5)).date()
-        else:
-            streak_day = now_user_tz.date()
+        streak_day = get_streak_day(user.timezone, datetime.now(UTC))
 
         # Reset streak to 1
         updated_user = await self.repo.users.update_user(

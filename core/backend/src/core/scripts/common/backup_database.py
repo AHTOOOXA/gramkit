@@ -4,9 +4,9 @@ Create a database backup using pg_dump.
 Common script available to all apps.
 
 Usage:
-    make script name=backup_database APP=tarot
-    make script name=backup_database args='--no-compress' APP=tarot
-    make script name=backup_database args='--name=before_migration' APP=tarot
+    make script name=backup_database APP=<app>
+    make script name=backup_database args='--no-compress' APP=<app>
+    make script name=backup_database args='--name=before_migration' APP=<app>
 """
 
 import asyncio
@@ -89,34 +89,44 @@ async def create_backup(
     ext = ".sql.gz" if compress else ".sql"
     backup_file = str(Path(output_dir) / f"{backup_name}{ext}")
 
-    # Build pg_dump command using network connection
-    # PGPASSWORD env var is used for authentication
-    env_prefix = f"PGPASSWORD={db_config.password}"
-    pg_dump_cmd = (
-        f"{env_prefix} pg_dump "
-        f"-h {db_config.host} -p {db_config.port} "
-        f"-U {db_config.user} -d {db_config.name} "
-        f"--clean --if-exists"
-    )
-
+    # pg_dump writes the file itself (-Z gzips plain-format output), so its exit code is the
+    # backup's. A `pg_dump | gzip` shell pipe reported gzip's 0 even when pg_dump was missing
+    # or failed, and an empty archive went out as a "successful" backup.
+    args = [
+        "pg_dump",
+        "-h",
+        str(db_config.host),
+        "-p",
+        str(db_config.port),
+        "-U",
+        str(db_config.user),
+        "-d",
+        str(db_config.name),
+        "--clean",
+        "--if-exists",
+        "-f",
+        backup_file,
+    ]
     if compress:
-        # Pipe through gzip
-        cmd = f"{pg_dump_cmd} | gzip > {backup_file}"
-    else:
-        cmd = f"{pg_dump_cmd} > {backup_file}"
+        args += ["-Z", "6"]
 
     # Execute backup
-    proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-    _, stderr = await proc.communicate()
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *args,
+            env={**os.environ, "PGPASSWORD": str(db_config.password)},
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, stderr = await proc.communicate()
+        returncode = proc.returncode
+    except FileNotFoundError:
+        returncode, stderr = 127, b"pg_dump not found - install postgresql-client in the image"
 
     duration = time.time() - start_time
 
     # Check for errors
-    if proc.returncode != 0:
+    if returncode != 0:
         error_msg = stderr.decode().strip() if stderr else "Unknown error"
         return BackupResult(
             success=False,

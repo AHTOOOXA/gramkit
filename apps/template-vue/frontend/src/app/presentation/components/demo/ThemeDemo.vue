@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { mode } from '@app/store/theme'
 import DemoSection from './DemoSection.vue'
 import { Button } from '@/components/ui/button'
-import { Sun, Moon, Monitor } from 'lucide-vue-next'
+import { Sun, Moon, Monitor } from '@lucide/vue'
 
 const { t } = useI18n()
 

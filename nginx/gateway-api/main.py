@@ -17,7 +17,7 @@ client = docker.from_env()
 
 # Known apps and their container prefixes
 APPS = {
-    "template": {"containers": ["template-webhook", "template-bot", "template-worker"], "compose": "template"},
+    "template-vue": {"containers": ["template-vue-webhook", "template-vue-bot", "template-vue-worker"], "compose": "template-vue"},
     "template-react": {"containers": ["template-react-webhook"], "compose": "template-react"},
 }
 

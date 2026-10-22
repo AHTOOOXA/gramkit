@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuery } from '@tanstack/vue-query'
-import { RefreshCw, XCircle, CheckCircle } from 'lucide-vue-next'
+import { RefreshCw, XCircle, CheckCircle } from '@lucide/vue'
 
 import { getErrorMessage } from '@core/errors'
 import { triggerErrorDemoErrorStatusCodeGet } from '@/gen/client/triggerErrorDemoErrorStatusCodeGet'

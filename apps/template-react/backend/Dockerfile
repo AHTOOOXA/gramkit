@@ -65,6 +65,11 @@ CMD ["python", "-u", "src/app/webhook/app.py"]
 # Production stage - minimal Python image
 FROM python:3.14-slim as production
 
+# Install postgresql-client for pg_dump (database backups)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /workspace
 
 # Copy entire workspace structure from builder (includes .venv)

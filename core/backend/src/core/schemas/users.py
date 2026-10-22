@@ -1,7 +1,8 @@
+import re
 from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 from core.infrastructure.database.models.enums import UserRole, UserType
 
@@ -53,6 +54,12 @@ class UserSchema(BaseModel):
     is_onboarded: bool | None = None
     is_terms_accepted: bool | None = None
     referral_code: str | None = None
+
+    # Notifications: set when the bot got TelegramForbiddenError, cleared on /start or app open
+    bot_blocked_at: datetime | None = None
+
+    # Feature-reveal tracking (read path; written via PATCH /users/me/seen-features)
+    seen_features: dict = {}
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -119,3 +126,37 @@ class UpdateUserRequest(BaseModel):
     is_terms_accepted: bool | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# Feature-seen tracking ------------------------------------------------------
+
+_FEATURE_KEY_RE = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$")
+_MAX_FEATURE_KEYS = 20
+
+# A feature value is either a scalar (one-shot bool, version int) or a shallow
+# record (capped-nudge / acknowledged state). Depth is capped at one level by
+# construction — values may not nest further.
+FeatureScalar = bool | int | float | str
+FeatureValue = FeatureScalar | dict[str, FeatureScalar]
+
+
+class SeenFeaturesPatch(RootModel[dict[str, FeatureValue]]):
+    """Body for PATCH /users/me/seen-features.
+
+    A shallow `feature_key -> value` map, merged into `users.seen_features` via
+    JSONB `||` (top-level keys only). Hardened because it is user-writable:
+    keys must be dotted lowercase identifiers, the map is bounded, and values
+    are at most one level deep.
+    """
+
+    @field_validator("root")
+    @classmethod
+    def _validate(cls, value: dict) -> dict:
+        if not value:
+            raise ValueError("patch must contain at least one feature key")
+        if len(value) > _MAX_FEATURE_KEYS:
+            raise ValueError(f"too many feature keys (max {_MAX_FEATURE_KEYS})")
+        for key in value:
+            if not _FEATURE_KEY_RE.match(key):
+                raise ValueError(f"invalid feature key: {key!r}")
+        return value

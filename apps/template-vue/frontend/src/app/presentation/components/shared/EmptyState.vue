@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { InboxIcon } from 'lucide-vue-next';
+import { InboxIcon } from '@lucide/vue';
 import { computed } from 'vue';
 import { cn } from '@/lib/utils';
 

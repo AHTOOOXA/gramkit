@@ -1,38 +1,8 @@
 from core.infrastructure.arq import WorkerContext, inject_context
+from core.infrastructure.arq.jobs.admin import admin_broadcast_job  # noqa: F401 — registered by worker.py
 from core.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
-
-
-@inject_context
-async def admin_broadcast_job(ctx: WorkerContext, text: str):
-    """Send admin broadcast message - uses bot directly (no transaction for external API).
-
-    Transaction pattern:
-    - NO transaction: Send Telegram messages directly (external API)
-    - Admin broadcasts are typically small (3-5 admins), so no DB tracking needed
-    """
-    logger.info(f"Job started: admin_broadcast - Text length: {len(text)}")
-    try:
-        # Send directly via bot (no transaction)
-        import asyncio
-
-        from core.infrastructure.config import settings
-
-        count = 0
-        for admin_id in settings.rbac.owner_ids:
-            try:
-                await ctx.bot.send_message(admin_id, text)
-                count += 1
-                await asyncio.sleep(0.05)
-            except Exception as e:
-                logger.error(f"Failed to send to admin {admin_id}: {e}")
-
-        logger.info(f"Job completed: admin_broadcast - Sent to {count}/{len(settings.rbac.owner_ids)} admins")
-        return {"sent": count}
-    except Exception as e:
-        logger.error(f"Job failed: admin_broadcast - {e}", exc_info=True)
-        raise
 
 
 @inject_context
@@ -76,8 +46,8 @@ async def user_broadcast_job(ctx: WorkerContext, broadcast_data: dict, requester
         elif keyboard_type == "daily":
             kb = InlineKeyboardBuilder()
             kb.button(
-                text=i18n("tarot.open_app_button"),
-                url=f"{settings.web.app_url}?startapp=r-dailycardnotification",
+                text=i18n("app.open_app_button"),
+                url=f"{settings.web.app_url}?startapp=r-dailynotification",
             )
             kb.adjust(1)
             keyboard = kb.as_markup()

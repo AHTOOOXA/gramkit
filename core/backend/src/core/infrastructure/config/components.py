@@ -149,6 +149,21 @@ class OpenAISettings(BaseModel):
         return bool(self.api_key)
 
 
+class SentryConfigAdapter:
+    """Adapter for script runner compatibility."""
+
+    def __init__(self, dsn: str):
+        self.dsn = dsn
+
+
+class PostHogConfigAdapter:
+    """Adapter for script runner compatibility."""
+
+    def __init__(self, api_key: str, host: str):
+        self.api_key = api_key
+        self.host = host
+
+
 class ObservabilitySettings(BaseModel):
     """Observability services settings (Sentry, PostHog, Logfire).
 
@@ -173,6 +188,16 @@ class ObservabilitySettings(BaseModel):
     @property
     def logfire_enabled(self) -> bool:
         return bool(self.logfire_token)
+
+    @property
+    def sentry(self) -> SentryConfigAdapter:
+        """Adapter for script runner compatibility."""
+        return SentryConfigAdapter(dsn=self.sentry_dsn)
+
+    @property
+    def posthog(self) -> PostHogConfigAdapter:
+        """Adapter for script runner compatibility."""
+        return PostHogConfigAdapter(api_key=self.posthog_api_key, host=self.posthog_host)
 
 
 class RBACSettings(BaseModel):

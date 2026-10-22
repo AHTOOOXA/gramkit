@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Send, ExternalLink } from 'lucide-vue-next'
+import { Loader2, Send, ExternalLink } from '@lucide/vue'
 
 const props = defineProps<{
   open: boolean

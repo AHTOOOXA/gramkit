@@ -8,7 +8,7 @@ import ProfileSection from './ProfileSection.vue'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Copy, Check, UserPlus } from 'lucide-vue-next'
+import { Copy, Check, UserPlus } from '@lucide/vue'
 
 const { t } = useI18n()
 

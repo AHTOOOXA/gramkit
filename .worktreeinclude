@@ -1,0 +1,7 @@
+# Gitignored files copied into every worktree Claude Code creates (claude -w, subagent isolation).
+# Dependencies aren't copied: run `uv sync` / `pnpm install` in the worktree when you need them.
+.env
+scripts/.env
+apps/*/.env
+apps/*/frontend/.env
+apps/*/backend/.env

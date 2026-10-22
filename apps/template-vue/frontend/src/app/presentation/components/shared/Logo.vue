@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FlaskConical } from 'lucide-vue-next';
+import { FlaskConical } from '@lucide/vue';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 

@@ -1,4 +1,4 @@
-"""Tarot bot start handlers."""
+"""Bot start handlers."""
 
 from functools import partial
 
@@ -12,16 +12,16 @@ from core.infrastructure.telegram.handlers.start import start_command as core_st
 
 router = Router()
 
-# Configure core start handler for Tarot app
-tarot_start_handler = partial(
+# Configure core start handler for this app
+app_start_handler = partial(
     core_start_command,
-    menu_i18n_key="tarot.menu",
+    menu_i18n_key="app.menu",
     keyboard_factory=command_keyboard,
     posthog_event="bot_command_start",
 )
 
-# Configure core ref handler for Tarot app
-tarot_ref_handler = partial(
+# Configure core ref handler for this app
+app_ref_handler = partial(
     core_ref_command,
     bot_url=settings.bot.url,
     web_app_path="/app",
@@ -29,5 +29,5 @@ tarot_ref_handler = partial(
 )
 
 # Register configured handlers
-router.message.register(tarot_start_handler, CommandStart())
-router.message.register(tarot_ref_handler, Command("ref"))
+router.message.register(app_start_handler, CommandStart())
+router.message.register(app_ref_handler, Command("ref"))

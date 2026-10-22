@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { RotateCcw } from 'lucide-vue-next';
+import { RotateCcw } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 
 const COMMANDS = [

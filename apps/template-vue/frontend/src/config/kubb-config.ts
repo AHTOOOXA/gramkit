@@ -18,7 +18,10 @@
 import { setConfig, axiosInstance } from '@kubb/plugin-client/clients/axios';
 import { classifyHttpError, classifyNetworkError } from '@core/errors';
 
-const STORAGE_KEY = 'telegram-platform-mock';
+// Login-as switch: gates the Mock-Platform header that tells the backend to
+// authenticate as the mock user carried in initData. Independent of the
+// TG-platform mock (telegram vs web) toggle.
+const LOGIN_AS_KEY = 'telegram-platform-login-as';
 
 /**
  * Resolve API base URL based on environment and hostname.
@@ -70,21 +73,21 @@ export function configureApiClient() {
       ? (window as { Telegram?: { WebApp?: { initData?: string } } }).Telegram?.WebApp?.initData ?? ''
       : '';
 
-    // Check if mock mode is enabled (debug mode only)
-    let isMockMode = false;
+    // Check if login-as (mock user auth) is enabled (debug mode only)
+    let isUserMock = false;
     if (import.meta.env.VITE_DEBUG === 'true' && typeof window !== 'undefined') {
       try {
-        isMockMode = localStorage.getItem(STORAGE_KEY) === 'true';
+        isUserMock = localStorage.getItem(LOGIN_AS_KEY) === 'true';
       } catch {
-        isMockMode = false;
+        isUserMock = false;
       }
     }
 
     // Set initData header (required for all Telegram authentication)
     config.headers.set('initData', initData);
 
-    // Add mock platform header when in mock mode
-    if (isMockMode) {
+    // Tell the backend to accept the mock user carried in initData.
+    if (isUserMock) {
       config.headers.set('Mock-Platform', 'true');
     }
 
@@ -164,12 +167,13 @@ export function getSocketOptions(): SocketOptions {
       ? ((window as { Telegram?: { WebApp?: { initData?: string } } })
           .Telegram?.WebApp?.initData ?? '')
       : '';
-  let isMockMode = false;
+  // Login-as gates the mock-user auth header (independent of TG-platform mock).
+  let isUserMock = false;
   if (import.meta.env.VITE_DEBUG === 'true' && typeof window !== 'undefined') {
     try {
-      isMockMode = localStorage.getItem(STORAGE_KEY) === 'true';
+      isUserMock = localStorage.getItem(LOGIN_AS_KEY) === 'true';
     } catch {
-      isMockMode = false;
+      isUserMock = false;
     }
   }
 
@@ -184,7 +188,7 @@ export function getSocketOptions(): SocketOptions {
       path: `${pathname}/socket.io`,
       auth: {
         initData,
-        ...(isMockMode ? { mockPlatform: 'true' } : {}),
+        ...(isUserMock ? { mockPlatform: 'true' } : {}),
       },
       withCredentials: true,
       transports: ['websocket', 'polling'],
@@ -213,18 +217,19 @@ export function apiFetch(
       : '';
 
   // Check if mock mode is enabled
-  let isMockMode = false;
+  // Login-as gates the mock-user auth header (independent of TG-platform mock).
+  let isUserMock = false;
   if (import.meta.env.VITE_DEBUG === 'true' && typeof window !== 'undefined') {
     try {
-      isMockMode = localStorage.getItem(STORAGE_KEY) === 'true';
+      isUserMock = localStorage.getItem(LOGIN_AS_KEY) === 'true';
     } catch {
-      isMockMode = false;
+      isUserMock = false;
     }
   }
 
   const headers = new Headers(init?.headers);
   headers.set('initData', initData);
-  if (isMockMode) {
+  if (isUserMock) {
     headers.set('Mock-Platform', 'true');
   }
 

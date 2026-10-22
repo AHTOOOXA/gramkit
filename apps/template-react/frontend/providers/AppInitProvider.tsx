@@ -9,7 +9,7 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { noop, useQueryClient } from '@tanstack/react-query';
 
 import { useTelegram } from '@tma-platform/core-react/platform';
 import { usePostHog } from '@tma-platform/core-react/analytics';
@@ -288,12 +288,12 @@ export function AppInitProvider({ children }: PropsWithChildren) {
         }
 
         // 10. Prefetch subscription
-        void queryClient.prefetchQuery({
+        void queryClient.query({
           queryKey: getSubscriptionSubscriptionsGetQueryKey(),
           queryFn: async () => {
             return await getSubscriptionSubscriptionsGet();
           },
-        });
+        }).catch(noop);
 
         // 11. Handle page parameter (direct navigation)
         if (startParamData.type === StartParamKey.PAGE && startParamData.value) {

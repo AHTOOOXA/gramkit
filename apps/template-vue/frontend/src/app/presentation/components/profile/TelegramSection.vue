@@ -4,7 +4,7 @@ import { usePlatform } from '@core/platform'
 import ProfileSection from './ProfileSection.vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Smartphone, Globe, Vibrate, X } from 'lucide-vue-next'
+import { Smartphone, Globe, Vibrate, X } from '@lucide/vue'
 
 const { t } = useI18n()
 const platform = usePlatform()

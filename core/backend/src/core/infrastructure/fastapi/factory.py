@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Protocol
 
 import sentry_sdk
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
@@ -22,12 +23,14 @@ from core.infrastructure.fastapi.middleware import (
     RequestIdMiddleware,
     RequestTracker,
     RequestTrackerMiddleware,
+    RootPathMiddleware,
     SecurityConfig,
     SecurityHeadersMiddleware,
 )
 from core.infrastructure.fastapi.routers.health import router as health_router
 from core.infrastructure.logging import get_logger
 from core.infrastructure.redis import RedisClient
+from core.infrastructure.telegram.admin_messages import announce_start
 
 logger = get_logger(__name__)
 
@@ -90,9 +93,9 @@ def create_api(
             routers=[
                 routers.auth.router,
                 routers.base.router,
-                routers.tarot.router,
+                routers.items.router,
             ],
-            title="Tarot API",
+            title="My App API",
             version="1.0.0",
             static_path=Path(__file__).parent.parent / "static",
             security_csp=(
@@ -107,6 +110,9 @@ def create_api(
             dsn=settings.observability.sentry_dsn,
             environment=settings.observability.logfire_environment,
             send_default_pii=True,
+            # Never attach request bodies: they carry users' own free text (questions, chat messages)
+            # that must not leave our server.
+            max_request_body_size="never",
             traces_sample_rate=1.0,  # 100% - fine for low traffic (<1k DAU)
             profiles_sample_rate=0.5,  # 50% - profiles are heavier
             integrations=[
@@ -143,6 +149,7 @@ def create_api(
                 await callback(session_pool)
 
         logger.info("✅ Webhook application ready")
+        await announce_start("webhook", version)
 
         yield  # Application runs here
 
@@ -173,12 +180,14 @@ def create_api(
 
         logger.info("✅ Webhook application shutdown complete")
 
-    # Create app
+    # Create app — root_path is NOT set on FastAPI directly because Starlette's
+    # Mount creates child scopes with root_path = app_root_path + mount_path,
+    # which breaks static file serving when the proxy strips the prefix.
+    # Instead, RootPathMiddleware handles prefix stripping at the ASGI level.
     app_configs = {
         "lifespan": lifespan,
         "title": title,
         "version": version,
-        "root_path": root_path,  # For proper URL generation behind proxy
     }
 
     # Hide docs in production
@@ -192,8 +201,17 @@ def create_api(
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+    # Global exception handler - logs all unhandled exceptions
+    @app.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+        logger.exception(f"Unhandled exception on {request.method} {request.url.path}: {exc}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": str(exc)},
+        )
+
     # Middleware stack (last added = first executed)
-    # Order: RequestId → RequestTracker → Security → CORS
+    # Order: RootPath → RequestId → RequestTracker → Security → CORS
 
     # Request ID propagation (must be first to set context for all other middleware)
     app.add_middleware(RequestIdMiddleware)
@@ -230,6 +248,12 @@ def create_api(
         allow_headers=["*"],
     )
 
+    # Root path stripping — must run first (added last) so all other middleware
+    # and route matching see paths without the proxy prefix. This makes static
+    # file Mounts work regardless of whether the proxy strips the prefix or not.
+    if root_path:
+        app.add_middleware(RootPathMiddleware, root_path=root_path)
+
     # Register routers
     # Always include health check endpoints first (core functionality)
     app.include_router(health_router)
@@ -244,7 +268,7 @@ def create_api(
         if images_path.exists():
             app.mount(
                 "/static/images",
-                CachedStaticFiles(directory=images_path, html=False, cache_max_age=604800),
+                CachedStaticFiles(directory=images_path, html=False, cache_max_age=31536000),
                 name="static_images",
             )
 

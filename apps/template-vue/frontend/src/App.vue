@@ -2,6 +2,7 @@
 import { computed, ref, onMounted, onUnmounted, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Toaster, type ToasterProps } from 'vue-sonner';
+import 'vue-sonner/style.css';
 import { usePlatform } from '@core/platform';
 import { useGetCurrentUserUsersMeGet } from '@gen/hooks';
 import { i18n } from '@app/i18n';

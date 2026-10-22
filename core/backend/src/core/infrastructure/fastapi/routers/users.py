@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from core.infrastructure.fastapi.dependencies import get_services, get_user
 from core.infrastructure.fastapi.rate_limiter import HARD_LIMIT, SOFT_LIMIT, limiter
 from core.infrastructure.logging import get_logger
-from core.schemas.users import UpdateUserRequest, UserSchema
+from core.schemas.users import SeenFeaturesPatch, UpdateUserRequest, UserSchema
 from core.services.requests import CoreRequestsService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -53,3 +53,19 @@ async def update_current_user(
         )
 
     return updated_user
+
+
+@router.patch("/me/seen-features", response_model=UserSchema)
+@limiter.limit(HARD_LIMIT)
+async def mark_seen_features(
+    request: Request,
+    patch: SeenFeaturesPatch,
+    services: CoreRequestsService = Depends(get_services),
+    user: UserSchema = Depends(get_user),
+) -> UserSchema:
+    """Merge feature-seen flags into the current user's `seen_features` map.
+
+    Body is a shallow `feature_key -> value` map (see SeenFeaturesPatch), merged
+    via JSONB `||`. Returns the updated user so clients refresh the /users/me cache.
+    """
+    return await services.users.merge_seen_features(user.id, patch.root)

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onlineManager } from '@tanstack/vue-query'
 import { useI18n } from 'vue-i18n'
-import { Wifi, WifiOff } from 'lucide-vue-next'
+import { Wifi, WifiOff } from '@lucide/vue'
 
 import { isApiError, getErrorMessage } from '@core/errors'
 import { useGetServerTimeDemoTimeGet } from '@/gen/hooks'

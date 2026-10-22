@@ -3,6 +3,7 @@
 from core.infrastructure.database.models.base import Base, CreatedAtMixin, TableNameMixin, UpdatedAtMixin
 from core.infrastructure.database.models.enums import (
     AuthMethod,
+    NotificationSlot,
     NotificationTimeSlot,
     PaymentEventType,
     PaymentProvider,
@@ -13,6 +14,7 @@ from core.infrastructure.database.models.enums import (
 from core.infrastructure.database.models.friendships import Friendship
 from core.infrastructure.database.models.groups import Group, GroupMember
 from core.infrastructure.database.models.invites import GroupInvite
+from core.infrastructure.database.models.notifications import NotificationDelivery
 from core.infrastructure.database.models.payments import Payment, PaymentEvent
 from core.infrastructure.database.models.subscriptions import Subscription
 from core.infrastructure.database.models.users import User
@@ -38,5 +40,7 @@ __all__ = [
     "Group",
     "GroupMember",
     "NotificationTimeSlot",
+    "NotificationSlot",
+    "NotificationDelivery",
     "FailedWebhook",
 ]

@@ -1,9 +1,9 @@
-"""Tarot backend application.
+"""Template backend application.
 
-This package provides the tarot application backend with:
-- Tarot-specific models (readings, chat, trainer, etc.)
-- Tarot-specific repositories extending CoreRequestsRepo
-- Tarot-specific services extending CoreRequestsService
+This package provides the starter app backend with:
+- App-specific models
+- App-specific repositories extending CoreRequestsRepo
+- App-specific services extending CoreRequestsService
 - Entry points (webhook, bot, worker)
 """
 

@@ -601,28 +601,28 @@ export default function HomePage() {
                 <CardContent className="space-y-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.createTask.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.createTask.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.codeReview.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.codeReview.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.executeTask.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.executeTask.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.codeReviewUltra.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.codeReviewUltra.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.develop.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.develop.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.simplify.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.simplify.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.design.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.design.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.securityReview.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.securityReview.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.review.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.review.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.loop.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.loop.desc')}</p>
                     </div>
                     <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.addTesting.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.addTesting.desc')}</p>
+                      <code className="text-primary">{t('claudeCode.slashCommands.items.init.cmd')}</code>
+                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.init.desc')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -638,11 +638,8 @@ export default function HomePage() {
                   </p>
                   <div className="bg-muted p-3 rounded text-xs font-mono">
                     <div className="text-muted-foreground">docs/tasks/user-settings/</div>
-                    <div className="text-muted-foreground ml-2">├── README.md <span className="text-primary"># PRD</span></div>
-                    <div className="text-muted-foreground ml-2">├── ARCHITECTURE.md <span className="text-primary"># Contracts</span></div>
-                    <div className="text-muted-foreground ml-2">├── CONTEXT.md <span className="text-primary"># State</span></div>
-                    <div className="text-muted-foreground ml-2">├── 01-models.md <span className="text-primary"># file:line refs</span></div>
-                    <div className="text-muted-foreground ml-2">└── 02-api.md</div>
+                    <div className="text-muted-foreground ml-2">├── README.md <span className="text-primary"># brief → decisions → slices</span></div>
+                    <div className="text-muted-foreground ml-2">└── HANDOFF.md <span className="text-primary"># for the next session</span></div>
                   </div>
                 </CardContent>
               </Card>
@@ -685,21 +682,12 @@ export default function HomePage() {
               <CardContent>
                 <div className="grid md:grid-cols-4 gap-3 text-xs">
                   <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.createTask.cmd')}</code>
+                    <code className="text-primary">{t('claudeCode.example.plan.cmd')}</code>
                     <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.createTask.desc')}
+                      {t('claudeCode.example.plan.desc')}
                     </p>
                     <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.createTask.result')}
-                    </p>
-                  </div>
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.executeTask.cmd')}</code>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.executeTask.desc')}
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.executeTask.result')}
+                      {t('claudeCode.example.plan.result')}
                     </p>
                   </div>
                   <div className="bg-muted p-3 rounded">
@@ -709,6 +697,15 @@ export default function HomePage() {
                     </p>
                     <p className="text-muted-foreground mt-1">
                       {t('claudeCode.example.developerAgent.result')}
+                    </p>
+                  </div>
+                  <div className="bg-muted p-3 rounded">
+                    <code className="text-primary">{t('claudeCode.example.qa.cmd')}</code>
+                    <p className="text-muted-foreground mt-1">
+                      {t('claudeCode.example.qa.desc')}
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      {t('claudeCode.example.qa.result')}
                     </p>
                   </div>
                   <div className="bg-muted p-3 rounded">

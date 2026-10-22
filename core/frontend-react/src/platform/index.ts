@@ -8,6 +8,7 @@ export {
   createMockInitDataString,
   getSelectedMockUser,
   isMockModeEnabled,
+  isUserMockEnabled,
   type MockUser,
   type UsePlatformMockReturn,
 } from './usePlatformMock';

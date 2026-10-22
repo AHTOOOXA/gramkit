@@ -17,7 +17,6 @@
             --text: #e4e4e7;
             --text-dim: #71717a;
             --accent: #22c55e;
-            --tarot: #a855f7;
             --template: #22c55e;
             --react: #3b82f6;
             --error: #ef4444;
@@ -121,7 +120,6 @@
             flex-shrink: 0;
         }
 
-        .card.tarot .icon { background: rgba(168, 85, 247, 0.15); }
         .card.template .icon { background: rgba(34, 197, 94, 0.15); }
         .card.react .icon { background: rgba(59, 130, 246, 0.15); }
 
@@ -131,7 +129,6 @@
             color: var(--text);
         }
 
-        .card.tarot .card-title { color: var(--tarot); }
         .card.template .card-title { color: var(--template); }
         .card.react .card-title { color: var(--react); }
 
@@ -296,8 +293,7 @@
         }
 
         /* Container colors matching project cards */
-        .log-table .container.tarot { color: var(--tarot); }
-        .log-table .container.template { color: var(--template); }
+        .log-table .container.template-vue { color: var(--template); }
         .log-table .container.template-react { color: var(--react); }
 
         .log-table .level {
@@ -364,42 +360,23 @@
                 </div>
                 <div class="card-desc">Next.js 16 + React 19 + shadcn/ui + Zustand starter</div>
                 <div class="card-links">
-                    <a href="https://local.gramkit.dev/template-react" class="primary">tunnel</a>
+                    <a href="/template-react" class="primary">open</a>
                     <a href="http://localhost:3001/template-react">:3001</a>
-                    <a href="https://local.gramkit.dev/api/template-react/docs">api</a>
+                    <a href="/api/template-react/docs">api</a>
                 </div>
             </div>
 
-            <div class="card template" data-app="template">
-                <div class="status-indicator"><div class="status-dot" data-status="template"></div></div>
+            <div class="card template" data-app="template-vue">
+                <div class="status-indicator"><div class="status-dot" data-status="template-vue"></div></div>
                 <div class="card-header">
                     <div class="icon">🚀</div>
                     <div class="card-title">template-vue</div>
                 </div>
                 <div class="card-desc">Vue 3 + shadcn-vue starter with auth, payments, admin panel</div>
                 <div class="card-links">
-                    <a href="https://local.gramkit.dev/template/" class="primary">tunnel</a>
-                    <a href="http://localhost:5174/template">:5174</a>
-                    <a href="https://local.gramkit.dev/api/template/docs">api</a>
-                </div>
-            </div>
-
-                <div class="card-header">
-                    <div class="icon">📊</div>
-                </div>
-                <div class="card-desc">Analytics dashboard with metrics visualization</div>
-                <div class="card-links">
-                </div>
-            </div>
-
-            <div class="card tarot" data-app="tarot">
-                <div class="status-indicator"><div class="status-dot" data-status="tarot"></div></div>
-                <div class="card-header">
-                    <div class="icon">🔮</div>
-                    <div class="card-title">tarot</div>
-                </div>
-                <div class="card-desc">AI tarot readings with multiple spreads, chat interface, daily readings</div>
-                <div class="card-links">
+                    <a href="/template-vue/" class="primary">open</a>
+                    <a href="http://localhost:5174/template-vue/">:5174</a>
+                    <a href="/api/template-vue/docs">api</a>
                 </div>
             </div>
         </div>
@@ -413,8 +390,7 @@
                 <div class="log-controls">
                     <select id="log-app">
                         <option value="all">All Apps</option>
-                        <option value="tarot">tarot</option>
-                        <option value="template">template</option>
+                        <option value="template-vue">template-vue</option>
                         <option value="template-react">template-react</option>
                     </select>
                     <select id="log-level">
@@ -567,10 +543,9 @@
         }
 
         function getAppClass(containerName) {
-            // Extract app name from container (e.g., "tarot-webhook" -> "tarot")
+            // Extract app name from container (e.g., "template-vue-webhook" -> "template-vue")
             if (containerName.startsWith('template-react')) return 'template-react';
-            if (containerName.startsWith('template')) return 'template';
-            if (containerName.startsWith('tarot')) return 'tarot';
+            if (containerName.startsWith('template-vue')) return 'template-vue';
             return '';
         }
 

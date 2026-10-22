@@ -78,6 +78,8 @@ export default [
       'src/gen/**', // Generated Kubb client code
       'src/components/ui/**', // shadcn-vue components (generated)
       'src/lib/utils.ts', // shadcn-vue utils (generated)
+      'ios/**', // Capacitor native build
+      'android/**', // Capacitor native build
     ],
   },
 ]

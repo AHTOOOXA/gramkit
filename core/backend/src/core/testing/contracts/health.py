@@ -29,3 +29,11 @@ class BaseHealthTests:
         data = response.json()
         assert data["status"] == "healthy"
         assert "timestamp" in data
+
+    @pytest.mark.contract
+    async def test_health_reports_the_live_build(self, client: AsyncClient):
+        """GET /health says which version is running and since when (release rollout checks)."""
+        data = (await client.get("/health")).json()
+
+        assert data["version"]
+        assert data["started_at"]

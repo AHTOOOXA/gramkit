@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { noop, useQueryClient } from '@tanstack/react-query';
 import { usePostHog } from '@tma-platform/core-react/analytics';
 import { useTelegram } from '@tma-platform/core-react/platform';
 
@@ -164,12 +164,12 @@ export function useStartParams() {
         }
 
         // 10. Prefetch subscription
-        await queryClient.prefetchQuery({
+        await queryClient.query({
           queryKey: getSubscriptionSubscriptionsGetQueryKey(),
           queryFn: async () => {
             return await getSubscriptionSubscriptionsGet();
           },
-        });
+        }).catch(noop);
 
         // 11. Handle page parameter (direct navigation)
         if (paramData.type === StartParamKey.PAGE && paramData.value) {

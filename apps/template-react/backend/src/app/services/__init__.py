@@ -1,4 +1,4 @@
-"""Tarot application services."""
+"""Application services."""
 
 from app.services.requests import RequestsService
 

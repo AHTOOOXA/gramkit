@@ -95,16 +95,20 @@ async def start_command(
     """
     # Capture analytics event
     posthog.capture(
-        distinct_id=user.telegram_id or user.id,
+        distinct_id=str(user.telegram_id or user.id),
         event=posthog_event,
         properties={
-            "user_id": user.id,
+            "user_id": str(user.id),
             "telegram_id": user.telegram_id,
             "referral_code": command.args,
             "username": message.from_user.username,
             "language": message.from_user.language_code,
         },
     )
+
+    # /start after a block means the bot can write again (see users.bot_blocked_at)
+    if user.bot_blocked_at is not None and user.id is not None:
+        await services.users.clear_bot_blocked(user.id)
 
     # Process referral code or invite code if provided
     referral_code = command.args
@@ -167,8 +171,9 @@ async def ref_command(
     app_link = f"{bot_url}{web_app_path}"
 
     if command.args:
-        referral_code = f"{referral_prefix}{command.args}"
-        bot_link = f"{bot_link}?start={referral_code}"
-        app_link = f"{app_link}?startapp={referral_code}"
+        # The bot stores its /start payload as-is, while the app strips the prefix from
+        # startapp — so the bot link carries the bare code and both record the same one.
+        bot_link = f"{bot_link}?start={command.args}"
+        app_link = f"{app_link}?startapp={referral_prefix}{command.args}"
 
     await message.answer(text=f"{bot_link}\n\n{app_link}", disable_web_page_preview=True)

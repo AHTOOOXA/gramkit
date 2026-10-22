@@ -43,7 +43,7 @@ export function OptimisticDemo() {
           const previousData = queryClient.getQueryData<CounterResponse>(queryKey);
 
           // Optimistically update cache
-          const params = variables.params as { amount?: number } | undefined;
+          const params = variables.params;
           const amount = params?.amount ?? 1;
           queryClient.setQueryData<CounterResponse>(
             queryKey,

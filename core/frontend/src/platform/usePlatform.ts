@@ -1,5 +1,5 @@
 import useTelegram from './useTelegram';
-import { usePlatformMock } from './usePlatformMock';
+import { usePlatformMock, createMockInitDataString } from './usePlatformMock';
 
 export interface PlatformState {
   isTelegram: boolean;
@@ -18,6 +18,7 @@ export interface PlatformActions {
   hideBackButton: () => void;
   setButtonLoader: (state: boolean) => void;
   showAlert: (text: string) => void;
+  showConfirm: (message: string) => Promise<boolean>;
   openInvoice: (url: string, callback: (status: 'pending' | 'failed' | 'cancelled' | 'paid') => void) => void;
   closeApp: () => void;
   expand: () => void;
@@ -38,11 +39,17 @@ export interface PlatformActions {
     | 'unknown';
   headerColor: string;
   setHeaderColor: (color: 'bg_color' | 'secondary_bg_color' | `#${string}`) => void;
+  /** Telegram WebView background (pre-paint, iOS overscroll). Bot API 6.1+; no-op on web / older clients. */
+  setBackgroundColor: (color: 'bg_color' | 'secondary_bg_color' | `#${string}`) => void;
+  /** Telegram bottom bar behind the native Main/Secondary buttons. Bot API 7.10+; no-op on web / older clients. */
+  setBottomBarColor: (color: 'bg_color' | 'secondary_bg_color' | 'bottom_bar_bg_color' | `#${string}`) => void;
   webAppInitData: string;
   openTelegramLink: (url: string) => void;
   shareMessage: (msgId: string, callback?: (success: boolean) => void) => void;
   openLink: (url: string) => void;
   disableVerticalSwipes: () => void;
+  enableClosingConfirmation: () => void;
+  disableClosingConfirmation: () => void;
 }
 
 export type UsePlatformReturn = PlatformState & PlatformActions;
@@ -55,8 +62,13 @@ export function usePlatform(): UsePlatformReturn {
   const telegram = useTelegram();
   const platformMock = usePlatformMock();
 
-  // Check if mock mode is enabled (debug mode only)
-  const isMockMode = import.meta.env.VITE_DEBUG === 'true' && platformMock.isMockEnabled.value;
+  // Two INDEPENDENT debug switches (decoupled on purpose):
+  //   tgMock   → report platform as Telegram (iOS), regardless of who you are.
+  //   userMock → authenticate as the selected mock user, regardless of platform.
+  // So you can log in as a real user while staying on the web platform.
+  const isDebug = import.meta.env.VITE_DEBUG === 'true';
+  const tgMock = isDebug && platformMock.isMockEnabled.value;
+  const userMock = isDebug && platformMock.isUserMockEnabled.value;
 
   // Detect if we're in Telegram Mini App or web browser
   let isTelegram: boolean;
@@ -65,36 +77,34 @@ export function usePlatform(): UsePlatformReturn {
   let telegramPlatform: typeof telegram.platform;
   let webAppInitData: string;
 
-  if (isMockMode) {
-    // Mock Telegram iOS environment with selected user data
-    const selectedUser = platformMock.selectedUser.value;
+  // --- Platform: driven by TG mock only ---
+  if (tgMock) {
+    // Mock a Telegram iOS environment.
     isTelegram = true;
     isWeb = false;
     platform = 'telegram';
     telegramPlatform = 'ios';
-
-    // Create mock initData with selected user information
-    const mockUserData = selectedUser
-      ? {
-          user_id: selectedUser.user_id,
-          username: selectedUser.username,
-          display_name: selectedUser.display_name,
-          user_type: selectedUser.user_type,
-        }
-      : {
-          user_id: 123456789,
-          username: 'ReallyCoolSupport',
-          display_name: 'Really Cool Support',
-          user_type: 'REGISTERED',
-        };
-
-    webAppInitData = `mock_init_data=true&user=${encodeURIComponent(JSON.stringify(mockUserData))}`; // Include mock user data
   } else {
-    // Normal platform detection
+    // Normal platform detection.
     isTelegram = telegram.platform !== 'unknown' && !!telegram.webAppInitData;
     isWeb = !isTelegram;
     platform = isTelegram ? 'telegram' : 'web';
     telegramPlatform = telegram.platform;
+  }
+
+  // --- Auth (initData): driven by login-as only ---
+  if (userMock) {
+    // Authenticate as the selected mock user (works on web or telegram platform).
+    const selectedUser = platformMock.selectedUser.value;
+    webAppInitData = selectedUser
+      ? createMockInitDataString(selectedUser)
+      : createMockInitDataString({
+          user_id: 123456789,
+          username: 'ReallyCoolSupport',
+          display_name: 'Really Cool Support',
+          user_type: 'REGISTERED',
+        });
+  } else {
     webAppInitData = telegram.webAppInitData;
   }
 
@@ -148,6 +158,14 @@ export function usePlatform(): UsePlatformReturn {
         // Use browser alert as fallback
         alert(text);
       }
+    },
+
+    showConfirm: (message: string): Promise<boolean> => {
+      if (isTelegram) {
+        return telegram.showConfirm(message);
+      }
+      // Web fallback — native confirm is reliable outside the Telegram WebView.
+      return Promise.resolve(window.confirm(message));
     },
 
     openInvoice: (url: string, callback: (status: 'pending' | 'failed' | 'cancelled' | 'paid') => void) => {
@@ -213,6 +231,15 @@ export function usePlatform(): UsePlatformReturn {
       }
     },
 
+    setBackgroundColor: (color: 'bg_color' | 'secondary_bg_color' | `#${string}`) => {
+      // Web: the page's own background is the canvas — nothing to set.
+      if (isTelegram) telegram.setBackgroundColor(color);
+    },
+
+    setBottomBarColor: (color: 'bg_color' | 'secondary_bg_color' | 'bottom_bar_bg_color' | `#${string}`) => {
+      if (isTelegram) telegram.setBottomBarColor(color);
+    },
+
     openTelegramLink: (url: string) => {
       if (isTelegram) {
         telegram.openTelegramLink(url);
@@ -251,6 +278,22 @@ export function usePlatform(): UsePlatformReturn {
         telegram.disableVerticalSwipes();
       } else {
         console.log('Web fallback: disableVerticalSwipes');
+      }
+    },
+
+    enableClosingConfirmation: () => {
+      if (isTelegram) {
+        telegram.enableClosingConfirmation();
+      } else {
+        console.log('Web fallback: enableClosingConfirmation');
+      }
+    },
+
+    disableClosingConfirmation: () => {
+      if (isTelegram) {
+        telegram.disableClosingConfirmation();
+      } else {
+        console.log('Web fallback: disableClosingConfirmation');
       }
     },
   };

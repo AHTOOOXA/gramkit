@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { Lock } from 'lucide-vue-next'
+import { Lock } from '@lucide/vue'
 
 defineProps<{
   locked: boolean

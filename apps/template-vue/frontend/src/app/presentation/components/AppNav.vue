@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { Menu, X, Lock } from 'lucide-vue-next';
+import { Menu, X, Lock } from '@lucide/vue';
 import { cn } from '@/lib/utils';
 import Logo from '@app/presentation/components/shared/Logo.vue';
 import LanguageToggle from '@app/presentation/components/shared/LanguageToggle.vue';

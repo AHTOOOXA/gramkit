@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Moon, Sun } from 'lucide-vue-next';
+import { Moon, Sun } from '@lucide/vue';
 import { computed } from 'vue';
 import { mode } from '@app/store/theme';
 import { Button } from '@/components/ui/button';

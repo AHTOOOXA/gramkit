@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
 import { useI18n } from 'vue-i18n'
-import { Cloud, TrendingUp, Newspaper, RefreshCw } from 'lucide-vue-next'
+import { Cloud, TrendingUp, Newspaper, RefreshCw } from '@lucide/vue'
 
 import {
   getWeatherDemoWeatherGetQueryOptions,

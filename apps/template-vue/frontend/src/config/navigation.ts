@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import { Home, FlaskConical, User, Settings, ArrowRight } from 'lucide-vue-next'
+import { Home, FlaskConical, User, Settings, ArrowRight } from '@lucide/vue'
 
 /**
  * Access levels for navigation items:
@@ -14,7 +14,7 @@ export type AccessLevel = 'public' | 'guest' | 'auth' | 'admin' | 'owner'
 export interface NavItem {
   id: string
   href: string
-  icon: Component  // lucide-vue-next icon component
+  icon: Component  // @lucide/vue icon component
   labelKey: string // i18n key for translation
   access: AccessLevel
   /** Show in mobile bottom tabs (max 5 recommended) */

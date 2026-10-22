@@ -3,8 +3,8 @@
 #
 # Usage:
 #   make -f Makefile.shared up    # Start shared infrastructure
-#   make up APP=tarot             # Start individual apps (from root)
-#   make up APP=bible
+#   make up APP=template-vue      # Start individual apps (from root)
+#   make up APP=template-react
 #
 # Apps can be started/stopped independently. Nginx handles missing apps gracefully.
 
@@ -64,34 +64,6 @@ services:
         max-file: "10"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/gateway/status"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Shared Playwright Server (for AI-driven interactive testing)
-  playwright:
-    image: mcr.microsoft.com/playwright:v1.48.0-jammy
-    container_name: shared-playwright
-    working_dir: /app
-    command: bash -c "npm install && node server.js"
-    ports:
-      - "9876:9876"
-    volumes:
-      - ./tools/playwright:/app
-      - /dev/shm:/dev/shm  # Shared memory for Chrome
-    environment:
-      - PORT=9876
-      - DISPLAY=:99
-    networks:
-      - shared_gateway
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9876/health"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -1,0 +1,125 @@
+---
+paths:
+  - "core/backend/**"
+  - "apps/*/backend/**"
+---
+
+# Backend rules (core + app backends)
+
+Always-on rules (make-only, `datetime.now(UTC)`, `flush()` not `commit()` in repos, core never imports app, locking for money, no factory routers, no `TYPE_CHECKING`) live in the root `CLAUDE.md`. This file adds what the code won't tell you at a glance.
+
+## Core or app?
+
+- Ask: "Will a second app need this exact thing?" Yes → `core/`. No or maybe → the app. Promote to core only once a second app actually needs it. Leave a `TODO: extract to core` note rather than abstracting early.
+- Check `core/` first. Don't re-implement users, auth, sessions, payments, subscriptions, groups or invites in an app.
+- Core can hold routers, bot handlers and worker jobs too. It has 8 router modules in `core/backend/src/core/infrastructure/fastapi/routers/` (auth, users, payments, subscriptions, provider webhooks, health), handlers in `.../telegram/handlers/` and jobs in `.../arq/jobs/`. Put something in core when it's shared; otherwise it goes in the app.
+- **Balance is app code** (`apps/template-vue/backend/src/app/services/balance.py`, `.../repo/balance.py`, `.../models/balance.py`), not core. Core only knows it by name:
+  - core `User.balance` is `relationship("Balance")`, so every app must define a `Balance` model;
+  - core jobs (`arq/jobs/balance.py`) call `services.balance.*` on the app's service aggregator.
+- No domain wording in core. A message like "your report is ready" belongs in the app.
+
+## Real layout
+
+```
+core/backend/src/core/
+├── auth/rbac.py                  # AdminUser / OwnerUser annotated deps, require_role()
+├── domain/products.py            # ProductCatalog protocol (apps inject their catalog)
+├── schemas/                      # UserSchema, payments, subscriptions…
+├── services/                     # auth, users, sessions, subscriptions, groups, invites,
+│   │                             # messages, start, telegram_link, worker, base.py
+│   ├── requests.py               # CoreRequestsService (aggregator)
+│   ├── payments/service.py       # PaymentsService (+ providers/)
+│   └── notifications/
+├── infrastructure/
+│   ├── config/                   # `settings` proxy → resolves to app.config.settings
+│   ├── database/models/          # User, Payment(+Event), Subscription, Group, GroupInvite, Friendship, FailedWebhook, NotificationDelivery; base.py mixins
+│   ├── database/repo/            # BaseRepo (base.py), users.py, payments.py, …, requests.py = CoreRequestsRepo
+│   ├── fastapi/                  # factory.py (create_api), dependencies.py, routers/
+│   ├── telegram/                 # factory.py (dispatcher + middlewares), handlers/, middlewares/
+│   ├── arq/                      # factory.py (WorkerContext, inject_context, create_worker_settings), jobs/
+│   └── session/                  # set_session_cookie / clear_session_cookie / get_session_from_request
+├── scripts/                      # base.py + runner.py for `make script`
+├── testing/                      # shared fixtures + reusable contract suites
+└── tests/
+
+apps/template-vue/backend/       # template-react and new apps follow the same shape
+├── migrations/versions/          # Alembic for this app. Covers core AND app models
+└── src/app/
+    ├── config.py                 # the concrete Settings that `settings` resolves to
+    ├── exceptions.py             # BackendException + subclasses
+    ├── domain/, schemas/
+    ├── infrastructure/database/{models,repo}/   # repo/requests.py = RequestsRepo
+    ├── services/                 # requests.py = RequestsService; balance.py, statistics.py, notifications/
+    ├── webhook/                  # app.py, auth.py (get_user), dependencies/, routers/{base,admin,demo}.py
+    ├── tgbot/                    # bot.py, handlers/__init__.py (routers_list)
+    ├── worker/                   # jobs.py, worker.py (job + cron registration)
+    ├── scripts/
+    └── tests/
+```
+
+## Layers and boundaries
+
+- Interface (webhook router / bot handler / worker job) → service → repo. Routers stay thin; business rules and validation go in services.
+- import-linter (`apps/<app>/backend/.importlinter`, checked by `make lint`) enforces:
+  - `app.services` must not import `app.webhook` / `app.tgbot` / `app.worker`, so services never raise `HTTPException`;
+  - `app.infrastructure.database.repo` must not import `app.services`;
+  - `app.domain` / `app.schemas` must not import services or the interface layers.
+- Everything is **async**. `BaseRepo` methods are `async` and use `await self.session.execute(...)`:
+  ```python
+  class MyEntityRepo(BaseRepo[MyEntity]):
+      async def get_by_user_id(self, user_id: UUID) -> Sequence[MyEntity]:
+          result = await self.session.execute(select(MyEntity).where(MyEntity.user_id == user_id))
+          return result.scalars().all()
+  ```
+- Services subclass `BaseService(repo, producer, services, bot)`, using `app/services/base.py` in the app and `core/services/base.py` in core. Use `self.repo.<repo>` for data and `self.services.<other>` to call sibling services.
+
+## Aggregators (composition, not inheritance)
+
+- `RequestsRepo` wraps `CoreRequestsRepo` as `self._core`. `RequestsService` wraps `CoreRequestsService(repo=repo._core, products=..., ...)`. Each entry is a `@cached_property`.
+- **There's no `__getattr__` fallback.** A new core repo or service must be added to `CoreRequests*` and also get a delegating `@cached_property` in every app's `RequestsRepo` / `RequestsService` that uses it. Adding it to core alone isn't enough.
+- A new app repo or service goes only in the app aggregator. Its constructor is `XService(self.repo, self.producer, self, self.bot)`.
+- Core services see only `CoreRequestsRepo` / `CoreRequestsService`. They can't reach app repos or services. If core needs app behaviour, inject it (the products catalog pattern) or do it in a core job, which gets the app's aggregator.
+
+## Transactions: who commits
+
+| Entry point | Unit of work | Commit |
+|---|---|---|
+| Webhook | `get_repo()` (`app/webhook/dependencies/database.py`): `session.begin()` per request | auto on exit, rollback on exception |
+| Bot | `DatabaseMiddleware` (`core/.../telegram/middlewares/database.py`): one transaction per update | auto |
+| Worker | `async with ctx.with_transaction() as services:` (`core/.../arq/factory.py`) | auto on block exit. `ctx.with_repo()` has **no** transaction |
+| Scripts (`core/scripts/base.py`) | `with_session()` / `with_repo()` / `with_services()` open a bare session | **you** `await session.commit()` |
+
+- Repos and services only `flush()`. In worker jobs, keep slow external calls (LLM, Telegram sends) outside `with_transaction()` blocks.
+- Money: `await self.repo.<x>.get_by_id_with_lock(id)` (`SELECT … FOR UPDATE`; `read=True` / `nowait` / `skip_locked` exist) before a read-modify-write. Real uses are in `app/services/balance.py` and `core/services/payments/service.py`.
+
+## Interfaces
+
+- **Webhook:** `services: RequestsService = Depends(get_services)` and `user: UserSchema = Depends(get_user)`, both from `core.infrastructure.fastapi.dependencies`. Core's `get_services` / `get_user` raise `NotImplementedError` until the app overrides them. Don't write wrapper deps like `get_auth_service`. Use `services.auth` directly.
+- **Router registration:** every router goes in the `routers=[...]` list of `create_api(...)` in `app/webhook/app.py`, core routers and app routers alike. Then `app.dependency_overrides[core_deps.get_services] = app_get_services` (same for `get_user`). `create_api` adds the health router itself.
+- **Auth (`app/webhook/auth.py::get_user`):** checks the `Mock-Platform` header (debug only), then the Telegram `initData` header, then the session cookie. With none of them it falls back to a **shared mock guest user**. It never returns 401 for "not logged in", so gate with `core.auth.rbac`: `user: AdminUser` / `user: OwnerUser` or `Depends(require_role(...))`. Config `settings.rbac.owner_ids` always pass.
+- **Sessions:** `session_id = await services.sessions.create_session(user_id, user_type)`, then `set_session_cookie(response, session_id)` / `clear_session_cookie(response)` from `core.infrastructure.session`. Cookie options come from `settings.session`; there's no config argument.
+- **Bot handlers:** services are **injected as a handler argument** by `ServiceMiddleware` (`core/.../telegram/middlewares/service.py`). Write `async def cmd(message: Message, user: UserSchema, services: RequestsService)`. `repo`, `session` and `user` are injected the same way. There's no `router.services`. Register routers in `app/tgbot/handlers/__init__.py::routers_list`. Order matters: core auth/link routers must come before `start_router`, whose `CommandStart()` swallows every `/start`.
+- **Worker jobs:** `@inject_context async def job(ctx: WorkerContext, ...)`, then add them to `job_functions=[...]` (and `cron_jobs`) in `app/worker/worker.py`. A job that isn't registered never runs. To wrap a core job that already has `@inject_context`, don't decorate the wrapper again (see `worker/jobs.py`).
+
+## Errors → HTTP
+
+- Domain errors subclass `BackendException` (`app/exceptions.py`). Its `code` is the class name, and it also carries `message` and `name`.
+- **No global handler maps them.** `create_exception_handler` in `webhook/app.py` is defined but not registered. Routers catch specific exceptions and translate them:
+  ```python
+  except NoChatMessagesError as e:
+      raise HTTPException(status_code=402, detail={"code": "NoChatMessagesError", "message": str(e)})
+  ```
+- `detail` is a plain string for simple cases, or `{"code", "message"}` (object detail) when the frontend branches on the error type. Streaming endpoints (see the streaming demo in `routers/demo.py`) can't change status mid-stream, so they emit an error line (`{"type": "error", "payload": {"detail": {"code", "message"}}}`) instead.
+- Unhandled exceptions hit core's global handler and return `500 {"detail": str(exc)}`. Details and the frontend side are in `.claude/rules/errors.md`.
+
+## Config, email, models, migrations
+
+- Always `from core.infrastructure.config import settings`. It's a lazy proxy that imports `app.config` on first attribute access, so new settings go in the app's `config.py`, built from the core components in `core/infrastructure/config/components.py`.
+- Email: `AuthService` (`core/services/auth.py`) holds every auth flow: Telegram code, deep-link and `email_*`. It reads `settings.email` (`api_key`, `from_address`, `from_name`) and imports `resend` lazily inside the send method. Nothing is passed through the aggregators, and there's no separate email service.
+- Models: use the `CreatedAtMixin` / `UpdatedAtMixin` / `TableNameMixin` in `core/.../models/base.py` (`TIMESTAMP(timezone=True)`, `server_default=func.now()`). Never use a bare `DateTime`.
+- Export new models from the package `__init__.py`. `migrations/env.py` star-imports core and app models, so an unexported model gets no migration.
+- Core has **no migrations of its own**. A core model change needs `make migration` in **each app** that uses it.
+
+## Data fixes and one-off jobs
+
+- One-off backend work (backfills, cleanups, backup/restore) is a script under `app/scripts/` or `core/scripts/common/`, run with `make script`. Running one against a live server has a memory catch: see `.claude/rules/prod-scripts.md`.

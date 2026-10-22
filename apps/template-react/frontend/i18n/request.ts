@@ -2,6 +2,8 @@ import { getRequestConfig } from 'next-intl/server';
 
 import { routing } from './routing';
 
+// TODO: migrate to next/root-params (https://next-intl.dev/blog/nextjs-root-params)
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
   const requested = await requestLocale;
