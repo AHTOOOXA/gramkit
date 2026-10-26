@@ -31,7 +31,7 @@ export function FriendsSection() {
     try {
       const { data } = await createInvite();
       if (data) {
-        setInviteLink(data.telegram_link);
+        setInviteLink(data);
       }
     } catch (err) {
       toast.error(getErrorMessage(err));

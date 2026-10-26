@@ -1,0 +1,1 @@
+{"properties":{"sent":{"type":"boolean","title":"Sent"}},"type":"object","required":["sent"],"title":"BroadcastPreviewResponse","x-readme-ref-name":"BroadcastPreviewResponse"}

@@ -11,30 +11,38 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailResendResponse
  * @description Successful Response
 */
 export type ResendCodeAuthSignupEmailResendPost200 = EmailResendResponse;
 
 /**
+ * ErrorResponse
  * @description Invalid token
 */
 export type ResendCodeAuthSignupEmailResendPost400 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Token expired
 */
 export type ResendCodeAuthSignupEmailResendPost410 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type ResendCodeAuthSignupEmailResendPost422 = HTTPValidationError;
 
 /**
+ * ErrorResponse
  * @description Rate limited
 */
 export type ResendCodeAuthSignupEmailResendPost429 = ErrorResponse;
 
+/**
+ * EmailResendRequest
+*/
 export type ResendCodeAuthSignupEmailResendPostMutationRequest = EmailResendRequest;
 
 export type ResendCodeAuthSignupEmailResendPostMutationResponse = ResendCodeAuthSignupEmailResendPost200;

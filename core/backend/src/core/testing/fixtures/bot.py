@@ -10,10 +10,41 @@ Provides:
 import random
 from datetime import UTC, datetime
 from typing import Any
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from aiogram.types import CallbackQuery, Chat, Message, Update, User
+
+
+def api_bot_mock() -> MagicMock:
+    """A bot for the webhook's ``get_bot`` override in HTTP tests (not a fixture: call it).
+
+    Sends are awaitable (``AsyncMock``). Media sends return a Message-shaped mock whose
+    ``photo[-1]`` / ``video`` / ``animation`` / ``document`` carry a ``file_id``, so the
+    broadcast media upload (which mints a ``file_id`` by sending the file) works under test.
+
+    Usage in an app's ``test_app`` fixture:
+        async def override_get_bot():
+            yield api_bot_mock()
+        app.dependency_overrides[get_bot] = override_get_bot
+    """
+    bot = MagicMock(id=123456789, username="test_bot")
+    bot.send_message = AsyncMock(return_value=MagicMock())
+
+    def _media_message(file_id: str) -> MagicMock:
+        msg = MagicMock()
+        msg.photo = [MagicMock(file_id=file_id)]
+        msg.video = MagicMock(file_id=file_id)
+        msg.animation = MagicMock(file_id=file_id)
+        msg.document = MagicMock(file_id=file_id)
+        return msg
+
+    bot.send_photo = AsyncMock(return_value=_media_message("file_photo_123"))
+    bot.send_video = AsyncMock(return_value=_media_message("file_video_123"))
+    bot.send_animation = AsyncMock(return_value=_media_message("file_anim_123"))
+    bot.send_document = AsyncMock(return_value=_media_message("file_doc_123"))
+    bot.delete_message = AsyncMock(return_value=True)
+    return bot
 
 
 @pytest.fixture

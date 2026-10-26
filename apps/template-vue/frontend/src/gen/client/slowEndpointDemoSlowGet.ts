@@ -7,21 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { SlowEndpointDemoSlowGetQueryResponse, SlowEndpointDemoSlowGetQueryParams, SlowEndpointDemoSlowGet422 } from "../models/demoController/SlowEndpointDemoSlowGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getSlowEndpointDemoSlowGetUrl() {
-  const res = { method: 'GET', url: `/demo/slow` as const }  
+  const res = { method: 'GET', url: `/demo/slow` as const }
   return res
 }
 
 /**
- * @description Endpoint with artificial delay for loading state demo.Args:    delay_ms: Delay in milliseconds (100-10000, default 2000)
+ * @description Endpoint with artificial delay for loading state demo.
+ * Args:
+ * delay_ms: Delay in milliseconds (100-10000, default 2000)
  * @summary Slow Endpoint
  * {@link /demo/slow}
  */
-export async function slowEndpointDemoSlowGet(params?: SlowEndpointDemoSlowGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, unknown>({ method : "GET", url : getSlowEndpointDemoSlowGetUrl().url.toString(), params, ... requestConfig })  
+export async function slowEndpointDemoSlowGet(params?: SlowEndpointDemoSlowGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, unknown>({ method : "GET", url : getSlowEndpointDemoSlowGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

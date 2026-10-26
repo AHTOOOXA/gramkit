@@ -4,7 +4,9 @@ Generic fixtures that don't depend on any specific app.
 App-specific fixtures (test_app, client, authenticated_client) belong in each app's conftest.py.
 """
 
-# Database
+# Admin
+from core.testing.fixtures.admin import admin_client, owner_client
+
 # API client utilities
 from core.testing.fixtures.api_client import MockSessionManager
 
@@ -13,11 +15,14 @@ from core.testing.fixtures.auth import generate_telegram_init_data
 
 # Bot
 from core.testing.fixtures.bot import (
+    api_bot_mock,
     callback_query_factory,
     message_factory,
     mock_bot,
     update_factory,
 )
+
+# Database
 from core.testing.fixtures.database import db_engine, db_session, postgres_container
 
 # Mocks
@@ -46,6 +51,9 @@ from core.testing.fixtures.worker import (
 )
 
 __all__ = [
+    # Admin (need the app's test_app)
+    "admin_client",
+    "owner_client",
     # Database
     "postgres_container",
     "db_engine",
@@ -63,6 +71,7 @@ __all__ = [
     # API client
     "MockSessionManager",
     # Bot
+    "api_bot_mock",
     "mock_bot",
     "message_factory",
     "update_factory",

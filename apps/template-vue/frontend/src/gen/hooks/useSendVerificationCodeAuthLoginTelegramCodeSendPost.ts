@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest, SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, SendVerificationCodeAuthLoginTelegramCodeSendPost422 } from "../models/authenticationController/SendVerificationCodeAuthLoginTelegramCodeSendPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { sendVerificationCodeAuthLoginTelegramCodeSendPost } from "../client/sendVerificationCodeAuthLoginTelegramCodeSendPost.ts";
@@ -25,18 +24,20 @@ export type SendVerificationCodeAuthLoginTelegramCodeSendPostMutationKey = Retur
 export function useSendVerificationCodeAuthLoginTelegramCodeSendPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, ResponseErrorConfig<SendVerificationCodeAuthLoginTelegramCodeSendPost422>, {data: MaybeRefOrGetter<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? sendVerificationCodeAuthLoginTelegramCodeSendPostMutationKey()
 
-  return useMutation<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, ResponseErrorConfig<SendVerificationCodeAuthLoginTelegramCodeSendPost422>, {data: SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return sendVerificationCodeAuthLoginTelegramCodeSendPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? sendVerificationCodeAuthLoginTelegramCodeSendPostMutationKey()
+
+          return useMutation<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, ResponseErrorConfig<SendVerificationCodeAuthLoginTelegramCodeSendPost422>, {data: SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return sendVerificationCodeAuthLoginTelegramCodeSendPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

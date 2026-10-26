@@ -20,6 +20,7 @@ export type AddFriendAddFriendPostQueryParams = {
 export type AddFriendAddFriendPost200 = any;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type AddFriendAddFriendPost422 = HTTPValidationError;

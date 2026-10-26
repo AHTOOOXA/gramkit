@@ -10,7 +10,7 @@ from uuid import UUID, uuid4
 from fastapi import Depends, HTTPException, Request, Response
 
 from app.services.requests import RequestsService
-from app.webhook.dependencies.service import get_services
+from app.webhook.dependencies.service import get_services, get_services_streaming
 from core.infrastructure.config import settings
 from core.infrastructure.database.models.enums import UserType
 from core.infrastructure.i18n import i18n
@@ -545,7 +545,22 @@ async def get_user(
 
     Always returns UserSchema - universal authentication for all platforms.
     """
+    return await _resolve_user(request, services)
 
+
+async def get_user_streaming(
+    request: Request,
+    services: RequestsService = Depends(get_services_streaming),
+) -> UserSchema:
+    """``get_user`` on the streaming endpoint's session (``get_services_streaming``).
+
+    A streaming endpoint must not mix it with ``get_user``: that one opens the function-scoped
+    session, a second one next to the stream's.
+    """
+    return await _resolve_user(request, services)
+
+
+async def _resolve_user(request: Request, services: RequestsService) -> UserSchema:
     # Check for mock platform mode in debug environment
     if request.headers.get("Mock-Platform") == "true" and settings.debug:
         logger.info("Mock platform mode enabled - checking for mock user data")

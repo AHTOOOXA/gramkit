@@ -114,10 +114,16 @@ class MessageService(BaseService):
         """Set ``users.bot_blocked_at``. Never breaks the send or the caller's transaction."""
         if telegram_id is None:
             return
+        session = self.repo.session
         try:
-            # A savepoint, so a failing UPDATE can't abort the caller's transaction.
-            async with self.repo.session.begin_nested():
-                await self.repo.users.mark_bot_blocked(int(telegram_id), datetime.now(UTC))
+            if session.in_transaction():
+                # A savepoint, so a failing UPDATE can't abort the caller's transaction.
+                async with session.begin_nested():
+                    await self.repo.users.mark_bot_blocked(int(telegram_id), datetime.now(UTC))
+            else:
+                # No caller transaction (a send phase outside one): a short one of its own.
+                async with session.begin():
+                    await self.repo.users.mark_bot_blocked(int(telegram_id), datetime.now(UTC))
         except Exception:
             logger.exception(f"Target [ID:{telegram_id}]: could not flag bot_blocked_at")
 
@@ -360,6 +366,40 @@ class MessageService(BaseService):
         finally:
             logger.info(f"{count} photo messages successfully sent.")
         return count
+
+    async def send_content(
+        self, telegram_id: int, content: dict, reply_markup: InlineKeyboardMarkup | None = None
+    ) -> bool | SendFailure:
+        """Send one message from a content dict (text / photo / video / animation / document).
+
+        ``content`` is the shape ``PromotionalBroadcast.get_content_for_sending()`` and
+        ``broadcast_content()`` return: ``{"type": "text", "text", "parse_mode"}`` or
+        ``{"type": <media>, "media_file_id", "caption", "parse_mode"}``. The one primitive every
+        broadcast path sends through (scheduled slot, send-now, bot ``/broadcast``, preview).
+        Falsy ``SendFailure`` on failure (a blocked bot is flagged, as for every send here).
+        """
+        message_type = content.get("type")
+        parse_mode = content.get("parse_mode")
+        if message_type == "text":
+            return await self.send_message(
+                telegram_id=telegram_id, text=content["text"], reply_markup=reply_markup, parse_mode=parse_mode
+            )
+        senders = {
+            "photo": self.send_photo_by_file_id,
+            "video": self.send_video_by_file_id,
+            "animation": self.send_animation_by_file_id,
+            "document": self.send_document_by_file_id,
+        }
+        if message_type not in senders:
+            logger.error(f"Unsupported content message type: {message_type}")
+            return SendFailure(SendFailure.OTHER)
+        return await senders[message_type](
+            telegram_id=telegram_id,
+            file_id=content["media_file_id"],
+            caption=content.get("caption"),
+            reply_markup=reply_markup,
+            parse_mode=parse_mode,
+        )
 
     async def send_localized(
         self,

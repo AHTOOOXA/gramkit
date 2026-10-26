@@ -10,15 +10,20 @@ import type { NotifyRequest } from "../NotifyRequest.ts";
 import type { NotifyResponse } from "../NotifyResponse.ts";
 
 /**
+ * NotifyResponse
  * @description Successful Response
 */
 export type ScheduleNotificationDemoNotifyPost200 = NotifyResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type ScheduleNotificationDemoNotifyPost422 = HTTPValidationError;
 
+/**
+ * NotifyRequest
+*/
 export type ScheduleNotificationDemoNotifyPostMutationRequest = NotifyRequest;
 
 export type ScheduleNotificationDemoNotifyPostMutationResponse = ScheduleNotificationDemoNotifyPost200;

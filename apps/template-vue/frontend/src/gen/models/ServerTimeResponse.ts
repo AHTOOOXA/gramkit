@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * ServerTimeResponse
+*/
 export type ServerTimeResponse = {
     /**
      * @type string

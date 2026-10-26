@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { IncrementCounterDemoCounterIncrementPostMutationResponse, IncrementCounterDemoCounterIncrementPostQueryParams, IncrementCounterDemoCounterIncrementPost422 } from "../models/demoController/IncrementCounterDemoCounterIncrementPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { incrementCounterDemoCounterIncrementPost } from "../client/incrementCounterDemoCounterIncrementPost.ts";
@@ -18,25 +17,31 @@ export const incrementCounterDemoCounterIncrementPostMutationKey = () => [{ url:
 export type IncrementCounterDemoCounterIncrementPostMutationKey = ReturnType<typeof incrementCounterDemoCounterIncrementPostMutationKey>
 
 /**
- * @description Increment counter for optimistic update demo.Args:    counter_id: Unique counter ID (default: "default")    amount: Amount to increment (1-100, default 1)    should_fail: If true, fails after delay (for rollback demo)
+ * @description Increment counter for optimistic update demo.
+ * Args:
+ * counter_id: Unique counter ID (default: "default")
+ * amount: Amount to increment (1-100, default 1)
+ * should_fail: If true, fails after delay (for rollback demo)
  * @summary Increment Counter
  * {@link /demo/counter/increment}
  */
 export function useIncrementCounterDemoCounterIncrementPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<IncrementCounterDemoCounterIncrementPostMutationResponse, ResponseErrorConfig<IncrementCounterDemoCounterIncrementPost422>, {params?: MaybeRefOrGetter<IncrementCounterDemoCounterIncrementPostQueryParams>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? incrementCounterDemoCounterIncrementPostMutationKey()
 
-  return useMutation<IncrementCounterDemoCounterIncrementPostMutationResponse, ResponseErrorConfig<IncrementCounterDemoCounterIncrementPost422>, {params?: IncrementCounterDemoCounterIncrementPostQueryParams}, TContext>({
-    mutationFn: async({ params }) => {
-      return incrementCounterDemoCounterIncrementPost(params, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? incrementCounterDemoCounterIncrementPostMutationKey()
+
+          return useMutation<IncrementCounterDemoCounterIncrementPostMutationResponse, ResponseErrorConfig<IncrementCounterDemoCounterIncrementPost422>, {params?: IncrementCounterDemoCounterIncrementPostQueryParams}, TContext>({
+            mutationFn: async({ params }) => {
+              return incrementCounterDemoCounterIncrementPost(params, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

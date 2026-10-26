@@ -51,6 +51,8 @@ class MockBot:
         messages: List of CapturedMessage objects from send_message calls
         photos: List of CapturedMessage objects from send_photo calls
         rich_messages: List of CapturedMessage objects from send_rich_message calls (text = rich html)
+        media: List of CapturedMessage objects from send_video / send_animation / send_document calls
+            (``photo`` = the file id, ``kwargs["media_type"]`` = "video" / "animation" / "document")
 
     Usage:
         async def test_notification(worker_ctx, mock_bot):
@@ -64,6 +66,7 @@ class MockBot:
         self.messages: list[CapturedMessage] = []
         self.photos: list[CapturedMessage] = []
         self.rich_messages: list[CapturedMessage] = []
+        self.media: list[CapturedMessage] = []
 
     async def send_message(self, chat_id: int, text: str, **kwargs):
         """Capture send_message call and return mock result."""
@@ -79,6 +82,22 @@ class MockBot:
         """Capture send_photo call and return mock result."""
         self.photos.append(CapturedMessage(chat_id, text=caption, photo=photo, **kwargs))
         return MagicMock(message_id=len(self.photos))
+
+    async def _send_media(self, media_type: str, chat_id: int, file_id: str, caption: str | None, **kwargs):
+        self.media.append(CapturedMessage(chat_id, text=caption, photo=file_id, media_type=media_type, **kwargs))
+        return MagicMock(message_id=len(self.media))
+
+    async def send_video(self, chat_id: int, video: str, caption: str = None, **kwargs):
+        """Capture send_video call (into ``media``) and return mock result."""
+        return await self._send_media("video", chat_id, video, caption, **kwargs)
+
+    async def send_animation(self, chat_id: int, animation: str, caption: str = None, **kwargs):
+        """Capture send_animation call (into ``media``) and return mock result."""
+        return await self._send_media("animation", chat_id, animation, caption, **kwargs)
+
+    async def send_document(self, chat_id: int, document: str, caption: str = None, **kwargs):
+        """Capture send_document call (into ``media``) and return mock result."""
+        return await self._send_media("document", chat_id, document, caption, **kwargs)
 
 
 @pytest_asyncio.fixture

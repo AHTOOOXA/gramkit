@@ -7,21 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { UnreliableEndpointDemoUnreliableGetQueryResponse, UnreliableEndpointDemoUnreliableGetQueryParams, UnreliableEndpointDemoUnreliableGet422 } from "../models/demoController/UnreliableEndpointDemoUnreliableGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getUnreliableEndpointDemoUnreliableGetUrl() {
-  const res = { method: 'GET', url: `/demo/unreliable` as const }  
+  const res = { method: 'GET', url: `/demo/unreliable` as const }
   return res
 }
 
 /**
- * @description Endpoint that randomly fails for error handling demo.Args:    fail_rate: Probability of failure (0-1, default 0.5)
+ * @description Endpoint that randomly fails for error handling demo.
+ * Args:
+ * fail_rate: Probability of failure (0-1, default 0.5)
  * @summary Unreliable Endpoint
  * {@link /demo/unreliable}
  */
-export async function unreliableEndpointDemoUnreliableGet(params?: UnreliableEndpointDemoUnreliableGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, unknown>({ method : "GET", url : getUnreliableEndpointDemoUnreliableGetUrl().url.toString(), params, ... requestConfig })  
+export async function unreliableEndpointDemoUnreliableGet(params?: UnreliableEndpointDemoUnreliableGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, unknown>({ method : "GET", url : getUnreliableEndpointDemoUnreliableGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

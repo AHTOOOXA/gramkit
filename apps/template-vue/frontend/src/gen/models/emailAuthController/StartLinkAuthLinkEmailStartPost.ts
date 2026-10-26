@@ -11,30 +11,38 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailLinkResponse
  * @description Successful Response
 */
 export type StartLinkAuthLinkEmailStartPost200 = EmailLinkResponse;
 
 /**
+ * ErrorResponse
  * @description Not authenticated
 */
 export type StartLinkAuthLinkEmailStartPost401 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Email already in use
 */
 export type StartLinkAuthLinkEmailStartPost409 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type StartLinkAuthLinkEmailStartPost422 = HTTPValidationError;
 
 /**
+ * ErrorResponse
  * @description Rate limited
 */
 export type StartLinkAuthLinkEmailStartPost429 = ErrorResponse;
 
+/**
+ * EmailLinkRequest
+*/
 export type StartLinkAuthLinkEmailStartPostMutationRequest = EmailLinkRequest;
 
 export type StartLinkAuthLinkEmailStartPostMutationResponse = StartLinkAuthLinkEmailStartPost200;

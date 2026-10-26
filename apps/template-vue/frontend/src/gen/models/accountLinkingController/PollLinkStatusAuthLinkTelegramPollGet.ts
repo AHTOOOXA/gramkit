@@ -17,21 +17,25 @@ export type PollLinkStatusAuthLinkTelegramPollGetQueryParams = {
 };
 
 /**
+ * TelegramLinkStatusResponse
  * @description Successful Response
 */
 export type PollLinkStatusAuthLinkTelegramPollGet200 = TelegramLinkStatusResponse;
 
 /**
+ * ErrorResponse
  * @description Not authenticated
 */
 export type PollLinkStatusAuthLinkTelegramPollGet401 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Token not found
 */
 export type PollLinkStatusAuthLinkTelegramPollGet404 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type PollLinkStatusAuthLinkTelegramPollGet422 = HTTPValidationError;

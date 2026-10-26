@@ -2164,6 +2164,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.32"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/42/55c32bb9b12693c092ad250a0e82edb5b31ddeda6eb772de5f308b3804ad/python_multipart-0.0.32.tar.gz", hash = "sha256:be54b7f3fa167bb83e4fcd936b887b708f4e57fe75911c02aebf53efaf8d938e", size = 46881, upload-time = "2026-06-04T16:18:58.647Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/04/e8135ebd1ad02c56ec633277529b2602ff99ff634be76cdba5744cf554fd/python_multipart-0.0.32-py3-none-any.whl", hash = "sha256:ff6d3f776f16878c894e52e107296ffc890e913c611b1a4ec6c44e2821fe2e23", size = 30042, upload-time = "2026-06-04T16:18:57.319Z" },
+]
+
+[[package]]
 name = "python-socketio"
 version = "5.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2501,6 +2510,7 @@ bot = [
 web = [
     { name = "fastapi" },
     { name = "python-dateutil" },
+    { name = "python-multipart" },
     { name = "python-socketio" },
     { name = "sentry-sdk", extra = ["fastapi"] },
     { name = "slowapi" },
@@ -2542,6 +2552,7 @@ requires-dist = [
     { name = "g4f", specifier = "==0.5.6.3" },
     { name = "pytest" },
     { name = "python-dateutil", marker = "extra == 'web'" },
+    { name = "python-multipart", marker = "extra == 'web'", specifier = ">=0.0.9" },
     { name = "python-socketio", marker = "extra == 'web'" },
     { name = "resend", specifier = ">=2.0.0" },
     { name = "sentry-sdk", extras = ["arq"], marker = "extra == 'worker'" },
@@ -2603,6 +2614,7 @@ bot = [
 web = [
     { name = "fastapi" },
     { name = "python-dateutil" },
+    { name = "python-multipart" },
     { name = "python-socketio" },
     { name = "sentry-sdk", extra = ["fastapi"] },
     { name = "slowapi" },
@@ -2644,6 +2656,7 @@ requires-dist = [
     { name = "g4f", specifier = "==0.5.6.3" },
     { name = "pytest" },
     { name = "python-dateutil", marker = "extra == 'web'" },
+    { name = "python-multipart", marker = "extra == 'web'", specifier = ">=0.0.9" },
     { name = "python-socketio", marker = "extra == 'web'" },
     { name = "resend", specifier = ">=2.0.0" },
     { name = "sentry-sdk", extras = ["arq"], marker = "extra == 'worker'" },
@@ -2774,6 +2787,7 @@ dev = [
     { name = "httpx" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
+    { name = "python-multipart" },
     { name = "ruff" },
     { name = "testcontainers" },
 ]
@@ -2814,6 +2828,7 @@ dev = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=1.2.0" },
+    { name = "python-multipart", specifier = ">=0.0.9" },
     { name = "ruff", specifier = ">=0.13.2" },
     { name = "testcontainers", extras = ["postgres"], specifier = ">=4.0.0" },
 ]

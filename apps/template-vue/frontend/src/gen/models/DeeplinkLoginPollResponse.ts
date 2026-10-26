@@ -7,14 +7,15 @@
 
 
 export const deeplinkLoginPollResponseStatusEnum = {
-    "pending": "pending",
-    "verified": "verified",
-    "expired": "expired"
+    pending: "pending",
+    verified: "verified",
+    expired: "expired"
 } as const;
 
 export type DeeplinkLoginPollResponseStatusEnumKey = (typeof deeplinkLoginPollResponseStatusEnum)[keyof typeof deeplinkLoginPollResponseStatusEnum];
 
 /**
+ * DeeplinkLoginPollResponse
  * @description Response for checking deep link login status.
 */
 export type DeeplinkLoginPollResponse = {

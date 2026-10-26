@@ -67,4 +67,12 @@ export type UserSchema = {
     is_onboarded?: (boolean | null);
     is_terms_accepted?: (boolean | null);
     referral_code?: (string | null);
+    bot_blocked_at?: (string | null);
+    /**
+     * @default [object Object]
+     * @type object | undefined
+    */
+    seen_features?: {
+        [key: string]: any;
+    };
 };

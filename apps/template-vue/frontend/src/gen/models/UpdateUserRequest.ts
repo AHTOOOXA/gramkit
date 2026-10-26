@@ -7,6 +7,7 @@
 
 
 /**
+ * UpdateUserRequest
  * @description Request schema for updating user profile fields
 */
 export type UpdateUserRequest = {

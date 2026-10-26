@@ -1,0 +1,1 @@
+{"properties":{"bucket":{"type":"string","title":"Bucket"},"new":{"type":"integer","title":"New"},"ended":{"type":"integer","title":"Ended"},"active":{"type":"integer","title":"Active"}},"type":"object","required":["bucket","new","ended","active"],"title":"SubscriptionTrendPoint","x-readme-ref-name":"SubscriptionTrendPoint"}

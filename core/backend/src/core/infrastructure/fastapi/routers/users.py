@@ -7,7 +7,7 @@ Generic user management endpoints for:
 Apps can override authentication via get_user dependency.
 """
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from core.infrastructure.fastapi.dependencies import get_services, get_user
 from core.infrastructure.fastapi.rate_limiter import HARD_LIMIT, SOFT_LIMIT, limiter
@@ -68,4 +68,8 @@ async def mark_seen_features(
     Body is a shallow `feature_key -> value` map (see SeenFeaturesPatch), merged
     via JSONB `||`. Returns the updated user so clients refresh the /users/me cache.
     """
+    # Every logged-out web visitor is the same GUEST row, so one visitor's dismissal
+    # would hide the UI moment for all of them. Gating state is per signed-in user only.
+    if user.is_guest:
+        raise HTTPException(status_code=403, detail="Sign in to save seen features")
     return await services.users.merge_seen_features(user.id, patch.root)

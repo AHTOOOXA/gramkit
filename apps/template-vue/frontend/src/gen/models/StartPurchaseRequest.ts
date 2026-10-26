@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * StartPurchaseRequest
+*/
 export type StartPurchaseRequest = {
     /**
      * @type string
@@ -21,8 +24,6 @@ export type StartPurchaseRequest = {
      * @type string | undefined
     */
     provider_id?: string;
-    /**
-     * @type string
-    */
-    return_url: string;
+    return_url?: (string | null);
+    locale?: (string | null);
 };

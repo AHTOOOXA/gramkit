@@ -7,6 +7,9 @@
 
 import type { SubscriptionStatus } from "./SubscriptionStatus.ts";
 
+/**
+ * SubscriptionSchema
+*/
 export type SubscriptionSchema = {
     /**
      * @type string, uuid

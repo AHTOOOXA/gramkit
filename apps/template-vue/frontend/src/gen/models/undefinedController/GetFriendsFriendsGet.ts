@@ -8,6 +8,7 @@
 import type { UserSchema } from "../UserSchema.ts";
 
 /**
+ * Response Get Friends Friends Get
  * @description Successful Response
 */
 export type GetFriendsFriendsGet200 = UserSchema[];

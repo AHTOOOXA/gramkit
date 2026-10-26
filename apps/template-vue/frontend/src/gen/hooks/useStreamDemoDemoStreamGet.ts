@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StreamDemoDemoStreamGetQueryResponse } from "../models/demoController/StreamDemoDemoStreamGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { streamDemoDemoStreamGet } from "../client/streamDemoDemoStreamGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,40 +16,61 @@ export const streamDemoDemoStreamGetQueryKey = () => [{ url: '/demo/stream' }] a
 
 export type StreamDemoDemoStreamGetQueryKey = ReturnType<typeof streamDemoDemoStreamGetQueryKey>
 
-export function streamDemoDemoStreamGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = streamDemoDemoStreamGetQueryKey()
-  return queryOptions<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, StreamDemoDemoStreamGetQueryResponse, typeof queryKey>({
+export function streamDemoDemoStreamGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return streamDemoDemoStreamGet(toValue(config))
-   },
-  })
+        const queryKey = streamDemoDemoStreamGetQueryKey()
+        return queryOptions<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, StreamDemoDemoStreamGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return streamDemoDemoStreamGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description SSE streaming endpoint for AI demo.Returns Server-Sent Events (SSE) with character-by-character text.Frontend parses lines starting with 'data: ' and stops at '[DONE]'.Example client:```typescriptconst res = await apiFetch('/demo/stream');const reader = res.body?.getReader();const decoder = new TextDecoder();while (reader) {  const { done, value } = await reader.read();  if (done) break;  const chunk = decoder.decode(value);  for (const line of chunk.split('\n')) {    if (line.startsWith('data: ') && !line.includes('[DONE]')) {      console.log(line.slice(6)); // Extract content after "data: "    }  }}```
+ * @description SSE streaming endpoint for AI demo.
+ * Returns Server-Sent Events (SSE) with character-by-character text.
+ * Frontend parses lines starting with 'data: ' and stops at '[DONE]'.
+ * Example client:
+ * ```typescript
+ * const res = await apiFetch('/demo/stream');
+ * const reader = res.body?.getReader();
+ * const decoder = new TextDecoder();
+ * while (reader) {
+ * const { done, value } = await reader.read();
+ * if (done) break;
+ * const chunk = decoder.decode(value);
+ * for (const line of chunk.split('\n')) {
+ * if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+ * console.log(line.slice(6)); // Extract content after "data: "
+ * }
+ * }
+ * }
+ * ```
  * @summary Stream Demo
  * {@link /demo/stream}
  */
 export function useStreamDemoDemoStreamGet<TData = StreamDemoDemoStreamGetQueryResponse, TQueryData = StreamDemoDemoStreamGetQueryResponse, TQueryKey extends QueryKey = StreamDemoDemoStreamGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? streamDemoDemoStreamGetQueryKey()
 
-  const query = useQuery({
-   ...streamDemoDemoStreamGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? streamDemoDemoStreamGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...streamDemoDemoStreamGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, TData, StreamDemoDemoStreamGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

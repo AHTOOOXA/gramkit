@@ -49,6 +49,7 @@ class WorkerContext:
 
     Provides clean patterns for transaction management in worker jobs:
     - with_transaction(): Single operation in a transaction
+    - without_transaction(): Services for external calls (Telegram sends), no transaction
     - with_repo(): Direct repo access (read-only, no transaction)
     - Direct access to bot, redis, arq, producer for external API calls
 
@@ -94,6 +95,24 @@ class WorkerContext:
                 repo = self.repo_class(session)
                 services = self.service_factory(repo=repo, bot=self.bot)
                 yield services
+
+    @asynccontextmanager
+    async def without_transaction(self):
+        """
+        Context manager that provides services on a session with NO transaction.
+
+        For a phase that only calls external APIs (Telegram sends) between two short
+        transactions: no connection is held while it waits. Don't write through these
+        services; a write has to open its own short transaction (``MessageService`` does
+        that to flag a user who blocked the bot).
+
+        Usage:
+            async with ctx.without_transaction() as services:
+                await services.messages.send_content(telegram_id, content)
+        """
+        async with self.session_pool() as session:
+            repo = self.repo_class(session)
+            yield self.service_factory(repo=repo, bot=self.bot)
 
     @asynccontextmanager
     async def with_repo(self):

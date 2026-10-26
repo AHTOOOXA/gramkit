@@ -14,21 +14,31 @@ Usage in app:
 """
 
 # Router contract tests
+from core.testing.contracts.admin import BaseAdminTests
+from core.testing.contracts.admin_statistics import BaseAdminStatisticsTests
 from core.testing.contracts.auth import BaseAuthTests
+from core.testing.contracts.broadcasts import BaseBroadcastTests
 
 # Architecture/pattern contract tests
 from core.testing.contracts.composition import BaseCompositionTests
 from core.testing.contracts.health import BaseHealthTests
+from core.testing.contracts.marketing_links import BaseMarketingLinksTests
 from core.testing.contracts.payments import BasePaymentTests
 from core.testing.contracts.products import BaseProductProtocolTests
+from core.testing.contracts.seen_features import BaseSeenFeaturesTests
 from core.testing.contracts.setup import BaseAppSetupTests
 from core.testing.contracts.users import BaseUserTests
 
 __all__ = [
     # Router contracts
+    "BaseAdminStatisticsTests",
+    "BaseAdminTests",
     "BaseAuthTests",
+    "BaseBroadcastTests",
     "BaseHealthTests",
+    "BaseMarketingLinksTests",
     "BasePaymentTests",
+    "BaseSeenFeaturesTests",
     "BaseUserTests",
     # Architecture contracts
     "BaseAppSetupTests",

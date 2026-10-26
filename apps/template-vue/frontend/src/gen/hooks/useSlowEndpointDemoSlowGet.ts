@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { SlowEndpointDemoSlowGetQueryResponse, SlowEndpointDemoSlowGetQueryParams, SlowEndpointDemoSlowGet422 } from "../models/demoController/SlowEndpointDemoSlowGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { slowEndpointDemoSlowGet } from "../client/slowEndpointDemoSlowGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,40 +17,45 @@ export const slowEndpointDemoSlowGetQueryKey = (params?: MaybeRefOrGetter<SlowEn
 
 export type SlowEndpointDemoSlowGetQueryKey = ReturnType<typeof slowEndpointDemoSlowGetQueryKey>
 
-export function slowEndpointDemoSlowGetQueryOptions(params?: MaybeRefOrGetter<SlowEndpointDemoSlowGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = slowEndpointDemoSlowGetQueryKey(params)
-  return queryOptions<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, SlowEndpointDemoSlowGetQueryResponse, typeof queryKey>({
+export function slowEndpointDemoSlowGetQueryOptions(params?: MaybeRefOrGetter<SlowEndpointDemoSlowGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return slowEndpointDemoSlowGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = slowEndpointDemoSlowGetQueryKey(params)
+        return queryOptions<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, SlowEndpointDemoSlowGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return slowEndpointDemoSlowGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Endpoint with artificial delay for loading state demo.Args:    delay_ms: Delay in milliseconds (100-10000, default 2000)
+ * @description Endpoint with artificial delay for loading state demo.
+ * Args:
+ * delay_ms: Delay in milliseconds (100-10000, default 2000)
  * @summary Slow Endpoint
  * {@link /demo/slow}
  */
 export function useSlowEndpointDemoSlowGet<TData = SlowEndpointDemoSlowGetQueryResponse, TQueryData = SlowEndpointDemoSlowGetQueryResponse, TQueryKey extends QueryKey = SlowEndpointDemoSlowGetQueryKey>(params?: MaybeRefOrGetter<SlowEndpointDemoSlowGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? slowEndpointDemoSlowGetQueryKey(params)
 
-  const query = useQuery({
-   ...slowEndpointDemoSlowGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<SlowEndpointDemoSlowGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? slowEndpointDemoSlowGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...slowEndpointDemoSlowGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<SlowEndpointDemoSlowGetQueryResponse, ResponseErrorConfig<SlowEndpointDemoSlowGet422>, TData, SlowEndpointDemoSlowGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<SlowEndpointDemoSlowGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

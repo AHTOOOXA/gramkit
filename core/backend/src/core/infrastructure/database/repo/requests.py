@@ -5,10 +5,15 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.infrastructure.database.repo.admin_users import AdminUsersRepo
+from core.infrastructure.database.repo.analytics import AnalyticsRepo
+from core.infrastructure.database.repo.audit_log import AuditLogRepo
 from core.infrastructure.database.repo.groups import GroupMemberRepo, GroupRepo
 from core.infrastructure.database.repo.invites import InviteRepo
+from core.infrastructure.database.repo.marketing_links import MarketingLinkRepo
 from core.infrastructure.database.repo.notifications import NotificationDeliveryRepo
 from core.infrastructure.database.repo.payments import PaymentEventRepo, PaymentRepo
+from core.infrastructure.database.repo.promotional_broadcasts import PromotionalBroadcastRepo
 from core.infrastructure.database.repo.subscriptions import SubscriptionRepo
 from core.infrastructure.database.repo.users import UserRepo
 
@@ -90,6 +95,31 @@ class CoreRequestsRepo:
         """Log of scheduled notification sends (one row per attempt)."""
         return NotificationDeliveryRepo(self.session)
 
+    @cached_property
+    def audit_log(self) -> AuditLogRepo:
+        """Admin audit-log repository (mutating admin/owner actions)."""
+        return AuditLogRepo(self.session)
+
+    @cached_property
+    def admin_users(self) -> AdminUsersRepo:
+        """Admin users repository (read-only search + per-user sub-lists)."""
+        return AdminUsersRepo(self.session)
+
+    @cached_property
+    def analytics(self) -> AnalyticsRepo:
+        """Admin money analytics (read-only aggregations: revenue, subscriptions, MRR inputs)."""
+        return AnalyticsRepo(self.session)
+
+    @cached_property
+    def promotional_broadcasts(self) -> PromotionalBroadcastRepo:
+        """Promotional broadcasts (admin composer + scheduled morning/evening sends)."""
+        return PromotionalBroadcastRepo(self.session)
+
+    @cached_property
+    def marketing_links(self) -> MarketingLinkRepo:
+        """Registered acquisition codes (admin marketing links) and per-code results."""
+        return MarketingLinkRepo(self.session)
+
     def get_all_repos(self) -> dict[str, Any]:
         """Get all core repos as dict (useful for debugging/introspection).
 
@@ -105,4 +135,9 @@ class CoreRequestsRepo:
             "payment_events": self.payment_events,
             "subscriptions": self.subscriptions,
             "notification_deliveries": self.notification_deliveries,
+            "audit_log": self.audit_log,
+            "admin_users": self.admin_users,
+            "analytics": self.analytics,
+            "promotional_broadcasts": self.promotional_broadcasts,
+            "marketing_links": self.marketing_links,
         }

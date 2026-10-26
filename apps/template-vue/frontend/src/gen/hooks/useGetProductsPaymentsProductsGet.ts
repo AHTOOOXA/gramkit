@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetProductsPaymentsProductsGetQueryResponse } from "../models/paymentsController/GetProductsPaymentsProductsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { getProductsPaymentsProductsGet } from "../client/getProductsPaymentsProductsGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,40 +16,44 @@ export const getProductsPaymentsProductsGetQueryKey = () => [{ url: '/payments/p
 
 export type GetProductsPaymentsProductsGetQueryKey = ReturnType<typeof getProductsPaymentsProductsGetQueryKey>
 
-export function getProductsPaymentsProductsGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getProductsPaymentsProductsGetQueryKey()
-  return queryOptions<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, GetProductsPaymentsProductsGetQueryResponse, typeof queryKey>({
+export function getProductsPaymentsProductsGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getProductsPaymentsProductsGet(toValue(config))
-   },
-  })
+        const queryKey = getProductsPaymentsProductsGetQueryKey()
+        return queryOptions<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, GetProductsPaymentsProductsGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getProductsPaymentsProductsGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Get available products for purchase.Returns products excluding test products, suitable for profile/shop pages.
+ * @description Get available products for purchase.
+ * Returns products excluding test products, suitable for profile/shop pages.
  * @summary Get Products
  * {@link /payments/products}
  */
 export function useGetProductsPaymentsProductsGet<TData = GetProductsPaymentsProductsGetQueryResponse, TQueryData = GetProductsPaymentsProductsGetQueryResponse, TQueryKey extends QueryKey = GetProductsPaymentsProductsGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getProductsPaymentsProductsGetQueryKey()
 
-  const query = useQuery({
-   ...getProductsPaymentsProductsGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getProductsPaymentsProductsGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getProductsPaymentsProductsGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, TData, GetProductsPaymentsProductsGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

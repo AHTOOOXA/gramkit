@@ -7,6 +7,7 @@
 
 
 /**
+ * SetRoleRequest
  * @description Request to change your role (demo only).
 */
 export type SetRoleRequest = {

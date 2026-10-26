@@ -8,6 +8,7 @@
 import type { SubscriptionWithDetailsSchema } from "../SubscriptionWithDetailsSchema.ts";
 
 /**
+ * SubscriptionWithDetailsSchema
  * @description Successful Response
 */
 export type GetSubscriptionSubscriptionsGet200 = SubscriptionWithDetailsSchema;

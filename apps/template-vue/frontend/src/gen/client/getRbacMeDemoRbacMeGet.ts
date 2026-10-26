@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetRbacMeDemoRbacMeGetQueryResponse } from "../models/demoController/GetRbacMeDemoRbacMeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetRbacMeDemoRbacMeGetUrl() {
-  const res = { method: 'GET', url: `/demo/rbac/me` as const }  
+  const res = { method: 'GET', url: `/demo/rbac/me` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetRbacMeDemoRbacMeGetUrl() {
  * @summary Get Rbac Me
  * {@link /demo/rbac/me}
  */
-export async function getRbacMeDemoRbacMeGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetRbacMeDemoRbacMeGetUrl().url.toString(), ... requestConfig })  
+export async function getRbacMeDemoRbacMeGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetRbacMeDemoRbacMeGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

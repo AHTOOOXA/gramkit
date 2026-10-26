@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * UnreliableResponse
+*/
 export type UnreliableResponse = {
     /**
      * @type string

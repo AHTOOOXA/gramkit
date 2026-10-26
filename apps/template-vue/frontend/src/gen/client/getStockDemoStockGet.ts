@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetStockDemoStockGetQueryResponse, GetStockDemoStockGetQueryParams, GetStockDemoStockGet422 } from "../models/demoController/GetStockDemoStockGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetStockDemoStockGetUrl() {
-  const res = { method: 'GET', url: `/demo/stock` as const }  
+  const res = { method: 'GET', url: `/demo/stock` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetStockDemoStockGetUrl() {
  * @summary Get Stock
  * {@link /demo/stock}
  */
-export async function getStockDemoStockGet(params?: GetStockDemoStockGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, unknown>({ method : "GET", url : getGetStockDemoStockGetUrl().url.toString(), params, ... requestConfig })  
+export async function getStockDemoStockGet(params?: GetStockDemoStockGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, unknown>({ method : "GET", url : getGetStockDemoStockGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

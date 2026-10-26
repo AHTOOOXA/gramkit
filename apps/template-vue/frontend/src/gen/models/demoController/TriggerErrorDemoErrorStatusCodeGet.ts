@@ -30,6 +30,7 @@ export type TriggerErrorDemoErrorStatusCodeGetQueryParams = {
 export type TriggerErrorDemoErrorStatusCodeGet200 = any;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type TriggerErrorDemoErrorStatusCodeGet422 = HTTPValidationError;

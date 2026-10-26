@@ -7,13 +7,17 @@
 
 
 export const subscriptionStatusEnum = {
-    "NONE": "NONE",
-    "PENDING": "PENDING",
-    "ACTIVE": "ACTIVE",
-    "CANCELED": "CANCELED",
-    "EXPIRED": "EXPIRED"
+    NONE: "NONE",
+    PENDING: "PENDING",
+    ACTIVE: "ACTIVE",
+    PAST_DUE: "PAST_DUE",
+    CANCELED: "CANCELED",
+    EXPIRED: "EXPIRED"
 } as const;
 
 export type SubscriptionStatusEnumKey = (typeof subscriptionStatusEnum)[keyof typeof subscriptionStatusEnum];
 
+/**
+ * SubscriptionStatus
+*/
 export type SubscriptionStatus = SubscriptionStatusEnumKey;

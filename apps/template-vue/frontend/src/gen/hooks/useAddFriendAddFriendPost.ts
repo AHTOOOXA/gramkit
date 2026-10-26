@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { AddFriendAddFriendPostMutationResponse, AddFriendAddFriendPostQueryParams, AddFriendAddFriendPost422 } from "../models/undefinedController/AddFriendAddFriendPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { addFriendAddFriendPost } from "../client/addFriendAddFriendPost.ts";
@@ -24,18 +23,20 @@ export type AddFriendAddFriendPostMutationKey = ReturnType<typeof addFriendAddFr
 export function useAddFriendAddFriendPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<AddFriendAddFriendPostMutationResponse, ResponseErrorConfig<AddFriendAddFriendPost422>, {params: MaybeRefOrGetter<AddFriendAddFriendPostQueryParams>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? addFriendAddFriendPostMutationKey()
 
-  return useMutation<AddFriendAddFriendPostMutationResponse, ResponseErrorConfig<AddFriendAddFriendPost422>, {params: AddFriendAddFriendPostQueryParams}, TContext>({
-    mutationFn: async({ params }) => {
-      return addFriendAddFriendPost(params, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? addFriendAddFriendPostMutationKey()
+
+          return useMutation<AddFriendAddFriendPostMutationResponse, ResponseErrorConfig<AddFriendAddFriendPost422>, {params: AddFriendAddFriendPostQueryParams}, TContext>({
+            mutationFn: async({ params }) => {
+              return addFriendAddFriendPost(params, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

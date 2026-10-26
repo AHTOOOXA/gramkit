@@ -7,21 +7,26 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetItemDetailDemoItemsItemIdGetQueryResponse, GetItemDetailDemoItemsItemIdGetPathParams, GetItemDetailDemoItemsItemIdGetQueryParams, GetItemDetailDemoItemsItemIdGet422 } from "../models/demoController/GetItemDetailDemoItemsItemIdGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetItemDetailDemoItemsItemIdGetUrl(item_id: GetItemDetailDemoItemsItemIdGetPathParams["item_id"]) {
-  const res = { method: 'GET', url: `/demo/items/${item_id}` as const }  
+  const res = { method: 'GET', url: `/demo/items/${item_id}` as const }
   return res
 }
 
 /**
- * @description Item detail endpoint for prefetch demo.Args:    item_id: Item ID (1-100)    delay_ms: Artificial delay in milliseconds (0-3000, default 300)
+ * @description Item detail endpoint for prefetch demo.
+ * Args:
+ * item_id: Item ID (1-100)
+ * delay_ms: Artificial delay in milliseconds (0-3000, default 300)
  * @summary Get Item Detail
  * {@link /demo/items/:item_id}
  */
-export async function getItemDetailDemoItemsItemIdGet(item_id: GetItemDetailDemoItemsItemIdGetPathParams["item_id"], params?: GetItemDetailDemoItemsItemIdGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, unknown>({ method : "GET", url : getGetItemDetailDemoItemsItemIdGetUrl(item_id).url.toString(), params, ... requestConfig })  
+export async function getItemDetailDemoItemsItemIdGet(item_id: GetItemDetailDemoItemsItemIdGetPathParams["item_id"], params?: GetItemDetailDemoItemsItemIdGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, unknown>({ method : "GET", url : getGetItemDetailDemoItemsItemIdGetUrl(item_id).url.toString(), params, ... requestConfig })
   return res.data
 }

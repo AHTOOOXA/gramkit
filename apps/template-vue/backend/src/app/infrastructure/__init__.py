@@ -83,6 +83,7 @@ def setup_infrastructure():
     - Observability (Logfire, PostHog)
     - Error tracking (Sentry)
     - Internationalization (i18n)
+    - Core registries: broadcast keyboards, admin Overview cards + digest rows
     """
     # Logging - Set up first for debug visibility
     setup_logging()
@@ -108,6 +109,16 @@ def setup_infrastructure():
 
     # Internationalization - Translation system
     init_i18n(app_locales_dir=_SRC_PATH / "i18n" / "locales")
+
+    # Broadcast keyboards (core registry): this app's "daily" button
+    from app.tgbot.keyboards.notification_keyboards import register_broadcast_keyboards
+
+    register_broadcast_keyboards()
+
+    # Admin Overview cards + daily digest rows (core registries): see app/services/admin_metrics.py
+    from app.services.admin_metrics import register_admin_metrics
+
+    register_admin_metrics()
 
 
 # ============================================================================

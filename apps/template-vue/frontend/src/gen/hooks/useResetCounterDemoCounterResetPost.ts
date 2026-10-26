@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { ResetCounterDemoCounterResetPostMutationResponse, ResetCounterDemoCounterResetPostQueryParams, ResetCounterDemoCounterResetPost422 } from "../models/demoController/ResetCounterDemoCounterResetPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { resetCounterDemoCounterResetPost } from "../client/resetCounterDemoCounterResetPost.ts";
@@ -18,25 +17,29 @@ export const resetCounterDemoCounterResetPostMutationKey = () => [{ url: '/demo/
 export type ResetCounterDemoCounterResetPostMutationKey = ReturnType<typeof resetCounterDemoCounterResetPostMutationKey>
 
 /**
- * @description Reset counter to 0.Args:    counter_id: Unique counter ID (default: "default")
+ * @description Reset counter to 0.
+ * Args:
+ * counter_id: Unique counter ID (default: "default")
  * @summary Reset Counter
  * {@link /demo/counter/reset}
  */
 export function useResetCounterDemoCounterResetPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<ResetCounterDemoCounterResetPostMutationResponse, ResponseErrorConfig<ResetCounterDemoCounterResetPost422>, {params?: MaybeRefOrGetter<ResetCounterDemoCounterResetPostQueryParams>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? resetCounterDemoCounterResetPostMutationKey()
 
-  return useMutation<ResetCounterDemoCounterResetPostMutationResponse, ResponseErrorConfig<ResetCounterDemoCounterResetPost422>, {params?: ResetCounterDemoCounterResetPostQueryParams}, TContext>({
-    mutationFn: async({ params }) => {
-      return resetCounterDemoCounterResetPost(params, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? resetCounterDemoCounterResetPostMutationKey()
+
+          return useMutation<ResetCounterDemoCounterResetPostMutationResponse, ResponseErrorConfig<ResetCounterDemoCounterResetPost422>, {params?: ResetCounterDemoCounterResetPostQueryParams}, TContext>({
+            mutationFn: async({ params }) => {
+              return resetCounterDemoCounterResetPost(params, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

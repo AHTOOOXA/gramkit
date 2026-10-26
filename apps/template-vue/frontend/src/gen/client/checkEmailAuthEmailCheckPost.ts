@@ -7,23 +7,24 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { CheckEmailAuthEmailCheckPostMutationRequest, CheckEmailAuthEmailCheckPostMutationResponse, CheckEmailAuthEmailCheckPost422 } from "../models/emailAuthController/CheckEmailAuthEmailCheckPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getCheckEmailAuthEmailCheckPostUrl() {
-  const res = { method: 'POST', url: `/auth/email/check` as const }  
+  const res = { method: 'POST', url: `/auth/email/check` as const }
   return res
 }
 
 /**
- * @description Check if email is already registered.Returns whether the email exists in the system.
+ * @description Check if email is already registered.
+ * Returns whether the email exists in the system.
  * @summary Check Email
  * {@link /auth/email/check}
  */
-export async function checkEmailAuthEmailCheckPost(data: CheckEmailAuthEmailCheckPostMutationRequest, config: Partial<RequestConfig<CheckEmailAuthEmailCheckPostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<CheckEmailAuthEmailCheckPostMutationResponse, ResponseErrorConfig<CheckEmailAuthEmailCheckPost422>, CheckEmailAuthEmailCheckPostMutationRequest>({ method : "POST", url : getCheckEmailAuthEmailCheckPostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function checkEmailAuthEmailCheckPost(data: CheckEmailAuthEmailCheckPostMutationRequest, config: Partial<RequestConfig<CheckEmailAuthEmailCheckPostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<CheckEmailAuthEmailCheckPostMutationResponse, ResponseErrorConfig<CheckEmailAuthEmailCheckPost422>, CheckEmailAuthEmailCheckPostMutationRequest>({ method : "POST", url : getCheckEmailAuthEmailCheckPostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

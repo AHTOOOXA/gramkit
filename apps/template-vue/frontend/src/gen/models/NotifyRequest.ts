@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * NotifyRequest
+*/
 export type NotifyRequest = {
     /**
      * @default 5

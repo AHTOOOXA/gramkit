@@ -26,11 +26,13 @@ export type GetItemDetailDemoItemsItemIdGetQueryParams = {
 };
 
 /**
+ * ItemDetailResponse
  * @description Successful Response
 */
 export type GetItemDetailDemoItemsItemIdGet200 = ItemDetailResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetItemDetailDemoItemsItemIdGet422 = HTTPValidationError;

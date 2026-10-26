@@ -7,23 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartResetAuthPasswordResetStartPostMutationRequest, StartResetAuthPasswordResetStartPostMutationResponse, StartResetAuthPasswordResetStartPost401, StartResetAuthPasswordResetStartPost422, StartResetAuthPasswordResetStartPost429 } from "../models/emailAuthController/StartResetAuthPasswordResetStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getStartResetAuthPasswordResetStartPostUrl() {
-  const res = { method: 'POST', url: `/auth/password/reset/start` as const }  
+  const res = { method: 'POST', url: `/auth/password/reset/start` as const }
   return res
 }
 
 /**
- * @description Start password reset flow.Sends verification code to provided email address.Returns reset token for subsequent requests.
+ * @description Start password reset flow.
+ * Sends verification code to provided email address.
+ * Returns reset token for subsequent requests.
  * @summary Start Reset
  * {@link /auth/password/reset/start}
  */
-export async function startResetAuthPasswordResetStartPost(data: StartResetAuthPasswordResetStartPostMutationRequest, config: Partial<RequestConfig<StartResetAuthPasswordResetStartPostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<StartResetAuthPasswordResetStartPostMutationResponse, ResponseErrorConfig<StartResetAuthPasswordResetStartPost401 | StartResetAuthPasswordResetStartPost422 | StartResetAuthPasswordResetStartPost429>, StartResetAuthPasswordResetStartPostMutationRequest>({ method : "POST", url : getStartResetAuthPasswordResetStartPostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function startResetAuthPasswordResetStartPost(data: StartResetAuthPasswordResetStartPostMutationRequest, config: Partial<RequestConfig<StartResetAuthPasswordResetStartPostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<StartResetAuthPasswordResetStartPostMutationResponse, ResponseErrorConfig<StartResetAuthPasswordResetStartPost401 | StartResetAuthPasswordResetStartPost422 | StartResetAuthPasswordResetStartPost429>, StartResetAuthPasswordResetStartPostMutationRequest>({ method : "POST", url : getStartResetAuthPasswordResetStartPostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * NotifyResponse
+*/
 export type NotifyResponse = {
     /**
      * @type string

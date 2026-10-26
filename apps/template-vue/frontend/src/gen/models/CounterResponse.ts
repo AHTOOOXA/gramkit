@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * CounterResponse
+*/
 export type CounterResponse = {
     /**
      * @type integer

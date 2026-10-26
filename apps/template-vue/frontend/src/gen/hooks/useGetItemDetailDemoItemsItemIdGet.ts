@@ -5,53 +5,58 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetItemDetailDemoItemsItemIdGetQueryResponse, GetItemDetailDemoItemsItemIdGetPathParams, GetItemDetailDemoItemsItemIdGetQueryParams, GetItemDetailDemoItemsItemIdGet422 } from "../models/demoController/GetItemDetailDemoItemsItemIdGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { getItemDetailDemoItemsItemIdGet } from "../client/getItemDetailDemoItemsItemIdGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
 
-export const getItemDetailDemoItemsItemIdGetQueryKey = (item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"]>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>) => [{ url: '/demo/items/:item_id', params: {item_id:item_id} }, ...(params ? [params] : [])] as const
+export const getItemDetailDemoItemsItemIdGetQueryKey = (item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"] | undefined>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>) => [{ url: '/demo/items/:item_id', params: {item_id:item_id} }, ...(params ? [params] : [])] as const
 
 export type GetItemDetailDemoItemsItemIdGetQueryKey = ReturnType<typeof getItemDetailDemoItemsItemIdGetQueryKey>
 
-export function getItemDetailDemoItemsItemIdGetQueryOptions(item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"]>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getItemDetailDemoItemsItemIdGetQueryKey(item_id, params)
-  return queryOptions<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, GetItemDetailDemoItemsItemIdGetQueryResponse, typeof queryKey>({
-  enabled: !!(item_id),
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getItemDetailDemoItemsItemIdGet(toValue(item_id), toValue(params), toValue(config))
-   },
-  })
+export function getItemDetailDemoItemsItemIdGetQueryOptions(item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"] | undefined>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
+
+        const queryKey = getItemDetailDemoItemsItemIdGetQueryKey(item_id, params)
+        return queryOptions<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, GetItemDetailDemoItemsItemIdGetQueryResponse, typeof queryKey>({
+        enabled: () => !!toValue(item_id),
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getItemDetailDemoItemsItemIdGet(toValue(item_id)!, toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Item detail endpoint for prefetch demo.Args:    item_id: Item ID (1-100)    delay_ms: Artificial delay in milliseconds (0-3000, default 300)
+ * @description Item detail endpoint for prefetch demo.
+ * Args:
+ * item_id: Item ID (1-100)
+ * delay_ms: Artificial delay in milliseconds (0-3000, default 300)
  * @summary Get Item Detail
  * {@link /demo/items/:item_id}
  */
-export function useGetItemDetailDemoItemsItemIdGet<TData = GetItemDetailDemoItemsItemIdGetQueryResponse, TQueryData = GetItemDetailDemoItemsItemIdGetQueryResponse, TQueryKey extends QueryKey = GetItemDetailDemoItemsItemIdGetQueryKey>(item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"]>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>, options: 
+export function useGetItemDetailDemoItemsItemIdGet<TData = GetItemDetailDemoItemsItemIdGetQueryResponse, TQueryData = GetItemDetailDemoItemsItemIdGetQueryResponse, TQueryKey extends QueryKey = GetItemDetailDemoItemsItemIdGetQueryKey>(item_id: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetPathParams["item_id"] | undefined>, params?: MaybeRefOrGetter<GetItemDetailDemoItemsItemIdGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getItemDetailDemoItemsItemIdGetQueryKey(item_id, params)
 
-  const query = useQuery({
-   ...getItemDetailDemoItemsItemIdGetQueryOptions(item_id, params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getItemDetailDemoItemsItemIdGetQueryKey(item_id, params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getItemDetailDemoItemsItemIdGetQueryOptions(item_id, params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetItemDetailDemoItemsItemIdGetQueryResponse, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>, TData, GetItemDetailDemoItemsItemIdGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<GetItemDetailDemoItemsItemIdGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

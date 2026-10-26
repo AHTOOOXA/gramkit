@@ -1,2 +1,3 @@
-export type { GetCurrentUserUsersMeGet200, GetCurrentUserUsersMeGetQueryResponse, GetCurrentUserUsersMeGetQuery } from "./GetCurrentUserUsersMeGet.ts";
-export type { UpdateCurrentUserUsersMePatch200, UpdateCurrentUserUsersMePatch422, UpdateCurrentUserUsersMePatchMutationRequest, UpdateCurrentUserUsersMePatchMutationResponse, UpdateCurrentUserUsersMePatchMutation } from "./UpdateCurrentUserUsersMePatch.ts";
+export type { GetCurrentUserUsersMeGet200, GetCurrentUserUsersMeGetQuery, GetCurrentUserUsersMeGetQueryResponse } from "./GetCurrentUserUsersMeGet.ts";
+export type { MarkSeenFeaturesUsersMeSeenFeaturesPatch200, MarkSeenFeaturesUsersMeSeenFeaturesPatch422, MarkSeenFeaturesUsersMeSeenFeaturesPatchMutation, MarkSeenFeaturesUsersMeSeenFeaturesPatchMutationRequest, MarkSeenFeaturesUsersMeSeenFeaturesPatchMutationResponse } from "./MarkSeenFeaturesUsersMeSeenFeaturesPatch.ts";
+export type { UpdateCurrentUserUsersMePatch200, UpdateCurrentUserUsersMePatch422, UpdateCurrentUserUsersMePatchMutation, UpdateCurrentUserUsersMePatchMutationRequest, UpdateCurrentUserUsersMePatchMutationResponse } from "./UpdateCurrentUserUsersMePatch.ts";

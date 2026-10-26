@@ -1,0 +1,1 @@
+{"properties":{"alltime":{"additionalProperties":{"type":"integer"},"type":"object","title":"Alltime"},"today":{"additionalProperties":{"type":"integer"},"type":"object","title":"Today"}},"type":"object","required":["alltime","today"],"title":"ProductSalesStatsSchema","x-readme-ref-name":"ProductSalesStatsSchema"}

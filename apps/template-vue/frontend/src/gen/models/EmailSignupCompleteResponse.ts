@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailSignupCompleteResponse
  * @description Response for successful signup completion.
 */
 export type EmailSignupCompleteResponse = {

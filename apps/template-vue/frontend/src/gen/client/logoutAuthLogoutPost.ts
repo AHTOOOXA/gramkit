@@ -7,21 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { LogoutAuthLogoutPostMutationResponse } from "../models/authenticationController/LogoutAuthLogoutPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getLogoutAuthLogoutPostUrl() {
-  const res = { method: 'POST', url: `/auth/logout` as const }  
+  const res = { method: 'POST', url: `/auth/logout` as const }
   return res
 }
 
 /**
- * @description Logout endpoint that destroys the user's session.Uses SessionService for session destruction (business logic) andsession cookie functions for cookie clearing (HTTP concern).
+ * @description Logout endpoint that destroys the user's session.
+ * Uses SessionService for session destruction (business logic) and
+ * session cookie functions for cookie clearing (HTTP concern).
  * @summary Logout
  * {@link /auth/logout}
  */
-export async function logoutAuthLogoutPost(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<LogoutAuthLogoutPostMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getLogoutAuthLogoutPostUrl().url.toString(), ... requestConfig })  
+export async function logoutAuthLogoutPost(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<LogoutAuthLogoutPostMutationResponse, ResponseErrorConfig<Error>, unknown>({ method : "POST", url : getLogoutAuthLogoutPostUrl().url.toString(), ... requestConfig })
   return res.data
 }

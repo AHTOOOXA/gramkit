@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { SetDemoRoleDemoRbacSetRolePostMutationRequest, SetDemoRoleDemoRbacSetRolePostMutationResponse, SetDemoRoleDemoRbacSetRolePost422 } from "../models/demoController/SetDemoRoleDemoRbacSetRolePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { setDemoRoleDemoRbacSetRolePost } from "../client/setDemoRoleDemoRbacSetRolePost.ts";
@@ -18,25 +17,29 @@ export const setDemoRoleDemoRbacSetRolePostMutationKey = () => [{ url: '/demo/rb
 export type SetDemoRoleDemoRbacSetRolePostMutationKey = ReturnType<typeof setDemoRoleDemoRbacSetRolePostMutationKey>
 
 /**
- * @description Change your role for demo purposes (debug mode only).This allows testing different permission levels withoutneeding actual admin access.
+ * @description Change your role for demo purposes (debug mode only).
+ * This allows testing different permission levels without
+ * needing actual admin access.
  * @summary Set Demo Role
  * {@link /demo/rbac/set-role}
  */
 export function useSetDemoRoleDemoRbacSetRolePost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<SetDemoRoleDemoRbacSetRolePostMutationResponse, ResponseErrorConfig<SetDemoRoleDemoRbacSetRolePost422>, {data: MaybeRefOrGetter<SetDemoRoleDemoRbacSetRolePostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<SetDemoRoleDemoRbacSetRolePostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<SetDemoRoleDemoRbacSetRolePostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? setDemoRoleDemoRbacSetRolePostMutationKey()
 
-  return useMutation<SetDemoRoleDemoRbacSetRolePostMutationResponse, ResponseErrorConfig<SetDemoRoleDemoRbacSetRolePost422>, {data: SetDemoRoleDemoRbacSetRolePostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return setDemoRoleDemoRbacSetRolePost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? setDemoRoleDemoRbacSetRolePostMutationKey()
+
+          return useMutation<SetDemoRoleDemoRbacSetRolePostMutationResponse, ResponseErrorConfig<SetDemoRoleDemoRbacSetRolePost422>, {data: SetDemoRoleDemoRbacSetRolePostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return setDemoRoleDemoRbacSetRolePost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { LogoutAuthLogoutPostMutationResponse } from "../models/authenticationController/LogoutAuthLogoutPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { logoutAuthLogoutPost } from "../client/logoutAuthLogoutPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,29 @@ export const logoutAuthLogoutPostMutationKey = () => [{ url: '/auth/logout' }] a
 export type LogoutAuthLogoutPostMutationKey = ReturnType<typeof logoutAuthLogoutPostMutationKey>
 
 /**
- * @description Logout endpoint that destroys the user's session.Uses SessionService for session destruction (business logic) andsession cookie functions for cookie clearing (HTTP concern).
+ * @description Logout endpoint that destroys the user's session.
+ * Uses SessionService for session destruction (business logic) and
+ * session cookie functions for cookie clearing (HTTP concern).
  * @summary Logout
  * {@link /auth/logout}
  */
 export function useLogoutAuthLogoutPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<LogoutAuthLogoutPostMutationResponse, ResponseErrorConfig<Error>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? logoutAuthLogoutPostMutationKey()
 
-  return useMutation<LogoutAuthLogoutPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
-    mutationFn: async() => {
-      return logoutAuthLogoutPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? logoutAuthLogoutPostMutationKey()
+
+          return useMutation<LogoutAuthLogoutPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
+            mutationFn: async() => {
+              return logoutAuthLogoutPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

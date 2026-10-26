@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { CompleteLinkAuthLinkEmailCompletePostMutationRequest, CompleteLinkAuthLinkEmailCompletePostMutationResponse, CompleteLinkAuthLinkEmailCompletePost400, CompleteLinkAuthLinkEmailCompletePost401, CompleteLinkAuthLinkEmailCompletePost409, CompleteLinkAuthLinkEmailCompletePost410, CompleteLinkAuthLinkEmailCompletePost422 } from "../models/emailAuthController/CompleteLinkAuthLinkEmailCompletePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { completeLinkAuthLinkEmailCompletePost } from "../client/completeLinkAuthLinkEmailCompletePost.ts";
@@ -18,25 +17,28 @@ export const completeLinkAuthLinkEmailCompletePostMutationKey = () => [{ url: '/
 export type CompleteLinkAuthLinkEmailCompletePostMutationKey = ReturnType<typeof completeLinkAuthLinkEmailCompletePostMutationKey>
 
 /**
- * @description Complete email linking flow.Verifies code and sets password for email login.
+ * @description Complete email linking flow.
+ * Verifies code and sets password for email login.
  * @summary Complete Link
  * {@link /auth/link/email/complete}
  */
 export function useCompleteLinkAuthLinkEmailCompletePost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<CompleteLinkAuthLinkEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteLinkAuthLinkEmailCompletePost400 | CompleteLinkAuthLinkEmailCompletePost401 | CompleteLinkAuthLinkEmailCompletePost409 | CompleteLinkAuthLinkEmailCompletePost410 | CompleteLinkAuthLinkEmailCompletePost422>, {data: MaybeRefOrGetter<CompleteLinkAuthLinkEmailCompletePostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<CompleteLinkAuthLinkEmailCompletePostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<CompleteLinkAuthLinkEmailCompletePostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? completeLinkAuthLinkEmailCompletePostMutationKey()
 
-  return useMutation<CompleteLinkAuthLinkEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteLinkAuthLinkEmailCompletePost400 | CompleteLinkAuthLinkEmailCompletePost401 | CompleteLinkAuthLinkEmailCompletePost409 | CompleteLinkAuthLinkEmailCompletePost410 | CompleteLinkAuthLinkEmailCompletePost422>, {data: CompleteLinkAuthLinkEmailCompletePostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return completeLinkAuthLinkEmailCompletePost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? completeLinkAuthLinkEmailCompletePostMutationKey()
+
+          return useMutation<CompleteLinkAuthLinkEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteLinkAuthLinkEmailCompletePost400 | CompleteLinkAuthLinkEmailCompletePost401 | CompleteLinkAuthLinkEmailCompletePost409 | CompleteLinkAuthLinkEmailCompletePost410 | CompleteLinkAuthLinkEmailCompletePost422>, {data: CompleteLinkAuthLinkEmailCompletePostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return completeLinkAuthLinkEmailCompletePost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

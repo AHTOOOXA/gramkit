@@ -27,7 +27,9 @@ with patch("core.infrastructure.redis.RedisClient.__init__", lambda self, config
     from app.webhook.dependencies.redis import get_redis_client
     from app.webhook.routers.demo import _counters
     from core.infrastructure.config import settings
+    from core.testing.fixtures.admin import admin_client, owner_client
     from core.testing.fixtures.auth import generate_telegram_init_data
+    from core.testing.fixtures.bot import api_bot_mock
 
     # Core fixtures (generic, don't depend on app)
     from core.testing.fixtures.database import db_engine, db_session, postgres_container
@@ -52,6 +54,8 @@ __all__ = [
     "mock_yookassa_webhook",
     "mock_arq_enqueue",
     "mock_posthog",
+    "admin_client",
+    "owner_client",
     # App-specific
     "test_app",
     "client",
@@ -74,7 +78,8 @@ async def test_app(db_session: AsyncSession, mock_redis: InMemoryRedis):
         yield mock_redis
 
     async def override_get_bot():
-        yield MagicMock(id=123456789, username="test_bot")
+        # Awaitable sends; media sends return a file_id (the broadcast media upload mints one).
+        yield api_bot_mock()
 
     async def override_get_arq():
         mock_arq = MagicMock()

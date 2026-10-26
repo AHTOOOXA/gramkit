@@ -4,6 +4,8 @@ paths:
   - "**/useSeenFeatures.ts"
   - "core/backend/src/core/services/users.py"
   - "core/backend/src/core/infrastructure/fastapi/routers/users.py"
+  - "core/backend/src/core/testing/contracts/seen_features.py"
+  - "core/backend/src/core/tests/**/*seen_features*.py"
 ---
 
 # seen_features — feature reveals, coachmarks, nudges & "what's new"
@@ -19,6 +21,9 @@ Component  ──useReveal/useWhatsNew/useNudge──▶  user.seen_features (re
    └── dismiss()/accept()/recordShown() ──▶ PATCH /users/me/seen-features
                                               (atomic JSONB `||` merge)
 ```
+
+Kinds: `createSeenFeatures` (`@core/composables`, `core/frontend/src/composables/seenFeatures.ts`);
+store: the app's own `useSeenFeatures` (reads `/users/me`, PATCHes through its generated hook).
 
 ## What it is — and isn't
 
@@ -40,7 +45,7 @@ type FeatureValue =
   | true                                                   // one-shot: seen/done
   | { v?: number;                                          // versioned: last-seen version
       n?: number; at?: string;                             // capped: shown count + last-shown ISO
-      ack?: 'accepted' | 'dismissed' }                     // outcome
+      ack?: string }                                       // outcome: the client kinds write 'accepted' | 'dismissed'
 ```
 
 ## The three kinds
@@ -65,18 +70,18 @@ same-key writes are last-writer-wins.
   wholesale — callers send the **full value**, not a partial. The composables
   already do this.
 - The frontend optimistic update mirrors this exact top-level merge into the
-  `/users/me` cache (`useSeenFeatures.ts`).
+  `/users/me` cache (`mergeSeenFeatures` in `core/frontend/src/composables/seenFeatures.ts`,
+  called from each app's `useSeenFeatures.ts`).
 
 Do **not** route `seen_features` through the generic `update_user` (it does a
 full-column overwrite → lost updates). Use the dedicated endpoint.
 
 ## How to add a reveal/nudge (frontend-only)
 
-The templates ship the backend half only. The first time an app needs a reveal, run `make schema` (to get
-the `useMarkSeenFeaturesUsersMeSeenFeaturesPatch` hook) and add two small files: a typed registry
-`src/config/seenFeatures.ts` and a `useSeenFeatures.ts` composable/hook exposing `useReveal` / `useWhatsNew` /
-`useNudge`, which read `user.seen_features` from the `/users/me` query and PATCH through the generated hook with
-an optimistic top-level merge into that cache. Then:
+template-vue ships the whole thing: `src/config/seenFeatures.ts` (registry), `src/app/composables/useSeenFeatures.ts`
+(store + `createSeenFeatures` from `@core/composables`), and a versioned note on `/demo`
+(`components/demo/WhatsNewNote.vue`). For template-react, port the store to a React Query hook (none ships yet).
+Then:
 
 1. Add a key + kind to the registry `src/config/seenFeatures.ts`:
    ```ts
@@ -84,7 +89,7 @@ an optimistic top-level merge into that cache. Then:
      'reveal.profile_tab': { kind: 'oneShot' },
      'whatsnew.dashboard': { kind: 'versioned' },
      'nudge.push_optin': { kind: 'capped', maxShows: 3, cooldownDays: 7 },
-   } as const satisfies Record<string, FeatureConfig>;
+   } as const satisfies Record<string, SeenFeatureConfig>; // from '@core/composables'
    ```
    Key grammar: dotted lowercase `kind.feature[.variant]` (enforced server-side).
 2. Gate your component on the matching composable:
@@ -105,6 +110,8 @@ After that, each new reveal is frontend-only. The column, endpoint, and validati
   map (`SeenFeaturesPatch`), returns the updated `UserSchema`.
 - Hardened (user-writable): keys must match `^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$`,
   ≤ 20 keys/request, values at most one level deep.
+- The shared **GUEST** user (every logged-out web visitor resolves to the same
+  row) gets **403**: one visitor's dismissal must not hide a moment for all of them.
 - Server-side targeting (e.g. push "what's new" to users who haven't seen it):
   `WHERE NOT (seen_features ? :key)`. Add a `GIN (seen_features jsonb_path_ops)`
   index **only** when such a query actually exists.
@@ -115,23 +122,34 @@ After that, each new reveal is frontend-only. The column, endpoint, and validati
   in the registry, never reuse a name with new meaning.
 - **QA reset** — there's no UI to clear a user's `seen_features` yet; wire a reset
   into the admin/debug user-chooser before testing reveals at scale (otherwise
-  each test needs a fresh user).
+  each test needs a fresh user), or bump a `versioned` key's `currentVersion`.
 - **Politeness** — consider a "max one reveal per session" client governor so
   several features don't all fire on day one.
-- **Anonymous web users** without a user row → fall back to `localStorage` (a
-  storage adapter behind the same composables).
+- **Logged-out web visitors** are not "no user": they all resolve to **one shared
+  GUEST row**. Never read or write `seen_features` for GUEST: the store reports
+  not-loaded (no show, no write) and the endpoint answers 403. A per-browser
+  fallback would be a `localStorage`-backed store behind the same composables; not built.
 
 ## Cross-app note
 
 The column + endpoint live in **core**, so every app inherits the model field —
 and each app's **database** needs the column (`make migration` + `make upgrade`)
 before it runs. Both templates ship that migration; an app copied from an older
-template needs its own.
+template needs its own. Kinds logic is core (`createSeenFeatures`); each Vue app
+owns its key registry and a ~60-line store, because generated hooks are per app.
 
 ## Key files
 
 - Backend: `core/.../models/users.py`, `core/.../schemas/users.py`
   (`SeenFeaturesPatch`), `core/.../repo/users.py` (`merge_seen_features`),
   `core/.../services/users.py`, `core/.../fastapi/routers/users.py`.
-- Frontend (per app, once added): `src/config/seenFeatures.ts` (registry),
-  `useSeenFeatures.ts` (composable/hook).
+- Frontend (core): `core/frontend/src/composables/seenFeatures.ts` (types, kinds,
+  `createSeenFeatures`, `mergeSeenFeatures` — the inline API reference).
+- Frontend (template-vue): `apps/template-vue/frontend/src/config/seenFeatures.ts`
+  (registry), `apps/template-vue/frontend/src/app/composables/useSeenFeatures.ts`
+  (store + kinds), `apps/template-vue/frontend/src/app/presentation/components/demo/WhatsNewNote.vue`
+  (reference consumer).
+- Tests (core): `core/backend/src/core/tests/unit/test_seen_features_patch.py`
+  (patch validation), `core/backend/src/core/tests/integration/repositories/test_users_seen_features.py`
+  (merge atomicity), `core/backend/src/core/testing/contracts/seen_features.py`
+  (`BaseSeenFeaturesTests`, the HTTP contract every app subclasses).

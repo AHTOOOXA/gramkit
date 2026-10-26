@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { LoginAuthLoginEmailPostMutationRequest, LoginAuthLoginEmailPostMutationResponse, LoginAuthLoginEmailPost401, LoginAuthLoginEmailPost422, LoginAuthLoginEmailPost423 } from "../models/emailAuthController/LoginAuthLoginEmailPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { loginAuthLoginEmailPost } from "../client/loginAuthLoginEmailPost.ts";
@@ -18,25 +17,28 @@ export const loginAuthLoginEmailPostMutationKey = () => [{ url: '/auth/login/ema
 export type LoginAuthLoginEmailPostMutationKey = ReturnType<typeof loginAuthLoginEmailPostMutationKey>
 
 /**
- * @description Login with email or username and password.Sets session cookie on success.
+ * @description Login with email or username and password.
+ * Sets session cookie on success.
  * @summary Login
  * {@link /auth/login/email}
  */
 export function useLoginAuthLoginEmailPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<LoginAuthLoginEmailPostMutationResponse, ResponseErrorConfig<LoginAuthLoginEmailPost401 | LoginAuthLoginEmailPost422 | LoginAuthLoginEmailPost423>, {data: MaybeRefOrGetter<LoginAuthLoginEmailPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<LoginAuthLoginEmailPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<LoginAuthLoginEmailPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? loginAuthLoginEmailPostMutationKey()
 
-  return useMutation<LoginAuthLoginEmailPostMutationResponse, ResponseErrorConfig<LoginAuthLoginEmailPost401 | LoginAuthLoginEmailPost422 | LoginAuthLoginEmailPost423>, {data: LoginAuthLoginEmailPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return loginAuthLoginEmailPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? loginAuthLoginEmailPostMutationKey()
+
+          return useMutation<LoginAuthLoginEmailPostMutationResponse, ResponseErrorConfig<LoginAuthLoginEmailPost401 | LoginAuthLoginEmailPost422 | LoginAuthLoginEmailPost423>, {data: LoginAuthLoginEmailPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return loginAuthLoginEmailPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

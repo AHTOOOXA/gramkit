@@ -7,6 +7,9 @@
 
 import type { StartMode } from "./StartMode.ts";
 
+/**
+ * StartParamsRequest
+*/
 export type StartParamsRequest = {
     invite_code?: (string | null);
     referal_id?: (string | null);

@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { UpdateCurrentUserUsersMePatchMutationRequest, UpdateCurrentUserUsersMePatchMutationResponse, UpdateCurrentUserUsersMePatch422 } from "../models/usersController/UpdateCurrentUserUsersMePatch.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getUpdateCurrentUserUsersMePatchUrl() {
-  const res = { method: 'PATCH', url: `/users/me` as const }  
+  const res = { method: 'PATCH', url: `/users/me` as const }
   return res
 }
 
@@ -19,11 +19,11 @@ function getUpdateCurrentUserUsersMePatchUrl() {
  * @summary Update Current User
  * {@link /users/me}
  */
-export async function updateCurrentUserUsersMePatch(data?: UpdateCurrentUserUsersMePatchMutationRequest, config: Partial<RequestConfig<UpdateCurrentUserUsersMePatchMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, UpdateCurrentUserUsersMePatchMutationRequest>({ method : "PATCH", url : getUpdateCurrentUserUsersMePatchUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function updateCurrentUserUsersMePatch(data: UpdateCurrentUserUsersMePatchMutationRequest, config: Partial<RequestConfig<UpdateCurrentUserUsersMePatchMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, UpdateCurrentUserUsersMePatchMutationRequest>({ method : "PATCH", url : getUpdateCurrentUserUsersMePatchUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

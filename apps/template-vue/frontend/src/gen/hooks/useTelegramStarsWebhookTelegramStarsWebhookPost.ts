@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse } from "../models/undefinedController/TelegramStarsWebhookTelegramStarsWebhookPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { telegramStarsWebhookTelegramStarsWebhookPost } from "../client/telegramStarsWebhookTelegramStarsWebhookPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,40 @@ export const telegramStarsWebhookTelegramStarsWebhookPostMutationKey = () => [{ 
 export type TelegramStarsWebhookTelegramStarsWebhookPostMutationKey = ReturnType<typeof telegramStarsWebhookTelegramStarsWebhookPostMutationKey>
 
 /**
- * @description Webhook endpoint for Telegram Stars payment confirmations from web interface.This endpoint receives payment notifications from Telegram when paymentsare made through the web interface and processes them through the unifiedpayment system.Returns:    - 200 OK: Webhook processed successfully    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors    - 500 Internal Error: Transient business errors, unknown errors    - 503 Service Unavailable: Infrastructure errors (DB, Redis)
+ * @description Webhook endpoint for Telegram Stars payment confirmations from web interface.
+ * DORMANT (kept intentionally): the live Telegram Stars path is the aiogram bot — pre-checkout
+ * and successful_payment arrive as bot updates and are handled in
+ * ``core/infrastructure/telegram/handlers/payments.py`` (the bot long-polls). Nothing currently
+ * POSTs to this HTTP endpoint. It is retained — not deleted — because it is a thin, correct-by-
+ * construction adapter: it routes the same payload contract through the unified
+ * ``services.payments.process_callback(..., TELEGRAM_STARS)`` as the bot handler, so a future
+ * web/non-Telegram Stars flow can light it up without re-implementing payment finalization. If
+ * that future never materializes, this and its router registration can be removed wholesale.
+ * Returns:
+ * - 200 OK: Webhook processed successfully
+ * - 400 Bad Request: Invalid JSON, missing fields, permanent business errors
+ * - 500 Internal Error: Transient business errors, unknown errors
+ * - 503 Service Unavailable: Infrastructure errors (DB, Redis)
  * @summary Telegram Stars Webhook
  * {@link /telegram-stars/webhook}
  */
 export function useTelegramStarsWebhookTelegramStarsWebhookPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? telegramStarsWebhookTelegramStarsWebhookPostMutationKey()
 
-  return useMutation<TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
-    mutationFn: async() => {
-      return telegramStarsWebhookTelegramStarsWebhookPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? telegramStarsWebhookTelegramStarsWebhookPostMutationKey()
+
+          return useMutation<TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
+            mutationFn: async() => {
+              return telegramStarsWebhookTelegramStarsWebhookPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

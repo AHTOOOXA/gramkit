@@ -29,7 +29,7 @@ export function healthCheckHealthGetQueryOptions(config: Partial<RequestConfig> 
 }
 
 /**
- * @description Health check endpoint for monitoring services.Returns current status and timestamp.
+ * @description Liveness probe endpoint.Always returns 200 if the process is alive. This endpoint should be usedfor Kubernetes liveness probes to detect if the application is responsive.Also says which build is live — ``version`` (the app version passed to create_api,the same one Sentry gets) and ``started_at`` — so a rollout is one request to check.
  * @summary Health Check
  * {@link /health}
  */

@@ -15,7 +15,7 @@ routers_list = [
     telegram_link_router,
     start_router,
     admin_router,
-    core_admin_router,  # Core admin commands (/backup)
+    core_admin_router,  # Core admin commands (/backup, /stats)
     payments_router,
 ]
 

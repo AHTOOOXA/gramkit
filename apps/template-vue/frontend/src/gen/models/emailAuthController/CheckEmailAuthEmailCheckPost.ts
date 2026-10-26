@@ -10,15 +10,20 @@ import type { EmailCheckResponse } from "../EmailCheckResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailCheckResponse
  * @description Successful Response
 */
 export type CheckEmailAuthEmailCheckPost200 = EmailCheckResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type CheckEmailAuthEmailCheckPost422 = HTTPValidationError;
 
+/**
+ * EmailCheckRequest
+*/
 export type CheckEmailAuthEmailCheckPostMutationRequest = EmailCheckRequest;
 
 export type CheckEmailAuthEmailCheckPostMutationResponse = CheckEmailAuthEmailCheckPost200;

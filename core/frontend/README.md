@@ -22,11 +22,12 @@ This package contains platform-agnostic, reusable components and utilities for w
 - Platform detection and configuration
 
 ### Composables
-- **Navigation**: `useNavigation` for routing
 - **Language**: `useLanguage` for i18n integration
 - **Layout**: `useLayout` for responsive layouts
 - **Scroll**: `useScroll` for scroll management
 - **Placeholder**: `usePlaceholderHeight` for dynamic sizing
+- **Admin lists**: `useAdminList` (paged/sorted/filtered list state) and `useCsvExport` (CSV download), imported from `@core/composables`
+- **seen_features**: `createSeenFeatures(registry, useStore)` builds `useReveal` / `useWhatsNew` / `useNudge` over `user.seen_features` (each app passes its key registry and its `/users/me` store); `mergeSeenFeatures` mirrors the server's shallow merge for optimistic cache writes
 
 ### Services
 - **Static Assets**: `useStatic` for asset management
@@ -55,7 +56,6 @@ import {
   useTelegram,
   BaseLayout,
   AppButton,
-  useNavigation,
   useLanguage,
   apiClient,
   usePostHog
@@ -64,7 +64,6 @@ import {
 // Use in your components
 const platform = usePlatform();
 const { mainButton, backButton } = useTelegram();
-const { navigate } = useNavigation();
 ```
 
 ## Installation

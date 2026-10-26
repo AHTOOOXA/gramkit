@@ -1,6 +1,6 @@
-export type { AddFriendAddFriendPostQueryParams, AddFriendAddFriendPost200, AddFriendAddFriendPost422, AddFriendAddFriendPostMutationResponse, AddFriendAddFriendPostMutation } from "./AddFriendAddFriendPost.ts";
-export type { CreateInviteCreateInviteGet200, CreateInviteCreateInviteGetQueryResponse, CreateInviteCreateInviteGetQuery } from "./CreateInviteCreateInviteGet.ts";
-export type { GetFriendsFriendsGet200, GetFriendsFriendsGetQueryResponse, GetFriendsFriendsGetQuery } from "./GetFriendsFriendsGet.ts";
-export type { ProcessStartProcessStartPost200, ProcessStartProcessStartPost422, ProcessStartProcessStartPostMutationRequest, ProcessStartProcessStartPostMutationResponse, ProcessStartProcessStartPostMutation } from "./ProcessStartProcessStartPost.ts";
-export type { TelegramStarsWebhookTelegramStarsWebhookPost200, TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse, TelegramStarsWebhookTelegramStarsWebhookPostMutation } from "./TelegramStarsWebhookTelegramStarsWebhookPost.ts";
-export type { YookassaWebhookYookassaWebhookPost200, YookassaWebhookYookassaWebhookPostMutationResponse, YookassaWebhookYookassaWebhookPostMutation } from "./YookassaWebhookYookassaWebhookPost.ts";
+export type { AddFriendAddFriendPost200, AddFriendAddFriendPost422, AddFriendAddFriendPostMutation, AddFriendAddFriendPostMutationResponse, AddFriendAddFriendPostQueryParams } from "./AddFriendAddFriendPost.ts";
+export type { CreateInviteCreateInviteGet200, CreateInviteCreateInviteGetQuery, CreateInviteCreateInviteGetQueryResponse } from "./CreateInviteCreateInviteGet.ts";
+export type { GetFriendsFriendsGet200, GetFriendsFriendsGetQuery, GetFriendsFriendsGetQueryResponse } from "./GetFriendsFriendsGet.ts";
+export type { ProcessStartProcessStartPost200, ProcessStartProcessStartPost422, ProcessStartProcessStartPostMutation, ProcessStartProcessStartPostMutationRequest, ProcessStartProcessStartPostMutationResponse } from "./ProcessStartProcessStartPost.ts";
+export type { TelegramStarsWebhookTelegramStarsWebhookPost200, TelegramStarsWebhookTelegramStarsWebhookPostMutation, TelegramStarsWebhookTelegramStarsWebhookPostMutationResponse } from "./TelegramStarsWebhookTelegramStarsWebhookPost.ts";
+export type { YookassaWebhookYookassaWebhookPost200, YookassaWebhookYookassaWebhookPostMutation, YookassaWebhookYookassaWebhookPostMutationResponse } from "./YookassaWebhookYookassaWebhookPost.ts";

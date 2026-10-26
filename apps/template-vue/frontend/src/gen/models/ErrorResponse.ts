@@ -7,6 +7,7 @@
 
 
 /**
+ * ErrorResponse
  * @description Standard error response.
 */
 export type ErrorResponse = {

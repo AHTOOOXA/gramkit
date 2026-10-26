@@ -33,8 +33,10 @@ Aliases: `@/` = `src/`, `@app/` = `src/app/`, `@gen/` = `src/gen/`, and `@core/`
   `@core/analytics` (`usePostHog`; see `.claude/rules/analytics.md`), `@core/services` (`useStatic()`, which
   builds backend `/static/...` URLs), `@core/platform-mock`, `@core/injection-keys` and
   `@core/types/language`.
-- `core/frontend/src/api` (openapi-fetch), `core/frontend/src/ui` and `core/frontend/src/composables` are
-  never imported by an app. Don't build on them. Use the app's generated hooks and the app's own composables.
+- `core/frontend/src/api` (openapi-fetch) and `core/frontend/src/ui` are never imported by an app. Don't build on
+  them. Use the app's generated hooks and the app's own composables. `@core/composables` is: `useAdminList`,
+  `useCsvExport` (admin lists), `groupOverviewCards` / `deltaPct` (admin Overview cards) and `createSeenFeatures`
+  (seen_features kinds); the other composables there are unused.
 - `core/` never imports from an app. If 2+ apps need a piece of Vue code, it goes in `core/frontend/src/`.
 
 ## Generated hooks in Vue: keep them reactive

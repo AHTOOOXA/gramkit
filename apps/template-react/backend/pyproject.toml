@@ -47,6 +47,7 @@ web = [
     "python-dateutil",
     "sentry-sdk[fastapi]",
     "slowapi",
+    "python-multipart>=0.0.9",  # REQUIRED: the core admin router has a multipart route (broadcast media upload)
 ]
 
 [dependency-groups]

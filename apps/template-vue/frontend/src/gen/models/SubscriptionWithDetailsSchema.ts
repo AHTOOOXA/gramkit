@@ -8,6 +8,9 @@
 import type { PaymentProvider } from "./PaymentProvider.ts";
 import type { SubscriptionStatus } from "./SubscriptionStatus.ts";
 
+/**
+ * SubscriptionWithDetailsSchema
+*/
 export type SubscriptionWithDetailsSchema = {
     /**
      * @type string, uuid

@@ -11,25 +11,32 @@ import type { PasswordResetCompleteRequest } from "../PasswordResetCompleteReque
 import type { PasswordResetCompleteResponse } from "../PasswordResetCompleteResponse.ts";
 
 /**
+ * PasswordResetCompleteResponse
  * @description Successful Response
 */
 export type CompleteResetAuthPasswordResetCompletePost200 = PasswordResetCompleteResponse;
 
 /**
+ * ErrorResponse
  * @description Invalid code or password
 */
 export type CompleteResetAuthPasswordResetCompletePost400 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Token expired
 */
 export type CompleteResetAuthPasswordResetCompletePost410 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type CompleteResetAuthPasswordResetCompletePost422 = HTTPValidationError;
 
+/**
+ * PasswordResetCompleteRequest
+*/
 export type CompleteResetAuthPasswordResetCompletePostMutationRequest = PasswordResetCompleteRequest;
 
 export type CompleteResetAuthPasswordResetCompletePostMutationResponse = CompleteResetAuthPasswordResetCompletePost200;

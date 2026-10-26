@@ -8,11 +8,13 @@
 import type { UserType } from "./UserType.ts";
 
 /**
+ * UserSchema
  * @description User schema for API responses - NEVER expose password_hash
 */
 export type UserSchema = {
     id?: (string | null);
     /**
+     * @default "REGISTERED"
      * @type string | undefined
     */
     user_type?: UserType;
@@ -67,4 +69,12 @@ export type UserSchema = {
     is_onboarded?: (boolean | null);
     is_terms_accepted?: (boolean | null);
     referral_code?: (string | null);
+    bot_blocked_at?: (string | null);
+    /**
+     * @default [object Object]
+     * @type object | undefined
+    */
+    seen_features?: {
+        [key: string]: any;
+    };
 };

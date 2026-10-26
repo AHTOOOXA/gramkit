@@ -11,25 +11,32 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailSignupResponse
  * @description Successful Response
 */
 export type StartSignupAuthSignupEmailStartPost200 = EmailSignupResponse;
 
 /**
+ * ErrorResponse
  * @description Email already in use
 */
 export type StartSignupAuthSignupEmailStartPost409 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type StartSignupAuthSignupEmailStartPost422 = HTTPValidationError;
 
 /**
+ * ErrorResponse
  * @description Rate limited
 */
 export type StartSignupAuthSignupEmailStartPost429 = ErrorResponse;
 
+/**
+ * EmailSignupRequest
+*/
 export type StartSignupAuthSignupEmailStartPostMutationRequest = EmailSignupRequest;
 
 export type StartSignupAuthSignupEmailStartPostMutationResponse = StartSignupAuthSignupEmailStartPost200;

@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * VerifyCodeRequest
+*/
 export type VerifyCodeRequest = {
     /**
      * @type string

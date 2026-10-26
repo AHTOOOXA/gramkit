@@ -29,11 +29,13 @@ export type IncrementCounterDemoCounterIncrementPostQueryParams = {
 };
 
 /**
+ * CounterResponse
  * @description Successful Response
 */
 export type IncrementCounterDemoCounterIncrementPost200 = CounterResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type IncrementCounterDemoCounterIncrementPost422 = HTTPValidationError;

@@ -1,0 +1,1 @@
+{"properties":{"file_id":{"type":"string","title":"File Id"},"message_type":{"type":"string","title":"Message Type"}},"type":"object","required":["file_id","message_type"],"title":"BroadcastMediaUploadResponse","description":"Telegram ``file_id`` minted by sending the uploaded file via the bot.","x-readme-ref-name":"BroadcastMediaUploadResponse"}

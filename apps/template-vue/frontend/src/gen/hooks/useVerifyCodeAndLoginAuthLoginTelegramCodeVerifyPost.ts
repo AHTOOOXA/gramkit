@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest, VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationResponse, VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost422 } from "../models/authenticationController/VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { verifyCodeAndLoginAuthLoginTelegramCodeVerifyPost } from "../client/verifyCodeAndLoginAuthLoginTelegramCodeVerifyPost.ts";
@@ -18,25 +17,29 @@ export const verifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationKey = () =
 export type VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationKey = ReturnType<typeof verifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationKey>
 
 /**
- * @description Verify 6-digit code and create authenticated session.Uses SessionService for session creation (business logic) andsession cookie functions for cookie setting (HTTP concern).
+ * @description Verify 6-digit code and create authenticated session.
+ * Uses SessionService for session creation (business logic) and
+ * session cookie functions for cookie setting (HTTP concern).
  * @summary Verify Code And Login
  * {@link /auth/login/telegram/code/verify}
  */
 export function useVerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationResponse, ResponseErrorConfig<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost422>, {data: MaybeRefOrGetter<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? verifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationKey()
 
-  return useMutation<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationResponse, ResponseErrorConfig<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost422>, {data: VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return verifyCodeAndLoginAuthLoginTelegramCodeVerifyPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? verifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationKey()
+
+          return useMutation<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationResponse, ResponseErrorConfig<VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost422>, {data: VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return verifyCodeAndLoginAuthLoginTelegramCodeVerifyPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

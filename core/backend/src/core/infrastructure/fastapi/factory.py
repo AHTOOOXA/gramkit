@@ -27,7 +27,6 @@ from core.infrastructure.fastapi.middleware import (
     SecurityConfig,
     SecurityHeadersMiddleware,
 )
-from core.infrastructure.fastapi.routers.health import router as health_router
 from core.infrastructure.logging import get_logger
 from core.infrastructure.redis import RedisClient
 from core.infrastructure.telegram.admin_messages import announce_start
@@ -255,6 +254,11 @@ def create_api(
         app.add_middleware(RootPathMiddleware, root_path=root_path)
 
     # Register routers
+    # Imported here, not at module level: importing the routers package at load time
+    # creates a cycle (core.auth.rbac -> fastapi.dependencies -> fastapi/__init__ ->
+    # factory -> routers/__init__ -> routers.admin -> core.auth.rbac).
+    from core.infrastructure.fastapi.routers.health import router as health_router
+
     # Always include health check endpoints first (core functionality)
     app.include_router(health_router)
     # Then include app-specific routers

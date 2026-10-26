@@ -16,7 +16,7 @@ This directory holds the project's Claude Code setup: path-scoped rules, hooks, 
 │   ├── errors.md           # API error shapes → ApiError → UI
 │   ├── packages.md         # pyproject.toml / package.json / lockfiles
 │   ├── analytics.md        # PostHog capture + keeping an event catalog
-│   ├── prod-scripts.md     # backend scripts, locally and on a server
+│   ├── prod-scripts.md     # backend scripts and admin tasks, locally and on a server
 │   └── seen-features.md    # feature reveals / nudges / "what's new"
 │
 ├── hooks/                  # Wired in settings.json

@@ -7,6 +7,9 @@
 
 import type { UserSchema } from "./UserSchema.ts";
 
+/**
+ * VerifyCodeResponse
+*/
 export type VerifyCodeResponse = {
     /**
      * @description User schema for API responses - NEVER expose password_hash

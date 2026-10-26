@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationResponse } from "../models/authenticationController/StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { startDeeplinkLoginAuthLoginTelegramDeeplinkStartPost } from "../client/startDeeplinkLoginAuthLoginTelegramDeeplinkStartPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,29 @@ export const startDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationKey = (
 export type StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationKey = ReturnType<typeof startDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationKey>
 
 /**
- * @description Start Telegram deep link login flow.Returns a token and bot URL. User should be redirected to bot URL.Frontend should then poll /poll endpoint.
+ * @description Start Telegram deep link login flow.
+ * Returns a token and bot URL. User should be redirected to bot URL.
+ * Frontend should then poll /poll endpoint.
  * @summary Start Deeplink Login
  * {@link /auth/login/telegram/deeplink/start}
  */
 export function useStartDeeplinkLoginAuthLoginTelegramDeeplinkStartPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationResponse, ResponseErrorConfig<Error>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationKey()
 
-  return useMutation<StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
-    mutationFn: async() => {
-      return startDeeplinkLoginAuthLoginTelegramDeeplinkStartPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationKey()
+
+          return useMutation<StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
+            mutationFn: async() => {
+              return startDeeplinkLoginAuthLoginTelegramDeeplinkStartPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

@@ -7,9 +7,12 @@
 
 
 export const startModeEnum = {
-    "draw": "draw"
+    draw: "draw"
 } as const;
 
 export type StartModeEnumKey = (typeof startModeEnum)[keyof typeof startModeEnum];
 
+/**
+ * StartMode
+*/
 export type StartMode = StartModeEnumKey;

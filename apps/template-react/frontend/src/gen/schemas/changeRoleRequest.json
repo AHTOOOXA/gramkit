@@ -1,0 +1,1 @@
+{"properties":{"new_role":{"type":"string","enum":["user","admin","owner"],"title":"New Role"}},"type":"object","required":["new_role"],"title":"ChangeRoleRequest","description":"Change a user's RBAC role.","x-readme-ref-name":"ChangeRoleRequest"}

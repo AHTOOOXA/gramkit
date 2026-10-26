@@ -152,6 +152,16 @@ class UserRepo(BaseRepo):
         result = await self.session.execute(query)
         return result.scalars().all()
 
+    async def get_broadcast_audience(self) -> Sequence[User]:
+        """Who an all-users broadcast (send-now, bot ``/broadcast``) goes to: in Telegram, bot not blocked.
+
+        Unlike ``_notifiable()`` no timezone is needed: the message goes out right away.
+        """
+        result = await self.session.execute(
+            select(User).where(User.telegram_id.is_not(None), User.bot_blocked_at.is_(None)).order_by(User.created_at)
+        )
+        return result.scalars().all()
+
     async def get_notifiable_users(self) -> Sequence[User]:
         """All users ``get_users_by_local_time`` can return, whatever their local hour."""
         result = await self.session.execute(select(User).where(self._notifiable()))

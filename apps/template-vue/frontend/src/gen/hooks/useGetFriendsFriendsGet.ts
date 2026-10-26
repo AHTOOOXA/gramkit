@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetFriendsFriendsGetQueryResponse } from "../models/undefinedController/GetFriendsFriendsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { getFriendsFriendsGet } from "../client/getFriendsFriendsGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,16 +16,17 @@ export const getFriendsFriendsGetQueryKey = () => [{ url: '/friends' }] as const
 
 export type GetFriendsFriendsGetQueryKey = ReturnType<typeof getFriendsFriendsGetQueryKey>
 
-export function getFriendsFriendsGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getFriendsFriendsGetQueryKey()
-  return queryOptions<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, GetFriendsFriendsGetQueryResponse, typeof queryKey>({
+export function getFriendsFriendsGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getFriendsFriendsGet(toValue(config))
-   },
-  })
+        const queryKey = getFriendsFriendsGetQueryKey()
+        return queryOptions<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, GetFriendsFriendsGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getFriendsFriendsGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -35,21 +35,23 @@ export function getFriendsFriendsGetQueryOptions(config: Partial<RequestConfig> 
  */
 export function useGetFriendsFriendsGet<TData = GetFriendsFriendsGetQueryResponse, TQueryData = GetFriendsFriendsGetQueryResponse, TQueryKey extends QueryKey = GetFriendsFriendsGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getFriendsFriendsGetQueryKey()
 
-  const query = useQuery({
-   ...getFriendsFriendsGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getFriendsFriendsGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getFriendsFriendsGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, TData, GetFriendsFriendsGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

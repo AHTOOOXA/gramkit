@@ -7,21 +7,41 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { StreamDemoDemoStreamGetQueryResponse } from "../models/demoController/StreamDemoDemoStreamGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getStreamDemoDemoStreamGetUrl() {
-  const res = { method: 'GET', url: `/demo/stream` as const }  
+  const res = { method: 'GET', url: `/demo/stream` as const }
   return res
 }
 
 /**
- * @description SSE streaming endpoint for AI demo.Returns Server-Sent Events (SSE) with character-by-character text.Frontend parses lines starting with 'data: ' and stops at '[DONE]'.Example client:```typescriptconst res = await apiFetch('/demo/stream');const reader = res.body?.getReader();const decoder = new TextDecoder();while (reader) {  const { done, value } = await reader.read();  if (done) break;  const chunk = decoder.decode(value);  for (const line of chunk.split('\n')) {    if (line.startsWith('data: ') && !line.includes('[DONE]')) {      console.log(line.slice(6)); // Extract content after "data: "    }  }}```
+ * @description SSE streaming endpoint for AI demo.
+ * Returns Server-Sent Events (SSE) with character-by-character text.
+ * Frontend parses lines starting with 'data: ' and stops at '[DONE]'.
+ * Example client:
+ * ```typescript
+ * const res = await apiFetch('/demo/stream');
+ * const reader = res.body?.getReader();
+ * const decoder = new TextDecoder();
+ * while (reader) {
+ * const { done, value } = await reader.read();
+ * if (done) break;
+ * const chunk = decoder.decode(value);
+ * for (const line of chunk.split('\n')) {
+ * if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+ * console.log(line.slice(6)); // Extract content after "data: "
+ * }
+ * }
+ * }
+ * ```
  * @summary Stream Demo
  * {@link /demo/stream}
  */
-export async function streamDemoDemoStreamGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getStreamDemoDemoStreamGetUrl().url.toString(), ... requestConfig })  
+export async function streamDemoDemoStreamGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<StreamDemoDemoStreamGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getStreamDemoDemoStreamGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

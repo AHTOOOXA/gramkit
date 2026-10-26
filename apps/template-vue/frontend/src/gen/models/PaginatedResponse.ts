@@ -7,6 +7,9 @@
 
 import type { PaginatedItem } from "./PaginatedItem.ts";
 
+/**
+ * PaginatedResponse
+*/
 export type PaginatedResponse = {
     /**
      * @type array

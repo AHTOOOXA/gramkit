@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartSignupAuthSignupEmailStartPostMutationRequest, StartSignupAuthSignupEmailStartPostMutationResponse, StartSignupAuthSignupEmailStartPost409, StartSignupAuthSignupEmailStartPost422, StartSignupAuthSignupEmailStartPost429 } from "../models/emailAuthController/StartSignupAuthSignupEmailStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { startSignupAuthSignupEmailStartPost } from "../client/startSignupAuthSignupEmailStartPost.ts";
@@ -18,25 +17,29 @@ export const startSignupAuthSignupEmailStartPostMutationKey = () => [{ url: '/au
 export type StartSignupAuthSignupEmailStartPostMutationKey = ReturnType<typeof startSignupAuthSignupEmailStartPostMutationKey>
 
 /**
- * @description Start email signup flow.Sends verification code to provided email address.Returns signup token for subsequent requests.
+ * @description Start email signup flow.
+ * Sends verification code to provided email address.
+ * Returns signup token for subsequent requests.
  * @summary Start Signup
  * {@link /auth/signup/email/start}
  */
 export function useStartSignupAuthSignupEmailStartPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartSignupAuthSignupEmailStartPostMutationResponse, ResponseErrorConfig<StartSignupAuthSignupEmailStartPost409 | StartSignupAuthSignupEmailStartPost422 | StartSignupAuthSignupEmailStartPost429>, {data: MaybeRefOrGetter<StartSignupAuthSignupEmailStartPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<StartSignupAuthSignupEmailStartPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<StartSignupAuthSignupEmailStartPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startSignupAuthSignupEmailStartPostMutationKey()
 
-  return useMutation<StartSignupAuthSignupEmailStartPostMutationResponse, ResponseErrorConfig<StartSignupAuthSignupEmailStartPost409 | StartSignupAuthSignupEmailStartPost422 | StartSignupAuthSignupEmailStartPost429>, {data: StartSignupAuthSignupEmailStartPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return startSignupAuthSignupEmailStartPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startSignupAuthSignupEmailStartPostMutationKey()
+
+          return useMutation<StartSignupAuthSignupEmailStartPostMutationResponse, ResponseErrorConfig<StartSignupAuthSignupEmailStartPost409 | StartSignupAuthSignupEmailStartPost422 | StartSignupAuthSignupEmailStartPost429>, {data: StartSignupAuthSignupEmailStartPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return startSignupAuthSignupEmailStartPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

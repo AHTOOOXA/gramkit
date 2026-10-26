@@ -6,19 +6,26 @@ from aiogram import Bot
 from arq import ArqRedis
 
 from app.domain import products
+from app.domain.referrals import INTERNAL_REFERRAL_CODES
 from app.infrastructure.database.repo.requests import RequestsRepo
 from app.services.balance import BalanceService
 from app.services.notifications import NotificationsService
-from app.services.statistics import StatisticsService
 from core.infrastructure.config import settings
+from core.services.admin import AdminService
+from core.services.admin_tasks import AdminTasksService
+from core.services.analytics import AnalyticsService
+from core.services.audit_log import AuditLogService
 from core.services.auth import AuthService
+from core.services.broadcasts import BroadcastsService
 from core.services.groups import GroupService
 from core.services.invites import InvitesService
+from core.services.marketing_links import MarketingLinksService
 from core.services.messages import MessageService
 from core.services.payments import PaymentsService
 from core.services.requests import CoreRequestsService
 from core.services.sessions import SessionService
 from core.services.start import StartService
+from core.services.statistics import StatisticsService
 from core.services.subscriptions import SubscriptionsService
 from core.services.telegram_link import TelegramLinkService
 from core.services.users import UserService
@@ -58,6 +65,11 @@ class RequestsService:
             redis=redis,
             arq=arq,
             products=products,
+            # The app's own link codes (notification buttons): never stored as an acquisition source.
+            internal_referal_ids=INTERNAL_REFERRAL_CODES,
+            # Marketing links measure "activated" / "returned" as "opened the app" by default. To count
+            # your own key action instead, pass marketing_links_config=MarketingLinksConfig(activation=...,
+            # activity=..., activation_label=...) (core.services.marketing_links).
         )
 
     # ==================== CORE SERVICES (delegated) ====================
@@ -117,17 +129,47 @@ class RequestsService:
         """Session service (from core)."""
         return self._core.sessions
 
+    @cached_property
+    def audit_log(self) -> AuditLogService:
+        """Admin audit log service (from core)."""
+        return self._core.audit_log
+
+    @cached_property
+    def admin(self) -> AdminService:
+        """Admin users service (from core)."""
+        return self._core.admin
+
+    @cached_property
+    def admin_tasks(self) -> AdminTasksService:
+        """Admin tasks service (from core): lists and runs registered ``@admin_task`` functions."""
+        return self._core.admin_tasks
+
+    @cached_property
+    def broadcasts(self) -> BroadcastsService:
+        """Broadcasts admin composer service (from core): scheduled + send-now broadcasts."""
+        return self._core.broadcasts
+
+    @cached_property
+    def marketing_links(self) -> MarketingLinksService:
+        """Marketing links service (from core): acquisition codes, their links, results and owner alerts."""
+        return self._core.marketing_links
+
+    @cached_property
+    def statistics(self) -> StatisticsService:
+        """Admin statistics (from core): Overview snapshot + daily digest; app extras via admin_metrics."""
+        return self._core.statistics
+
+    @cached_property
+    def analytics(self) -> AnalyticsService:
+        """Admin money analytics (from core): revenue, subscriptions, MRR on this app's product catalog."""
+        return self._core.analytics
+
     # ==================== APP SERVICES (template-specific) ====================
 
     @cached_property
     def balance(self) -> BalanceService:
         """Balance service for managing user credits/limits."""
         return BalanceService(self.repo, self.producer, self, self.bot)
-
-    @cached_property
-    def statistics(self) -> StatisticsService:
-        """Statistics service for gathering app usage metrics."""
-        return StatisticsService(self.repo, self.producer, self, self.bot)
 
     @cached_property
     def notifications(self) -> NotificationsService:

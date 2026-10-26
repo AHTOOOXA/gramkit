@@ -1,0 +1,1 @@
+{"properties":{"name":{"type":"string","title":"Name"},"description":{"type":"string","title":"Description"},"destructive":{"type":"boolean","title":"Destructive"}},"type":"object","required":["name","description","destructive"],"title":"AdminTaskInfo","description":"A runnable admin task, for the Tasks list.","x-readme-ref-name":"AdminTaskInfo"}

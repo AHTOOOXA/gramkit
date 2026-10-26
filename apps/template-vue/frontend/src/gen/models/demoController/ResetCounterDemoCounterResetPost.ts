@@ -17,11 +17,13 @@ export type ResetCounterDemoCounterResetPostQueryParams = {
 };
 
 /**
+ * CounterResponse
  * @description Successful Response
 */
 export type ResetCounterDemoCounterResetPost200 = CounterResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type ResetCounterDemoCounterResetPost422 = HTTPValidationError;

@@ -46,6 +46,7 @@ web = [
     "python-dateutil",
     "sentry-sdk[fastapi]",
     "slowapi",
+    "python-multipart>=0.0.9",  # REQUIRED: the core admin router has a multipart route (broadcast media upload)
     "python-socketio",  # Socket.IO server with auto-reconnect, rooms, fallback
 ]
 

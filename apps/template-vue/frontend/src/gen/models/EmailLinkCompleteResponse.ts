@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLinkCompleteResponse
  * @description Response for successful email linking.
 */
 export type EmailLinkCompleteResponse = {

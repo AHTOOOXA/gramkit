@@ -17,11 +17,13 @@ export type GetCounterDemoCounterGetQueryParams = {
 };
 
 /**
+ * CounterResponse
  * @description Successful Response
 */
 export type GetCounterDemoCounterGet200 = CounterResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetCounterDemoCounterGet422 = HTTPValidationError;

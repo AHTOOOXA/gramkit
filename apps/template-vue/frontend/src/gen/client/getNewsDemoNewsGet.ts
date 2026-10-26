@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetNewsDemoNewsGetQueryResponse, GetNewsDemoNewsGetQueryParams, GetNewsDemoNewsGet422 } from "../models/demoController/GetNewsDemoNewsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetNewsDemoNewsGetUrl() {
-  const res = { method: 'GET', url: `/demo/news` as const }  
+  const res = { method: 'GET', url: `/demo/news` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetNewsDemoNewsGetUrl() {
  * @summary Get News
  * {@link /demo/news}
  */
-export async function getNewsDemoNewsGet(params?: GetNewsDemoNewsGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, unknown>({ method : "GET", url : getGetNewsDemoNewsGetUrl().url.toString(), params, ... requestConfig })  
+export async function getNewsDemoNewsGet(params?: GetNewsDemoNewsGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, unknown>({ method : "GET", url : getGetNewsDemoNewsGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

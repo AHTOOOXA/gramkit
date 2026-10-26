@@ -32,11 +32,13 @@ export type GetPaginatedItemsDemoItemsGetQueryParams = {
 };
 
 /**
+ * PaginatedResponse
  * @description Successful Response
 */
 export type GetPaginatedItemsDemoItemsGet200 = PaginatedResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetPaginatedItemsDemoItemsGet422 = HTTPValidationError;

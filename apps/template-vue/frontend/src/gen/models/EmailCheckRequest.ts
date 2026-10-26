@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * EmailCheckRequest
+*/
 export type EmailCheckRequest = {
     /**
      * @type string, email

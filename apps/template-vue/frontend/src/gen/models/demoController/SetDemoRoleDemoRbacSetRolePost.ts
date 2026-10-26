@@ -10,15 +10,20 @@ import type { SetRoleRequest } from "../SetRoleRequest.ts";
 import type { SetRoleResponse } from "../SetRoleResponse.ts";
 
 /**
+ * SetRoleResponse
  * @description Successful Response
 */
 export type SetDemoRoleDemoRbacSetRolePost200 = SetRoleResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type SetDemoRoleDemoRbacSetRolePost422 = HTTPValidationError;
 
+/**
+ * SetRoleRequest
+*/
 export type SetDemoRoleDemoRbacSetRolePostMutationRequest = SetRoleRequest;
 
 export type SetDemoRoleDemoRbacSetRolePostMutationResponse = SetDemoRoleDemoRbacSetRolePost200;

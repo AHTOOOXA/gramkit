@@ -7,21 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422 } from "../models/authenticationController/PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getPollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetUrl() {
-  const res = { method: 'GET', url: `/auth/login/telegram/deeplink/poll` as const }  
+  const res = { method: 'GET', url: `/auth/login/telegram/deeplink/poll` as const }
   return res
 }
 
 /**
- * @description Check status of deep link login token.Frontend should poll this endpoint after redirecting user to Telegram.When status is "verified", session cookie is set and user is logged in.
+ * @description Check status of deep link login token.
+ * Frontend should poll this endpoint after redirecting user to Telegram.
+ * When status is "verified", session cookie is set and user is logged in.
  * @summary Poll Deeplink Login
  * {@link /auth/login/telegram/deeplink/poll}
  */
-export async function pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet(params: PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, unknown>({ method : "GET", url : getPollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetUrl().url.toString(), params, ... requestConfig })  
+export async function pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet(params: PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, unknown>({ method : "GET", url : getPollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

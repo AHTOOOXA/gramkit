@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailResendResponse
  * @description Response for code resend.
 */
 export type EmailResendResponse = {

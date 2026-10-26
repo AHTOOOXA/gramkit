@@ -11,10 +11,8 @@ export type StartPurchaseResponse = {
      * @type string
     */
     payment_id: string;
-    /**
-     * @type string
-    */
-    confirmation_url: string;
+    confirmation_token?: (string | null);
+    confirmation_url?: (string | null);
     /**
      * @type number
     */

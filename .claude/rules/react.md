@@ -15,13 +15,16 @@ groups, auth hooks), so check that app's files before assuming any of it.
 
 ## Layout of `apps/<app>/frontend/` (there's no `src/` except for codegen)
 ```
-app/[locale]/(marketing|app|auth)/   routes; app/providers.tsx = QueryClient (retry rules), PostHog, platform mock
+app/[locale]/(marketing|app|auth|admin)/   routes; app/providers.tsx = QueryClient (retry rules), PostHog, platform mock
 components/ui/          shadcn/ui     components/shells/AppShell.tsx   components/navigation/AppNav.tsx
 components/layout/      Footer, FooterMinimal, header
+components/admin/       admin shell, tabs, data table, confirm dialog, StatCard; users/ tasks/ broadcasts/ chart/
 config/                 kubb-config.ts, navigation.ts, layout.ts, constants.ts, mock-users.ts
+config/admin/           admin registries: sections.ts (tabs), userPanels.ts (user-detail tabs), app-*.ts
 hooks/                  useAuth, useUpdateUser, useLogout, useScrollReveal…, re-exported from hooks/index.ts
 i18n/                   next-intl routing + messages/{en,ru}.json
 lib/                    utils (cn), errors, platform.ts (server), middleware-utils
+lib/admin/              pure TS for the admin: format, csv (export), overview, telegramHtml (sanitizer)
 styles/globals.css      Tailwind v4 entry, tokens, layout CSS vars
 src/gen/  src/schema/   codegen (don't edit)
 proxy.ts                Next 16 proxy (there is no middleware.ts): i18n + route access
@@ -75,7 +78,8 @@ Aliases: `@/` = the frontend root, so generated code is `@/src/gen/hooks` (`@gen
 - `config/layout.ts` → `layoutConfig.mobileLayout`: `'bottom-tabs'` (consumer apps) or `'hamburger'`
   (admin/dashboard).
 - Route groups, each with its own layout: `(marketing)` → `<AppShell footer={<Footer />}>` (`/`), `(app)` →
-  `<AppShell>` (`/demo`, `/profile`, `/admin`, `/test-gen`), `(auth)` → `<AppShell>` (`/login`).
+  `<AppShell>` (`/demo`, `/profile`, `/test-gen`), `(auth)` → `<AppShell>` (`/login`), `(admin)` →
+  `admin/layout.tsx` = `<AppShell variant="wide"><AdminShell>` (`/admin/*`).
 - `AppShell` (`components/shells/AppShell.tsx`) takes `footer?: ReactNode`, `variant` (`default` | `wide` |
   `narrow` | `full`) and `hideNav`. It **already pads `<main>`** with
   `px-[var(--page-padding-x)] py-[var(--page-padding-y)]` and reserves `--bottom-nav-height` on mobile. So
@@ -86,6 +90,27 @@ Aliases: `@/` = the frontend root, so generated code is `@/src/gen/hooks` (`@gen
   them for sticky/fixed placement: `sticky top-[calc(var(--header-height)+1rem)]`,
   `fixed bottom-[calc(var(--bottom-nav-height)+1.5rem)] md:bottom-6`, and for full-bleed sections
   `-mx-[var(--page-padding-x)]`. Never write `top-14`.
+
+## Admin panel (`/admin/*`)
+- `app/[locale]/(admin)/admin/layout.tsx` renders the wide AppShell around `AdminShell` (title, tabs, and the one
+  client-side role guard, `useAdminGuard`; the backend's `AdminUser`/`OwnerUser` is the real gate). `/admin`
+  redirects to `/admin/overview`.
+- **Sections:** Next routes by file, so `config/admin/sections.ts` drives the tabs only. A new section is a page
+  file `app/[locale]/(admin)/admin/<path>/page.tsx` plus an entry in `config/admin/app-sections.ts` (same ids,
+  order and `admin.nav.*` keys as template-vue's `app/admin/sections.ts`). Detail pages need no entry.
+- **User-detail panels:** `config/admin/app-userPanels.ts` takes `{ key, labelKey, loader }`. The panel module
+  default-exports a component with `AdminUserPanelProps` (`userId`, `onMutated`); the page wraps the loader in
+  `React.lazy` once and renders it in `Suspense`.
+- Lists: `useAdminList` (page / sort / filters → the list hook's params) + `AdminFilterBar` (debounced search) +
+  `AdminDataTable` (cards below `md`, a table from `md`; custom cells via `columns[].cell`) + `AdminStateBlock`
+  (loading → error → empty → data). Pass `enabled: isAdminOrOwner` (and `&& !!id`; it replaces Kubb's own
+  `enabled`) on every query.
+- **Every confirm uses `AdminActionDialog`**, never `AlertDialogAction`: that's a Radix close button, which
+  closes the dialog (and clears the parent's state) before the mutation resolves. The parent `await`s
+  `mutateAsync`, closes on success, and on failure toasts and keeps the dialog open.
+- Strings live in the `admin` block of `i18n/messages/{en,ru}.json`, with the same key paths as template-vue's.
+  Server enums (role, user type, audit action, overview card keys) go through `useAdminLabels` (`t.has`
+  fallbacks), since next-intl renders a missing key as its path.
 
 ## UI and styling
 - Use shadcn/ui from `@/components/ui/*` before you build anything custom. template-react has a broad set:
@@ -114,4 +139,5 @@ Aliases: `@/` = the frontend root, so generated code is `@/src/gen/hooks` (`@gen
 `hooks/useAuth.ts`, `hooks/useUpdateUser.ts` (optimistic), `hooks/useLogout.ts`, `config/navigation.ts`,
 `config/layout.ts`, `components/shells/AppShell.tsx`, `components/navigation/AppNav.tsx`, `proxy.ts`,
 `app/[locale]/(app)/profile/page.tsx`, `app/[locale]/(auth)/login/page.tsx`, and
-`app/[locale]/(app)/demo/page.tsx` (query/mutation/streaming demos).
+`app/[locale]/(app)/demo/page.tsx` (query/mutation/streaming demos), and
+`app/[locale]/(admin)/admin/users/[id]/page.tsx` (admin detail: actions with confirm dialogs, lazy panels).

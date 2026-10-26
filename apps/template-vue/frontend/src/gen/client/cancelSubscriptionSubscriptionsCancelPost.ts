@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { CancelSubscriptionSubscriptionsCancelPostMutationRequest, CancelSubscriptionSubscriptionsCancelPostMutationResponse, CancelSubscriptionSubscriptionsCancelPost422 } from "../models/subscriptionsController/CancelSubscriptionSubscriptionsCancelPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getCancelSubscriptionSubscriptionsCancelPostUrl() {
-  const res = { method: 'POST', url: `/subscriptions/cancel` as const }  
+  const res = { method: 'POST', url: `/subscriptions/cancel` as const }
   return res
 }
 
@@ -19,11 +19,11 @@ function getCancelSubscriptionSubscriptionsCancelPostUrl() {
  * @summary Cancel Subscription
  * {@link /subscriptions/cancel}
  */
-export async function cancelSubscriptionSubscriptionsCancelPost(data?: CancelSubscriptionSubscriptionsCancelPostMutationRequest, config: Partial<RequestConfig<CancelSubscriptionSubscriptionsCancelPostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, CancelSubscriptionSubscriptionsCancelPostMutationRequest>({ method : "POST", url : getCancelSubscriptionSubscriptionsCancelPostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function cancelSubscriptionSubscriptionsCancelPost(data: CancelSubscriptionSubscriptionsCancelPostMutationRequest, config: Partial<RequestConfig<CancelSubscriptionSubscriptionsCancelPostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, CancelSubscriptionSubscriptionsCancelPostMutationRequest>({ method : "POST", url : getCancelSubscriptionSubscriptionsCancelPostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

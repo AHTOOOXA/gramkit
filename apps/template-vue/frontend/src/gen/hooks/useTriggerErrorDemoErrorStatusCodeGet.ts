@@ -5,53 +5,58 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { TriggerErrorDemoErrorStatusCodeGetQueryResponse, TriggerErrorDemoErrorStatusCodeGetPathParams, TriggerErrorDemoErrorStatusCodeGetQueryParams, TriggerErrorDemoErrorStatusCodeGet422 } from "../models/demoController/TriggerErrorDemoErrorStatusCodeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { triggerErrorDemoErrorStatusCodeGet } from "../client/triggerErrorDemoErrorStatusCodeGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
 
-export const triggerErrorDemoErrorStatusCodeGetQueryKey = (status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"]>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>) => [{ url: '/demo/error/:status_code', params: {status_code:status_code} }, ...(params ? [params] : [])] as const
+export const triggerErrorDemoErrorStatusCodeGetQueryKey = (status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"] | undefined>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>) => [{ url: '/demo/error/:status_code', params: {status_code:status_code} }, ...(params ? [params] : [])] as const
 
 export type TriggerErrorDemoErrorStatusCodeGetQueryKey = ReturnType<typeof triggerErrorDemoErrorStatusCodeGetQueryKey>
 
-export function triggerErrorDemoErrorStatusCodeGetQueryOptions(status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"]>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = triggerErrorDemoErrorStatusCodeGetQueryKey(status_code, params)
-  return queryOptions<TriggerErrorDemoErrorStatusCodeGetQueryResponse, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>, TriggerErrorDemoErrorStatusCodeGetQueryResponse, typeof queryKey>({
-  enabled: !!(status_code),
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return triggerErrorDemoErrorStatusCodeGet(toValue(status_code), toValue(params), toValue(config))
-   },
-  })
+export function triggerErrorDemoErrorStatusCodeGetQueryOptions(status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"] | undefined>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
+
+        const queryKey = triggerErrorDemoErrorStatusCodeGetQueryKey(status_code, params)
+        return queryOptions<TriggerErrorDemoErrorStatusCodeGetQueryResponse, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>, TriggerErrorDemoErrorStatusCodeGetQueryResponse, typeof queryKey>({
+        enabled: () => !!toValue(status_code),
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return triggerErrorDemoErrorStatusCodeGet(toValue(status_code)!, toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Trigger specific HTTP error for error handling demo.Args:    status_code: HTTP status code to return (400-599)    delay_ms: Optional delay before returning error
+ * @description Trigger specific HTTP error for error handling demo.
+ * Args:
+ * status_code: HTTP status code to return (400-599)
+ * delay_ms: Optional delay before returning error
  * @summary Trigger Error
  * {@link /demo/error/:status_code}
  */
-export function useTriggerErrorDemoErrorStatusCodeGet<TData = TriggerErrorDemoErrorStatusCodeGetQueryResponse, TQueryData = TriggerErrorDemoErrorStatusCodeGetQueryResponse, TQueryKey extends QueryKey = TriggerErrorDemoErrorStatusCodeGetQueryKey>(status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"]>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>, options: 
+export function useTriggerErrorDemoErrorStatusCodeGet<TData = TriggerErrorDemoErrorStatusCodeGetQueryResponse, TQueryData = TriggerErrorDemoErrorStatusCodeGetQueryResponse, TQueryKey extends QueryKey = TriggerErrorDemoErrorStatusCodeGetQueryKey>(status_code: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetPathParams["status_code"] | undefined>, params?: MaybeRefOrGetter<TriggerErrorDemoErrorStatusCodeGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<TriggerErrorDemoErrorStatusCodeGetQueryResponse, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<TriggerErrorDemoErrorStatusCodeGetQueryResponse, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? triggerErrorDemoErrorStatusCodeGetQueryKey(status_code, params)
 
-  const query = useQuery({
-   ...triggerErrorDemoErrorStatusCodeGetQueryOptions(status_code, params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? triggerErrorDemoErrorStatusCodeGetQueryKey(status_code, params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...triggerErrorDemoErrorStatusCodeGetQueryOptions(status_code, params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<TriggerErrorDemoErrorStatusCodeGetQueryResponse, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>, TData, TriggerErrorDemoErrorStatusCodeGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<TriggerErrorDemoErrorStatusCodeGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * EmailCheckResponse
+*/
 export type EmailCheckResponse = {
     /**
      * @type boolean

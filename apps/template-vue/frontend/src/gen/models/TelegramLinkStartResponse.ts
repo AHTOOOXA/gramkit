@@ -7,6 +7,7 @@
 
 
 /**
+ * TelegramLinkStartResponse
  * @description Response for starting Telegram link flow.
 */
 export type TelegramLinkStartResponse = {

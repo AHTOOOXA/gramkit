@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { CancelSubscriptionSubscriptionsCancelPostMutationRequest, CancelSubscriptionSubscriptionsCancelPostMutationResponse, CancelSubscriptionSubscriptionsCancelPost422 } from "../models/subscriptionsController/CancelSubscriptionSubscriptionsCancelPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { cancelSubscriptionSubscriptionsCancelPost } from "../client/cancelSubscriptionSubscriptionsCancelPost.ts";
@@ -24,19 +23,21 @@ export type CancelSubscriptionSubscriptionsCancelPostMutationKey = ReturnType<ty
  */
 export function useCancelSubscriptionSubscriptionsCancelPost<TContext>(options: 
 {
-  mutation?: MutationObserverOptions<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, {data?: MaybeRefOrGetter<CancelSubscriptionSubscriptionsCancelPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<CancelSubscriptionSubscriptionsCancelPostMutationRequest>> & { client?: typeof fetch },
+  mutation?: MutationObserverOptions<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, {data: MaybeRefOrGetter<CancelSubscriptionSubscriptionsCancelPostMutationRequest>}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<CancelSubscriptionSubscriptionsCancelPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? cancelSubscriptionSubscriptionsCancelPostMutationKey()
 
-  return useMutation<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, {data?: CancelSubscriptionSubscriptionsCancelPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return cancelSubscriptionSubscriptionsCancelPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? cancelSubscriptionSubscriptionsCancelPostMutationKey()
+
+          return useMutation<CancelSubscriptionSubscriptionsCancelPostMutationResponse, ResponseErrorConfig<CancelSubscriptionSubscriptionsCancelPost422>, {data: CancelSubscriptionSubscriptionsCancelPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return cancelSubscriptionSubscriptionsCancelPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

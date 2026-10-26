@@ -7,21 +7,24 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetProductsPaymentsProductsGetQueryResponse } from "../models/paymentsController/GetProductsPaymentsProductsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetProductsPaymentsProductsGetUrl() {
-  const res = { method: 'GET', url: `/payments/products` as const }  
+  const res = { method: 'GET', url: `/payments/products` as const }
   return res
 }
 
 /**
- * @description Get available products for purchase.Returns products excluding test products, suitable for profile/shop pages.
+ * @description Get available products for purchase.
+ * Returns products excluding test products, suitable for profile/shop pages.
  * @summary Get Products
  * {@link /payments/products}
  */
-export async function getProductsPaymentsProductsGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetProductsPaymentsProductsGetUrl().url.toString(), ... requestConfig })  
+export async function getProductsPaymentsProductsGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetProductsPaymentsProductsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetProductsPaymentsProductsGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

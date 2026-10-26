@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { UnreliableEndpointDemoUnreliableGetQueryResponse, UnreliableEndpointDemoUnreliableGetQueryParams, UnreliableEndpointDemoUnreliableGet422 } from "../models/demoController/UnreliableEndpointDemoUnreliableGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { unreliableEndpointDemoUnreliableGet } from "../client/unreliableEndpointDemoUnreliableGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,40 +17,45 @@ export const unreliableEndpointDemoUnreliableGetQueryKey = (params?: MaybeRefOrG
 
 export type UnreliableEndpointDemoUnreliableGetQueryKey = ReturnType<typeof unreliableEndpointDemoUnreliableGetQueryKey>
 
-export function unreliableEndpointDemoUnreliableGetQueryOptions(params?: MaybeRefOrGetter<UnreliableEndpointDemoUnreliableGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = unreliableEndpointDemoUnreliableGetQueryKey(params)
-  return queryOptions<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, UnreliableEndpointDemoUnreliableGetQueryResponse, typeof queryKey>({
+export function unreliableEndpointDemoUnreliableGetQueryOptions(params?: MaybeRefOrGetter<UnreliableEndpointDemoUnreliableGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return unreliableEndpointDemoUnreliableGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = unreliableEndpointDemoUnreliableGetQueryKey(params)
+        return queryOptions<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, UnreliableEndpointDemoUnreliableGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return unreliableEndpointDemoUnreliableGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Endpoint that randomly fails for error handling demo.Args:    fail_rate: Probability of failure (0-1, default 0.5)
+ * @description Endpoint that randomly fails for error handling demo.
+ * Args:
+ * fail_rate: Probability of failure (0-1, default 0.5)
  * @summary Unreliable Endpoint
  * {@link /demo/unreliable}
  */
 export function useUnreliableEndpointDemoUnreliableGet<TData = UnreliableEndpointDemoUnreliableGetQueryResponse, TQueryData = UnreliableEndpointDemoUnreliableGetQueryResponse, TQueryKey extends QueryKey = UnreliableEndpointDemoUnreliableGetQueryKey>(params?: MaybeRefOrGetter<UnreliableEndpointDemoUnreliableGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? unreliableEndpointDemoUnreliableGetQueryKey(params)
 
-  const query = useQuery({
-   ...unreliableEndpointDemoUnreliableGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? unreliableEndpointDemoUnreliableGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...unreliableEndpointDemoUnreliableGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<UnreliableEndpointDemoUnreliableGetQueryResponse, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>, TData, UnreliableEndpointDemoUnreliableGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<UnreliableEndpointDemoUnreliableGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { ScheduleNotificationDemoNotifyPostMutationRequest, ScheduleNotificationDemoNotifyPostMutationResponse, ScheduleNotificationDemoNotifyPost422 } from "../models/demoController/ScheduleNotificationDemoNotifyPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { scheduleNotificationDemoNotifyPost } from "../client/scheduleNotificationDemoNotifyPost.ts";
@@ -18,25 +17,30 @@ export const scheduleNotificationDemoNotifyPostMutationKey = () => [{ url: '/dem
 export type ScheduleNotificationDemoNotifyPostMutationKey = ReturnType<typeof scheduleNotificationDemoNotifyPostMutationKey>
 
 /**
- * @description Schedule a delayed Telegram notification for demo.Requires Telegram authentication (guest users not supported).Args:    delay_seconds: Delay before sending (1-60 seconds)
+ * @description Schedule a delayed Telegram notification for demo.
+ * Requires Telegram authentication (guest users not supported).
+ * Args:
+ * delay_seconds: Delay before sending (1-60 seconds)
  * @summary Schedule Notification
  * {@link /demo/notify}
  */
 export function useScheduleNotificationDemoNotifyPost<TContext>(options: 
 {
-  mutation?: MutationObserverOptions<ScheduleNotificationDemoNotifyPostMutationResponse, ResponseErrorConfig<ScheduleNotificationDemoNotifyPost422>, {data?: MaybeRefOrGetter<ScheduleNotificationDemoNotifyPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<ScheduleNotificationDemoNotifyPostMutationRequest>> & { client?: typeof fetch },
+  mutation?: MutationObserverOptions<ScheduleNotificationDemoNotifyPostMutationResponse, ResponseErrorConfig<ScheduleNotificationDemoNotifyPost422>, {data: MaybeRefOrGetter<ScheduleNotificationDemoNotifyPostMutationRequest>}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<ScheduleNotificationDemoNotifyPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? scheduleNotificationDemoNotifyPostMutationKey()
 
-  return useMutation<ScheduleNotificationDemoNotifyPostMutationResponse, ResponseErrorConfig<ScheduleNotificationDemoNotifyPost422>, {data?: ScheduleNotificationDemoNotifyPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return scheduleNotificationDemoNotifyPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? scheduleNotificationDemoNotifyPostMutationKey()
+
+          return useMutation<ScheduleNotificationDemoNotifyPostMutationResponse, ResponseErrorConfig<ScheduleNotificationDemoNotifyPost422>, {data: ScheduleNotificationDemoNotifyPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return scheduleNotificationDemoNotifyPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

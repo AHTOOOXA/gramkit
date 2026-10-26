@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetStockDemoStockGetQueryResponse, GetStockDemoStockGetQueryParams, GetStockDemoStockGet422 } from "../models/demoController/GetStockDemoStockGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { getStockDemoStockGet } from "../client/getStockDemoStockGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,16 +17,17 @@ export const getStockDemoStockGetQueryKey = (params?: MaybeRefOrGetter<GetStockD
 
 export type GetStockDemoStockGetQueryKey = ReturnType<typeof getStockDemoStockGetQueryKey>
 
-export function getStockDemoStockGetQueryOptions(params?: MaybeRefOrGetter<GetStockDemoStockGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getStockDemoStockGetQueryKey(params)
-  return queryOptions<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, GetStockDemoStockGetQueryResponse, typeof queryKey>({
+export function getStockDemoStockGetQueryOptions(params?: MaybeRefOrGetter<GetStockDemoStockGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getStockDemoStockGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = getStockDemoStockGetQueryKey(params)
+        return queryOptions<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, GetStockDemoStockGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getStockDemoStockGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -37,21 +37,23 @@ export function getStockDemoStockGetQueryOptions(params?: MaybeRefOrGetter<GetSt
  */
 export function useGetStockDemoStockGet<TData = GetStockDemoStockGetQueryResponse, TQueryData = GetStockDemoStockGetQueryResponse, TQueryKey extends QueryKey = GetStockDemoStockGetQueryKey>(params?: MaybeRefOrGetter<GetStockDemoStockGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getStockDemoStockGetQueryKey(params)
 
-  const query = useQuery({
-   ...getStockDemoStockGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<GetStockDemoStockGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getStockDemoStockGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getStockDemoStockGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetStockDemoStockGetQueryResponse, ResponseErrorConfig<GetStockDemoStockGet422>, TData, GetStockDemoStockGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<GetStockDemoStockGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

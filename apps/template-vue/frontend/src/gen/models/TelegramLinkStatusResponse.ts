@@ -7,6 +7,7 @@
 
 
 /**
+ * TelegramLinkStatusResponse
  * @description Response for checking Telegram link status.
 */
 export type TelegramLinkStatusResponse = {

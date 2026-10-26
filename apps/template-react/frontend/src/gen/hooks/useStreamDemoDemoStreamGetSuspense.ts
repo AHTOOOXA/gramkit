@@ -29,7 +29,7 @@ export function streamDemoDemoStreamGetSuspenseQueryOptions(config: Partial<Requ
 }
 
 /**
- * @description SSE streaming endpoint for AI streaming demo.Streams hardcoded text character-by-character to simulate AI response streaming.
+ * @description SSE streaming endpoint for AI demo.Returns Server-Sent Events (SSE) with character-by-character text.Frontend parses lines starting with 'data: ' and stops at '[DONE]'.Example client:```typescriptconst res = await apiFetch('/demo/stream');const reader = res.body?.getReader();const decoder = new TextDecoder();while (reader) {  const { done, value } = await reader.read();  if (done) break;  const chunk = decoder.decode(value);  for (const line of chunk.split('\n')) {    if (line.startsWith('data: ') && !line.includes('[DONE]')) {      console.log(line.slice(6)); // Extract content after "data: "    }  }}```
  * @summary Stream Demo
  * {@link /demo/stream}
  */

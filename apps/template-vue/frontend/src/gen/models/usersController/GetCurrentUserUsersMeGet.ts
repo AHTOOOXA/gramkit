@@ -8,6 +8,7 @@
 import type { UserSchema } from "../UserSchema.ts";
 
 /**
+ * UserSchema
  * @description Successful Response
 */
 export type GetCurrentUserUsersMeGet200 = UserSchema;

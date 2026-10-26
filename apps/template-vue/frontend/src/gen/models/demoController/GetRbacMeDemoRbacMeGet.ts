@@ -8,6 +8,7 @@
 import type { RbacMeResponse } from "../RbacMeResponse.ts";
 
 /**
+ * RbacMeResponse
  * @description Successful Response
 */
 export type GetRbacMeDemoRbacMeGet200 = RbacMeResponse;

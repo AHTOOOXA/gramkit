@@ -7,6 +7,9 @@
 
 import type { UserSchema } from "./UserSchema.ts";
 
+/**
+ * GroupSchema
+*/
 export type GroupSchema = {
     /**
      * @type integer

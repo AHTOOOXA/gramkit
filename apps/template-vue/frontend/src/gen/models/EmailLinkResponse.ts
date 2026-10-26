@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLinkResponse
  * @description Response for starting email link flow.
 */
 export type EmailLinkResponse = {

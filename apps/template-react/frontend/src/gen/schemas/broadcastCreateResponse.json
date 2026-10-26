@@ -1,0 +1,1 @@
+{"properties":{"ids":{"items":{"type":"integer"},"type":"array","title":"Ids"}},"type":"object","required":["ids"],"title":"BroadcastCreateResponse","description":"IDs of the created row(s). 'both' yields two ids.","x-readme-ref-name":"BroadcastCreateResponse"}

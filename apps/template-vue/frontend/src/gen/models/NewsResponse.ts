@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * NewsResponse
+*/
 export type NewsResponse = {
     /**
      * @type string

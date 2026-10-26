@@ -7,23 +7,25 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { CompleteSignupAuthSignupEmailCompletePostMutationRequest, CompleteSignupAuthSignupEmailCompletePostMutationResponse, CompleteSignupAuthSignupEmailCompletePost400, CompleteSignupAuthSignupEmailCompletePost409, CompleteSignupAuthSignupEmailCompletePost410, CompleteSignupAuthSignupEmailCompletePost422 } from "../models/emailAuthController/CompleteSignupAuthSignupEmailCompletePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getCompleteSignupAuthSignupEmailCompletePostUrl() {
-  const res = { method: 'POST', url: `/auth/signup/email/complete` as const }  
+  const res = { method: 'POST', url: `/auth/signup/email/complete` as const }
   return res
 }
 
 /**
- * @description Complete email signup.Verifies code, validates password, creates user account.Sets session cookie on success.
+ * @description Complete email signup.
+ * Verifies code, validates password, creates user account.
+ * Sets session cookie on success.
  * @summary Complete Signup
  * {@link /auth/signup/email/complete}
  */
-export async function completeSignupAuthSignupEmailCompletePost(data: CompleteSignupAuthSignupEmailCompletePostMutationRequest, config: Partial<RequestConfig<CompleteSignupAuthSignupEmailCompletePostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<CompleteSignupAuthSignupEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteSignupAuthSignupEmailCompletePost400 | CompleteSignupAuthSignupEmailCompletePost409 | CompleteSignupAuthSignupEmailCompletePost410 | CompleteSignupAuthSignupEmailCompletePost422>, CompleteSignupAuthSignupEmailCompletePostMutationRequest>({ method : "POST", url : getCompleteSignupAuthSignupEmailCompletePostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function completeSignupAuthSignupEmailCompletePost(data: CompleteSignupAuthSignupEmailCompletePostMutationRequest, config: Partial<RequestConfig<CompleteSignupAuthSignupEmailCompletePostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<CompleteSignupAuthSignupEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteSignupAuthSignupEmailCompletePost400 | CompleteSignupAuthSignupEmailCompletePost409 | CompleteSignupAuthSignupEmailCompletePost410 | CompleteSignupAuthSignupEmailCompletePost422>, CompleteSignupAuthSignupEmailCompletePostMutationRequest>({ method : "POST", url : getCompleteSignupAuthSignupEmailCompletePostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

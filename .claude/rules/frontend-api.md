@@ -18,9 +18,13 @@ only through generated hooks. This file covers how that works here.
 ## Codegen: `make schema APP=<app>`
 - It runs `pnpm generate` (`kubb generate`) in `apps/<app>/frontend`, which writes `src/gen/{client,hooks,models}`.
   The backend has to be running because Kubb reads the live OpenAPI spec. The spec URL is in `kubb.config.ts`:
-  - `template-vue`: `http://localhost:8002/openapi.json` (the local backend).
-  - `template-react` points at the **Cloudflare tunnel** (`https://local.<your-domain>/api/template-react/openapi.json`).
-    Without a tunnel, point `input.path` at the local backend (`http://localhost:8003/openapi.json`).
+  - `template-vue`: `http://localhost:8002/openapi.json`. `template-react`: `http://localhost:8003/openapi.json`
+    (the local backends).
+- **Without a stack:** both templates' `kubb.config.ts` read `OPENAPI_PATH`. Dump `app.openapi()` to a file
+  (`ENV_FILE=.env.test`, `RedisClient.__init__` patched like the tests' conftest, and assert `app.__file__` is
+  the right template's package, since both backends are a package named `app`), then run
+  `OPENAPI_PATH=<file> pnpm generate`. The committed `gen/` is raw Kubb output, so generate without prettier
+  on `PATH`.
 - **`output.clean: true` wipes `src/gen` before it fetches.** Sometimes Kubb stops with "fetch failed" and
   leaves hundreds of files deleted. After every run, check `git status src/gen`. If you see mass deletions,
   fix the backend or tunnel and run it again. Never commit a half-empty `gen/`.
@@ -58,7 +62,9 @@ only through generated hooks. This file covers how that works here.
   nothing.** Always build keys with the generated `*QueryKey()` helpers.
 - Keys match by prefix. Call the helper with no params to invalidate every variant of that endpoint. With
   params, it hits only that one variant.
-- Don't write `predicate: q => q.queryKey[0].url === ...`. It's fragile.
+- Don't write `predicate: q => q.queryKey[0].url === ...`. It's fragile. The one accepted exception is the admin
+  user detail page (both templates): app-registered user panels own queries whose keys the page can't know, so
+  after a mutation it invalidates every key whose `url` starts with `/admin/users/:user_id/`.
 - On logout, call `queryClient.clear()`. Every app's `useLogout` already does this.
 
 ## Optimistic update (reference: `useUpdateUser`)

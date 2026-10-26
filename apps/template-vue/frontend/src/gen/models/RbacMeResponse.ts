@@ -7,6 +7,7 @@
 
 
 /**
+ * RbacMeResponse
  * @description Your current role and permissions.
 */
 export type RbacMeResponse = {

@@ -1,0 +1,1 @@
+{"properties":{"currency":{"type":"string","title":"Currency"},"amount":{"type":"number","title":"Amount"}},"type":"object","required":["currency","amount"],"title":"ProductPriceSchema","x-readme-ref-name":"ProductPriceSchema"}

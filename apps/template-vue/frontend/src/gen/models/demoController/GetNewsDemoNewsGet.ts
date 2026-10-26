@@ -19,11 +19,13 @@ export type GetNewsDemoNewsGetQueryParams = {
 };
 
 /**
+ * NewsResponse
  * @description Successful Response
 */
 export type GetNewsDemoNewsGet200 = NewsResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetNewsDemoNewsGet422 = HTTPValidationError;

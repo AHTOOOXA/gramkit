@@ -8,6 +8,7 @@
 import type { ProtectedActionResponse } from "../ProtectedActionResponse.ts";
 
 /**
+ * ProtectedActionResponse
  * @description Successful Response
 */
 export type DemoProtectedActionDemoRbacProtectedActionPost200 = ProtectedActionResponse;

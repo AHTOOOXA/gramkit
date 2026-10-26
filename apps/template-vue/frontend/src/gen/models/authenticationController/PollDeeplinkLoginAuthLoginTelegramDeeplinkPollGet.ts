@@ -16,11 +16,13 @@ export type PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams = {
 };
 
 /**
+ * DeeplinkLoginPollResponse
  * @description Successful Response
 */
 export type PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet200 = DeeplinkLoginPollResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422 = HTTPValidationError;

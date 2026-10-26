@@ -12,7 +12,11 @@ Always-on rules (make-only, `datetime.now(UTC)`, `flush()` not `commit()` in rep
 
 - Ask: "Will a second app need this exact thing?" Yes → `core/`. No or maybe → the app. Promote to core only once a second app actually needs it. Leave a `TODO: extract to core` note rather than abstracting early.
 - Check `core/` first. Don't re-implement users, auth, sessions, payments, subscriptions, groups or invites in an app.
-- Core can hold routers, bot handlers and worker jobs too. It has 8 router modules in `core/backend/src/core/infrastructure/fastapi/routers/` (auth, users, payments, subscriptions, provider webhooks, health), handlers in `.../telegram/handlers/` and jobs in `.../arq/jobs/`. Put something in core when it's shared; otherwise it goes in the app.
+- Core can hold routers, bot handlers and worker jobs too. It has 12 router modules in `core/backend/src/core/infrastructure/fastapi/routers/` (auth, users, payments, subscriptions, provider webhooks, health, admin, admin_broadcasts, admin_marketing_links, admin_statistics), handlers in `.../telegram/handlers/` and jobs in `.../arq/jobs/` (including `user_broadcast_job`, `marketing_links_alerts_job` and `daily_admin_statistics_job`). Put something in core when it's shared; otherwise it goes in the app.
+- **Admin API is core** (`routers/admin.py`, `services/admin.py`, `services/audit_log.py`): users list/detail, payments, subscriptions, gift/revoke, role, reset, refund, the audit log and admin tasks (`GET /admin/tasks`, `POST /admin/tasks/{name}`, `services/admin_tasks.py`). Apps mount `core_admin.router` before their own `routers.admin.router` and add app-only admin endpoints there. Core's `GET /admin/users/{user_id}` catches any one-segment `/admin/users/<x>`, so app sub-routes need two segments (`/admin/users/{id}/balance`). Record admin actions with `services.audit_log.record(actor, action, ...)`.
+- **Broadcasts are core** (`routers/admin_broadcasts.py`, included by `routers/admin.py`, never mounted on its own; `services/broadcasts.py`, `services/notifications/broadcasts.py`, `arq/jobs/broadcasts.py`): the 10 `/admin/broadcasts*` endpoints, scheduled promo templates and `user_broadcast_job` (send-now and the bot's `/broadcast`). Keyboard types are a registry: core has `main`; apps register theirs (e.g. `daily`) with `register_broadcast_keyboard(type, builder)` from `setup_infrastructure()`. Builders get `(button_text, locale)` and translate with `t(key, locale)`, not `i18n(key, locale=...)` (that ignores `locale` once a per-request translation is set). **One send path:** user broadcasts go through `MessageService.send_content` and `NotificationsService._deliver` (per-user delivery rows, blocked users skipped). Never call `bot.send_*` in a loop for user broadcasts.
+- **Marketing links are core** (`routers/admin_marketing_links.py`, included by `routers/admin.py`; `services/marketing_links.py`, `arq/jobs/marketing.py`): `/admin/marketing-links` (list, create, `PATCH /{link_id}`), one acquisition code per placement with its `?startapp=r-<code>` / `?start=<code>` links and per-code users, activated, return after 1/7/30 days, payers, revenue, CAC/LTV/ROAS/payback, plus the hourly `marketing_links_alerts_job` (apps register it in their worker). Per-code results come from `users.referral_code` (first touch). An app defines what counts as activity by passing `CoreRequestsService(..., marketing_links_config=MarketingLinksConfig(activation=..., activity=..., activation_label=...))`: zero-argument query factories with rows labelled `(user_id, at)`; the default is "opened the app". The app's own link codes (notification buttons) go in `internal_referal_ids`, so they're never stored as a source or listed.
+- **Overview, money analytics and the daily digest are core** (`routers/admin_statistics.py`, included by `routers/admin.py`; `services/statistics.py`, `services/analytics.py`, `services/admin_digest.py`, `arq/jobs/admin.py`): `GET /admin/statistics/overview` and `/admin/analytics/{revenue-timeseries,revenue-kpis,subscription-trend,subscription-breakdown,mrr}`, the `daily_admin_statistics_job` digest (apps schedule it in their worker; silent unless gathering failed) and the bot's `/stats` (core's bot admin router; it goes only to the requester). Apps add numbers through two registries in `core.services.admin_metrics`: `register_overview_card(key, fn)` (a tile on the Overview) and `register_digest_row(key, fn, order=...)` (a digest table row, a line under it, or a warning), called from one `register_admin_metrics()` in `setup_infrastructure()`. Callbacks get `(session, window: StatWindows)`, are read-only and run one after another on that session (never `gather`). `services.statistics` / `services.analytics` / `repo.analytics` must be core's (`BaseCompositionTests` checks the types). App-only analytics over app tables live on the app's admin router.
 - **Balance is app code** (`apps/template-vue/backend/src/app/services/balance.py`, `.../repo/balance.py`, `.../models/balance.py`), not core. Core only knows it by name:
   - core `User.balance` is `relationship("Balance")`, so every app must define a `Balance` model;
   - core jobs (`arq/jobs/balance.py`) call `services.balance.*` on the app's service aggregator.
@@ -32,7 +36,7 @@ core/backend/src/core/
 │   └── notifications/
 ├── infrastructure/
 │   ├── config/                   # `settings` proxy → resolves to app.config.settings
-│   ├── database/models/          # User, Payment(+Event), Subscription, Group, GroupInvite, Friendship, FailedWebhook, NotificationDelivery; base.py mixins
+│   ├── database/models/          # User, Payment(+Event), Subscription, Group, GroupInvite, Friendship, FailedWebhook, NotificationDelivery, AuditLog, PromotionalBroadcast, MarketingLink; base.py mixins
 │   ├── database/repo/            # BaseRepo (base.py), users.py, payments.py, …, requests.py = CoreRequestsRepo
 │   ├── fastapi/                  # factory.py (create_api), dependencies.py, routers/
 │   ├── telegram/                 # factory.py (dispatcher + middlewares), handlers/, middlewares/
@@ -49,7 +53,7 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
     ├── exceptions.py             # BackendException + subclasses
     ├── domain/, schemas/
     ├── infrastructure/database/{models,repo}/   # repo/requests.py = RequestsRepo
-    ├── services/                 # requests.py = RequestsService; balance.py, statistics.py, notifications/
+    ├── services/                 # requests.py = RequestsService; balance.py, admin_metrics.py, notifications/
     ├── webhook/                  # app.py, auth.py (get_user), dependencies/, routers/{base,admin,demo}.py
     ├── tgbot/                    # bot.py, handlers/__init__.py (routers_list)
     ├── worker/                   # jobs.py, worker.py (job + cron registration)
@@ -84,11 +88,16 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
 
 | Entry point | Unit of work | Commit |
 |---|---|---|
-| Webhook | `get_repo()` (`app/webhook/dependencies/database.py`): `session.begin()` per request | auto on exit, rollback on exception |
+| Webhook | `get_repo()` (`app/webhook/dependencies/database.py`): `session.begin()` per request | auto on exit, rollback on exception. **Before** the response is sent (function scope, below) |
 | Bot | `DatabaseMiddleware` (`core/.../telegram/middlewares/database.py`): one transaction per update | auto |
 | Worker | `async with ctx.with_transaction() as services:` (`core/.../arq/factory.py`) | auto on block exit. `ctx.with_repo()` has **no** transaction |
 | Scripts (`core/scripts/base.py`) | `with_session()` / `with_repo()` / `with_services()` open a bare session | **you** `await session.commit()` |
+| Admin tasks | run inside the admin request's transaction | auto (with the audit row) |
 
+- **Request session scope.** FastAPI runs a `yield` dependency's exit (our commit) *after the response is sent* unless it's declared `Depends(..., scope="function")`. So:
+  - **Default:** `get_services` / `get_user` open `get_repo` at `scope="function"`: the commit runs when the endpoint returns, before the client gets its 200, and a failing commit is a 500. `get_services` must `return`, not `yield` (FastAPI refuses a request-scoped `yield` dep over a function-scoped one).
+  - **Streaming:** an endpoint whose `StreamingResponse` generator still uses the services after it returned takes `get_services_streaming` **and** `get_user_streaming` (request scope: the session stays open for the stream, commits after it). The templates have none that touch the database (the demo `/demo/stream` takes no session).
+  - Never mix them in one endpoint, and never write a bare `Depends(get_repo)` (that's request scope): FastAPI caches the two scopes apart, so the endpoint opens a second session and can block on its own row locks. Need the repo directly? `Depends(get_repo, scope="function")`. Each app's `tests/contracts/api/test_session_scope.py` checks every route (via `core.testing.dependency_scopes`).
 - Repos and services only `flush()`. In worker jobs, keep slow external calls (LLM, Telegram sends) outside `with_transaction()` blocks.
 - Money: `await self.repo.<x>.get_by_id_with_lock(id)` (`SELECT … FOR UPDATE`; `read=True` / `nowait` / `skip_locked` exist) before a read-modify-write. Real uses are in `app/services/balance.py` and `core/services/payments/service.py`.
 
@@ -122,4 +131,5 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
 
 ## Data fixes and one-off jobs
 
-- One-off backend work (backfills, cleanups, backup/restore) is a script under `app/scripts/` or `core/scripts/common/`, run with `make script`. Running one against a live server has a memory catch: see `.claude/rules/prod-scripts.md`.
+- Data fixes on a running server are admin tasks: `@admin_task(name, description, destructive=...)` on `async def fn(session, *, dry_run) -> dict` in `app/services/admin_tasks.py` (framework: `core/services/admin_tasks.py`; register by importing the module in `app/webhook/app.py`). They run at `/admin/tasks`, owner-only and audit-logged, with dry run and apply. See `.claude/rules/prod-scripts.md`.
+- Other one-off backend work (backfills, backup/restore, benchmarks) is a script under `app/scripts/` or `core/scripts/common/`, run with `make script`. Running one against a live server has a memory catch: see `.claude/rules/prod-scripts.md`.

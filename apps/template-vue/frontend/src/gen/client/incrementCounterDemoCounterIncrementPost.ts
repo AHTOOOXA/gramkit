@@ -7,21 +7,27 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { IncrementCounterDemoCounterIncrementPostMutationResponse, IncrementCounterDemoCounterIncrementPostQueryParams, IncrementCounterDemoCounterIncrementPost422 } from "../models/demoController/IncrementCounterDemoCounterIncrementPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getIncrementCounterDemoCounterIncrementPostUrl() {
-  const res = { method: 'POST', url: `/demo/counter/increment` as const }  
+  const res = { method: 'POST', url: `/demo/counter/increment` as const }
   return res
 }
 
 /**
- * @description Increment counter for optimistic update demo.Args:    counter_id: Unique counter ID (default: "default")    amount: Amount to increment (1-100, default 1)    should_fail: If true, fails after delay (for rollback demo)
+ * @description Increment counter for optimistic update demo.
+ * Args:
+ * counter_id: Unique counter ID (default: "default")
+ * amount: Amount to increment (1-100, default 1)
+ * should_fail: If true, fails after delay (for rollback demo)
  * @summary Increment Counter
  * {@link /demo/counter/increment}
  */
-export async function incrementCounterDemoCounterIncrementPost(params?: IncrementCounterDemoCounterIncrementPostQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<IncrementCounterDemoCounterIncrementPostMutationResponse, ResponseErrorConfig<IncrementCounterDemoCounterIncrementPost422>, unknown>({ method : "POST", url : getIncrementCounterDemoCounterIncrementPostUrl().url.toString(), params, ... requestConfig })  
+export async function incrementCounterDemoCounterIncrementPost(params?: IncrementCounterDemoCounterIncrementPostQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<IncrementCounterDemoCounterIncrementPostMutationResponse, ResponseErrorConfig<IncrementCounterDemoCounterIncrementPost422>, unknown>({ method : "POST", url : getIncrementCounterDemoCounterIncrementPostUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

@@ -7,10 +7,13 @@
 
 
 export const userTypeEnum = {
-    "GUEST": "GUEST",
-    "REGISTERED": "REGISTERED"
+    GUEST: "GUEST",
+    REGISTERED: "REGISTERED"
 } as const;
 
 export type UserTypeEnumKey = (typeof userTypeEnum)[keyof typeof userTypeEnum];
 
+/**
+ * UserType
+*/
 export type UserType = UserTypeEnumKey;

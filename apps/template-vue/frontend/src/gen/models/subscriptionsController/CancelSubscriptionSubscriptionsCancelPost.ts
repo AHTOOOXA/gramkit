@@ -10,15 +10,20 @@ import type { HTTPValidationError } from "../HTTPValidationError.ts";
 import type { SubscriptionSchema } from "../SubscriptionSchema.ts";
 
 /**
+ * SubscriptionSchema
  * @description Successful Response
 */
 export type CancelSubscriptionSubscriptionsCancelPost200 = SubscriptionSchema;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type CancelSubscriptionSubscriptionsCancelPost422 = HTTPValidationError;
 
+/**
+ * CancelSubscriptionRequest
+*/
 export type CancelSubscriptionSubscriptionsCancelPostMutationRequest = CancelSubscriptionRequest;
 
 export type CancelSubscriptionSubscriptionsCancelPostMutationResponse = CancelSubscriptionSubscriptionsCancelPost200;

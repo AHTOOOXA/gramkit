@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { CompleteSignupAuthSignupEmailCompletePostMutationRequest, CompleteSignupAuthSignupEmailCompletePostMutationResponse, CompleteSignupAuthSignupEmailCompletePost400, CompleteSignupAuthSignupEmailCompletePost409, CompleteSignupAuthSignupEmailCompletePost410, CompleteSignupAuthSignupEmailCompletePost422 } from "../models/emailAuthController/CompleteSignupAuthSignupEmailCompletePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { completeSignupAuthSignupEmailCompletePost } from "../client/completeSignupAuthSignupEmailCompletePost.ts";
@@ -18,25 +17,29 @@ export const completeSignupAuthSignupEmailCompletePostMutationKey = () => [{ url
 export type CompleteSignupAuthSignupEmailCompletePostMutationKey = ReturnType<typeof completeSignupAuthSignupEmailCompletePostMutationKey>
 
 /**
- * @description Complete email signup.Verifies code, validates password, creates user account.Sets session cookie on success.
+ * @description Complete email signup.
+ * Verifies code, validates password, creates user account.
+ * Sets session cookie on success.
  * @summary Complete Signup
  * {@link /auth/signup/email/complete}
  */
 export function useCompleteSignupAuthSignupEmailCompletePost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<CompleteSignupAuthSignupEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteSignupAuthSignupEmailCompletePost400 | CompleteSignupAuthSignupEmailCompletePost409 | CompleteSignupAuthSignupEmailCompletePost410 | CompleteSignupAuthSignupEmailCompletePost422>, {data: MaybeRefOrGetter<CompleteSignupAuthSignupEmailCompletePostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<CompleteSignupAuthSignupEmailCompletePostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<CompleteSignupAuthSignupEmailCompletePostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? completeSignupAuthSignupEmailCompletePostMutationKey()
 
-  return useMutation<CompleteSignupAuthSignupEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteSignupAuthSignupEmailCompletePost400 | CompleteSignupAuthSignupEmailCompletePost409 | CompleteSignupAuthSignupEmailCompletePost410 | CompleteSignupAuthSignupEmailCompletePost422>, {data: CompleteSignupAuthSignupEmailCompletePostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return completeSignupAuthSignupEmailCompletePost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? completeSignupAuthSignupEmailCompletePostMutationKey()
+
+          return useMutation<CompleteSignupAuthSignupEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteSignupAuthSignupEmailCompletePost400 | CompleteSignupAuthSignupEmailCompletePost409 | CompleteSignupAuthSignupEmailCompletePost410 | CompleteSignupAuthSignupEmailCompletePost422>, {data: CompleteSignupAuthSignupEmailCompletePostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return completeSignupAuthSignupEmailCompletePost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetWeatherDemoWeatherGetQueryResponse, GetWeatherDemoWeatherGetQueryParams, GetWeatherDemoWeatherGet422 } from "../models/demoController/GetWeatherDemoWeatherGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetWeatherDemoWeatherGetUrl() {
-  const res = { method: 'GET', url: `/demo/weather` as const }  
+  const res = { method: 'GET', url: `/demo/weather` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetWeatherDemoWeatherGetUrl() {
  * @summary Get Weather
  * {@link /demo/weather}
  */
-export async function getWeatherDemoWeatherGet(params?: GetWeatherDemoWeatherGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, unknown>({ method : "GET", url : getGetWeatherDemoWeatherGetUrl().url.toString(), params, ... requestConfig })  
+export async function getWeatherDemoWeatherGet(params?: GetWeatherDemoWeatherGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, unknown>({ method : "GET", url : getGetWeatherDemoWeatherGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

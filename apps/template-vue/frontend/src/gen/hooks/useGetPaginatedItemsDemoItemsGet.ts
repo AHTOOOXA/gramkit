@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetPaginatedItemsDemoItemsGetQueryResponse, GetPaginatedItemsDemoItemsGetQueryParams, GetPaginatedItemsDemoItemsGet422 } from "../models/demoController/GetPaginatedItemsDemoItemsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { getPaginatedItemsDemoItemsGet } from "../client/getPaginatedItemsDemoItemsGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,40 +17,47 @@ export const getPaginatedItemsDemoItemsGetQueryKey = (params?: MaybeRefOrGetter<
 
 export type GetPaginatedItemsDemoItemsGetQueryKey = ReturnType<typeof getPaginatedItemsDemoItemsGetQueryKey>
 
-export function getPaginatedItemsDemoItemsGetQueryOptions(params?: MaybeRefOrGetter<GetPaginatedItemsDemoItemsGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getPaginatedItemsDemoItemsGetQueryKey(params)
-  return queryOptions<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, GetPaginatedItemsDemoItemsGetQueryResponse, typeof queryKey>({
+export function getPaginatedItemsDemoItemsGetQueryOptions(params?: MaybeRefOrGetter<GetPaginatedItemsDemoItemsGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getPaginatedItemsDemoItemsGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = getPaginatedItemsDemoItemsGetQueryKey(params)
+        return queryOptions<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, GetPaginatedItemsDemoItemsGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getPaginatedItemsDemoItemsGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Paginated items endpoint for infinite scroll demo.Args:    cursor: Starting index (default 0)    limit: Items per page (1-50, default 10)    delay_ms: Artificial delay in milliseconds (0-3000, default 500)
+ * @description Paginated items endpoint for infinite scroll demo.
+ * Args:
+ * cursor: Starting index (default 0)
+ * limit: Items per page (1-50, default 10)
+ * delay_ms: Artificial delay in milliseconds (0-3000, default 500)
  * @summary Get Paginated Items
  * {@link /demo/items}
  */
 export function useGetPaginatedItemsDemoItemsGet<TData = GetPaginatedItemsDemoItemsGetQueryResponse, TQueryData = GetPaginatedItemsDemoItemsGetQueryResponse, TQueryKey extends QueryKey = GetPaginatedItemsDemoItemsGetQueryKey>(params?: MaybeRefOrGetter<GetPaginatedItemsDemoItemsGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getPaginatedItemsDemoItemsGetQueryKey(params)
 
-  const query = useQuery({
-   ...getPaginatedItemsDemoItemsGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getPaginatedItemsDemoItemsGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getPaginatedItemsDemoItemsGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, TData, GetPaginatedItemsDemoItemsGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

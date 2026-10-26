@@ -7,6 +7,7 @@
 
 
 /**
+ * DeeplinkLoginStartResponse
  * @description Response for starting deep link login.
 */
 export type DeeplinkLoginStartResponse = {

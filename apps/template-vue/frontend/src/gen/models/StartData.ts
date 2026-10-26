@@ -9,6 +9,9 @@ import type { GroupSchema } from "./GroupSchema.ts";
 import type { StartMode } from "./StartMode.ts";
 import type { UserSchema } from "./UserSchema.ts";
 
+/**
+ * StartData
+*/
 export type StartData = {
     /**
      * @description User schema for API responses - NEVER expose password_hash

@@ -19,11 +19,13 @@ export type UnreliableEndpointDemoUnreliableGetQueryParams = {
 };
 
 /**
+ * UnreliableResponse
  * @description Successful Response
 */
 export type UnreliableEndpointDemoUnreliableGet200 = UnreliableResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type UnreliableEndpointDemoUnreliableGet422 = HTTPValidationError;

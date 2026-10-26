@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * SlowResponse
+*/
 export type SlowResponse = {
     /**
      * @type string

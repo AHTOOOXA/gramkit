@@ -11,35 +11,44 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailLinkCompleteResponse
  * @description Successful Response
 */
 export type CompleteLinkAuthLinkEmailCompletePost200 = EmailLinkCompleteResponse;
 
 /**
+ * ErrorResponse
  * @description Invalid code or password
 */
 export type CompleteLinkAuthLinkEmailCompletePost400 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Not authenticated
 */
 export type CompleteLinkAuthLinkEmailCompletePost401 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Email already in use
 */
 export type CompleteLinkAuthLinkEmailCompletePost409 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Code expired
 */
 export type CompleteLinkAuthLinkEmailCompletePost410 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type CompleteLinkAuthLinkEmailCompletePost422 = HTTPValidationError;
 
+/**
+ * EmailLinkCompleteRequest
+*/
 export type CompleteLinkAuthLinkEmailCompletePostMutationRequest = EmailLinkCompleteRequest;
 
 export type CompleteLinkAuthLinkEmailCompletePostMutationResponse = CompleteLinkAuthLinkEmailCompletePost200;

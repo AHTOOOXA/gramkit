@@ -18,6 +18,7 @@ import HttpStatusDemo from '@app/presentation/components/demo/HttpStatusDemo.vue
 import RetryComparisonDemo from '@app/presentation/components/demo/RetryComparisonDemo.vue'
 import WebSocketDemo from '@app/presentation/components/demo/WebSocketDemo.vue'
 import AiStreamingDemo from '@app/presentation/components/demo/AiStreamingDemo.vue'
+import WhatsNewNote from '@app/presentation/components/demo/WhatsNewNote.vue'
 import ScrollReveal from '@/components/ui/animation/ScrollReveal.vue'
 
 const { t } = useI18n()
@@ -41,6 +42,9 @@ const animBase =
         {{ t('demo.subtitle') }}
       </p>
     </div>
+
+    <!-- "What's new" note: shown once per version, gated on user.seen_features -->
+    <WhatsNewNote />
 
     <!-- Row 1: Loading + Error (2 cols) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

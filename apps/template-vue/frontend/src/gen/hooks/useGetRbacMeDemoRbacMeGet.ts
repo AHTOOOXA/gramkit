@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetRbacMeDemoRbacMeGetQueryResponse } from "../models/demoController/GetRbacMeDemoRbacMeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { getRbacMeDemoRbacMeGet } from "../client/getRbacMeDemoRbacMeGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,16 +16,17 @@ export const getRbacMeDemoRbacMeGetQueryKey = () => [{ url: '/demo/rbac/me' }] a
 
 export type GetRbacMeDemoRbacMeGetQueryKey = ReturnType<typeof getRbacMeDemoRbacMeGetQueryKey>
 
-export function getRbacMeDemoRbacMeGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getRbacMeDemoRbacMeGetQueryKey()
-  return queryOptions<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, GetRbacMeDemoRbacMeGetQueryResponse, typeof queryKey>({
+export function getRbacMeDemoRbacMeGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getRbacMeDemoRbacMeGet(toValue(config))
-   },
-  })
+        const queryKey = getRbacMeDemoRbacMeGetQueryKey()
+        return queryOptions<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, GetRbacMeDemoRbacMeGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getRbacMeDemoRbacMeGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -36,21 +36,23 @@ export function getRbacMeDemoRbacMeGetQueryOptions(config: Partial<RequestConfig
  */
 export function useGetRbacMeDemoRbacMeGet<TData = GetRbacMeDemoRbacMeGetQueryResponse, TQueryData = GetRbacMeDemoRbacMeGetQueryResponse, TQueryKey extends QueryKey = GetRbacMeDemoRbacMeGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getRbacMeDemoRbacMeGetQueryKey()
 
-  const query = useQuery({
-   ...getRbacMeDemoRbacMeGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getRbacMeDemoRbacMeGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getRbacMeDemoRbacMeGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetRbacMeDemoRbacMeGetQueryResponse, ResponseErrorConfig<Error>, TData, GetRbacMeDemoRbacMeGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

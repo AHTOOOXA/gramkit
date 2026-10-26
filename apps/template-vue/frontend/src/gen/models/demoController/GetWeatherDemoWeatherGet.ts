@@ -24,11 +24,13 @@ export type GetWeatherDemoWeatherGetQueryParams = {
 };
 
 /**
+ * WeatherResponse
  * @description Successful Response
 */
 export type GetWeatherDemoWeatherGet200 = WeatherResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetWeatherDemoWeatherGet422 = HTTPValidationError;

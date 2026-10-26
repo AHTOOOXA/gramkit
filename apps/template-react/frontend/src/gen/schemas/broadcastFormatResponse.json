@@ -1,0 +1,1 @@
+{"properties":{"html":{"type":"string","title":"Html"}},"type":"object","required":["html"],"title":"BroadcastFormatResponse","x-readme-ref-name":"BroadcastFormatResponse"}

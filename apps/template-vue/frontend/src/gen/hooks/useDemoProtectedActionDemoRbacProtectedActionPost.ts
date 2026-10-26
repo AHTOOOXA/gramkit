@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { DemoProtectedActionDemoRbacProtectedActionPostMutationResponse } from "../models/demoController/DemoProtectedActionDemoRbacProtectedActionPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { demoProtectedActionDemoRbacProtectedActionPost } from "../client/demoProtectedActionDemoRbacProtectedActionPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,28 @@ export const demoProtectedActionDemoRbacProtectedActionPostMutationKey = () => [
 export type DemoProtectedActionDemoRbacProtectedActionPostMutationKey = ReturnType<typeof demoProtectedActionDemoRbacProtectedActionPostMutationKey>
 
 /**
- * @description Demo endpoint that requires owner role.Use this to test permission checks - only owners can execute this action.
+ * @description Demo endpoint that requires owner role.
+ * Use this to test permission checks - only owners can execute this action.
  * @summary Demo Protected Action
  * {@link /demo/rbac/protected-action}
  */
 export function useDemoProtectedActionDemoRbacProtectedActionPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<DemoProtectedActionDemoRbacProtectedActionPostMutationResponse, ResponseErrorConfig<Error>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? demoProtectedActionDemoRbacProtectedActionPostMutationKey()
 
-  return useMutation<DemoProtectedActionDemoRbacProtectedActionPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
-    mutationFn: async() => {
-      return demoProtectedActionDemoRbacProtectedActionPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? demoProtectedActionDemoRbacProtectedActionPostMutationKey()
+
+          return useMutation<DemoProtectedActionDemoRbacProtectedActionPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
+            mutationFn: async() => {
+              return demoProtectedActionDemoRbacProtectedActionPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

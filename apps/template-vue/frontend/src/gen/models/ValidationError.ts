@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * ValidationError
+*/
 export type ValidationError = {
     /**
      * @type array
@@ -19,4 +22,9 @@ export type ValidationError = {
      * @type string
     */
     type: string;
+    input?: any;
+    /**
+     * @type object | undefined
+    */
+    ctx?: object;
 };

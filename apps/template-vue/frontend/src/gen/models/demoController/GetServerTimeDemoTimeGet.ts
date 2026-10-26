@@ -8,6 +8,7 @@
 import type { ServerTimeResponse } from "../ServerTimeResponse.ts";
 
 /**
+ * ServerTimeResponse
  * @description Successful Response
 */
 export type GetServerTimeDemoTimeGet200 = ServerTimeResponse;

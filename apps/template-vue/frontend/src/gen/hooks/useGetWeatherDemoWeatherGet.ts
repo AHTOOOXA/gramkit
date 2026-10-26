@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetWeatherDemoWeatherGetQueryResponse, GetWeatherDemoWeatherGetQueryParams, GetWeatherDemoWeatherGet422 } from "../models/demoController/GetWeatherDemoWeatherGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { getWeatherDemoWeatherGet } from "../client/getWeatherDemoWeatherGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,16 +17,17 @@ export const getWeatherDemoWeatherGetQueryKey = (params?: MaybeRefOrGetter<GetWe
 
 export type GetWeatherDemoWeatherGetQueryKey = ReturnType<typeof getWeatherDemoWeatherGetQueryKey>
 
-export function getWeatherDemoWeatherGetQueryOptions(params?: MaybeRefOrGetter<GetWeatherDemoWeatherGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getWeatherDemoWeatherGetQueryKey(params)
-  return queryOptions<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, GetWeatherDemoWeatherGetQueryResponse, typeof queryKey>({
+export function getWeatherDemoWeatherGetQueryOptions(params?: MaybeRefOrGetter<GetWeatherDemoWeatherGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getWeatherDemoWeatherGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = getWeatherDemoWeatherGetQueryKey(params)
+        return queryOptions<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, GetWeatherDemoWeatherGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getWeatherDemoWeatherGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -37,21 +37,23 @@ export function getWeatherDemoWeatherGetQueryOptions(params?: MaybeRefOrGetter<G
  */
 export function useGetWeatherDemoWeatherGet<TData = GetWeatherDemoWeatherGetQueryResponse, TQueryData = GetWeatherDemoWeatherGetQueryResponse, TQueryKey extends QueryKey = GetWeatherDemoWeatherGetQueryKey>(params?: MaybeRefOrGetter<GetWeatherDemoWeatherGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getWeatherDemoWeatherGetQueryKey(params)
 
-  const query = useQuery({
-   ...getWeatherDemoWeatherGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<GetWeatherDemoWeatherGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getWeatherDemoWeatherGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getWeatherDemoWeatherGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetWeatherDemoWeatherGetQueryResponse, ResponseErrorConfig<GetWeatherDemoWeatherGet422>, TData, GetWeatherDemoWeatherGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<GetWeatherDemoWeatherGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

@@ -8,6 +8,7 @@
 import type { LogoutResponse } from "../LogoutResponse.ts";
 
 /**
+ * LogoutResponse
  * @description Successful Response
 */
 export type LogoutAuthLogoutPost200 = LogoutResponse;

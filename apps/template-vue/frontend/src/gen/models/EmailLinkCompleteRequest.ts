@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLinkCompleteRequest
  * @description Request to complete email linking.
 */
 export type EmailLinkCompleteRequest = {

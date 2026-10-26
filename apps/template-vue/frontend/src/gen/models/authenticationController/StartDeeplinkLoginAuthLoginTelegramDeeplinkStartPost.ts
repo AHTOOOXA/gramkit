@@ -8,6 +8,7 @@
 import type { DeeplinkLoginStartResponse } from "../DeeplinkLoginStartResponse.ts";
 
 /**
+ * DeeplinkLoginStartResponse
  * @description Successful Response
 */
 export type StartDeeplinkLoginAuthLoginTelegramDeeplinkStartPost200 = DeeplinkLoginStartResponse;

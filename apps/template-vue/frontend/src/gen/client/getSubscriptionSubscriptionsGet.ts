@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetSubscriptionSubscriptionsGetQueryResponse } from "../models/subscriptionsController/GetSubscriptionSubscriptionsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetSubscriptionSubscriptionsGetUrl() {
-  const res = { method: 'GET', url: `/subscriptions/` as const }  
+  const res = { method: 'GET', url: `/subscriptions/` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetSubscriptionSubscriptionsGetUrl() {
  * @summary Get Subscription
  * {@link /subscriptions/}
  */
-export async function getSubscriptionSubscriptionsGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetSubscriptionSubscriptionsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetSubscriptionSubscriptionsGetUrl().url.toString(), ... requestConfig })  
+export async function getSubscriptionSubscriptionsGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetSubscriptionSubscriptionsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetSubscriptionSubscriptionsGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

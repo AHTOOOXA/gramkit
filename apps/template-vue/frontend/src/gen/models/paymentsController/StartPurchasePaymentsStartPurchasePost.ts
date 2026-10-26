@@ -10,15 +10,20 @@ import type { StartPurchaseRequest } from "../StartPurchaseRequest.ts";
 import type { StartPurchaseResponse } from "../StartPurchaseResponse.ts";
 
 /**
+ * StartPurchaseResponse
  * @description Successful Response
 */
 export type StartPurchasePaymentsStartPurchasePost200 = StartPurchaseResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type StartPurchasePaymentsStartPurchasePost422 = HTTPValidationError;
 
+/**
+ * StartPurchaseRequest
+*/
 export type StartPurchasePaymentsStartPurchasePostMutationRequest = StartPurchaseRequest;
 
 export type StartPurchasePaymentsStartPurchasePostMutationResponse = StartPurchasePaymentsStartPurchasePost200;

@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetCurrentUserUsersMeGetQueryResponse } from "../models/usersController/GetCurrentUserUsersMeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { getCurrentUserUsersMeGet } from "../client/getCurrentUserUsersMeGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,16 +16,17 @@ export const getCurrentUserUsersMeGetQueryKey = () => [{ url: '/users/me' }] as 
 
 export type GetCurrentUserUsersMeGetQueryKey = ReturnType<typeof getCurrentUserUsersMeGetQueryKey>
 
-export function getCurrentUserUsersMeGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getCurrentUserUsersMeGetQueryKey()
-  return queryOptions<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, GetCurrentUserUsersMeGetQueryResponse, typeof queryKey>({
+export function getCurrentUserUsersMeGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getCurrentUserUsersMeGet(toValue(config))
-   },
-  })
+        const queryKey = getCurrentUserUsersMeGetQueryKey()
+        return queryOptions<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, GetCurrentUserUsersMeGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getCurrentUserUsersMeGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -36,21 +36,23 @@ export function getCurrentUserUsersMeGetQueryOptions(config: Partial<RequestConf
  */
 export function useGetCurrentUserUsersMeGet<TData = GetCurrentUserUsersMeGetQueryResponse, TQueryData = GetCurrentUserUsersMeGetQueryResponse, TQueryKey extends QueryKey = GetCurrentUserUsersMeGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getCurrentUserUsersMeGetQueryKey()
 
-  const query = useQuery({
-   ...getCurrentUserUsersMeGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getCurrentUserUsersMeGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getCurrentUserUsersMeGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, TData, GetCurrentUserUsersMeGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

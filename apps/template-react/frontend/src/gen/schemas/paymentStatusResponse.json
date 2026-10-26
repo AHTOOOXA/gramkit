@@ -1,0 +1,1 @@
+{"properties":{"payment_id":{"type":"string","title":"Payment Id"},"status":{"type":"string","enum":["CREATED","WAITING_FOR_ACTION","SUCCEEDED","FAILED","CANCELED","REFUNDED"],"title":"PaymentStatus","x-readme-ref-name":"PaymentStatus"}},"type":"object","required":["payment_id","status"],"title":"PaymentStatusResponse","x-readme-ref-name":"PaymentStatusResponse"}

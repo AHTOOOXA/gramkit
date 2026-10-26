@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetServerTimeDemoTimeGetQueryResponse } from "../models/demoController/GetServerTimeDemoTimeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import { getServerTimeDemoTimeGet } from "../client/getServerTimeDemoTimeGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
 import { toValue } from "vue";
@@ -17,40 +16,44 @@ export const getServerTimeDemoTimeGetQueryKey = () => [{ url: '/demo/time' }] as
 
 export type GetServerTimeDemoTimeGetQueryKey = ReturnType<typeof getServerTimeDemoTimeGetQueryKey>
 
-export function getServerTimeDemoTimeGetQueryOptions(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getServerTimeDemoTimeGetQueryKey()
-  return queryOptions<GetServerTimeDemoTimeGetQueryResponse, ResponseErrorConfig<Error>, GetServerTimeDemoTimeGetQueryResponse, typeof queryKey>({
+export function getServerTimeDemoTimeGetQueryOptions(config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getServerTimeDemoTimeGet(toValue(config))
-   },
-  })
+        const queryKey = getServerTimeDemoTimeGetQueryKey()
+        return queryOptions<GetServerTimeDemoTimeGetQueryResponse, ResponseErrorConfig<Error>, GetServerTimeDemoTimeGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getServerTimeDemoTimeGet({ ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Server time endpoint for polling demo.Returns current server timestamp.
+ * @description Server time endpoint for polling demo.
+ * Returns current server timestamp.
  * @summary Get Server Time
  * {@link /demo/time}
  */
 export function useGetServerTimeDemoTimeGet<TData = GetServerTimeDemoTimeGetQueryResponse, TQueryData = GetServerTimeDemoTimeGetQueryResponse, TQueryKey extends QueryKey = GetServerTimeDemoTimeGetQueryKey>(options: 
 {
-  query?: Partial<QueryObserverOptions<GetServerTimeDemoTimeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetServerTimeDemoTimeGetQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getServerTimeDemoTimeGetQueryKey()
 
-  const query = useQuery({
-   ...getServerTimeDemoTimeGetQueryOptions(config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getServerTimeDemoTimeGetQueryKey()
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getServerTimeDemoTimeGetQueryOptions(config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetServerTimeDemoTimeGetQueryResponse, ResponseErrorConfig<Error>, TData, GetServerTimeDemoTimeGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

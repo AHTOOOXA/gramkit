@@ -5,7 +5,11 @@
 * Do not edit manually.
 */
 
+import type { ProductPriceSchema } from "./ProductPriceSchema.ts";
 
+/**
+ * ProductSchema
+*/
 export type ProductSchema = {
     /**
      * @type string
@@ -31,4 +35,8 @@ export type ProductSchema = {
      * @type boolean
     */
     is_recurring: boolean;
+    /**
+     * @type array | undefined
+    */
+    prices?: ProductPriceSchema[];
 };

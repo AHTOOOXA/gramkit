@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { YookassaWebhookYookassaWebhookPostMutationResponse } from "../models/undefinedController/YookassaWebhookYookassaWebhookPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { yookassaWebhookYookassaWebhookPost } from "../client/yookassaWebhookYookassaWebhookPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,32 @@ export const yookassaWebhookYookassaWebhookPostMutationKey = () => [{ url: '/yoo
 export type YookassaWebhookYookassaWebhookPostMutationKey = ReturnType<typeof yookassaWebhookYookassaWebhookPostMutationKey>
 
 /**
- * @description Webhook endpoint for YooKassa payment confirmations.Returns:    - 200 OK: Webhook processed successfully    - 400 Bad Request: Invalid JSON, missing fields, permanent business errors    - 500 Internal Error: Transient business errors, unknown errors    - 503 Service Unavailable: Infrastructure errors (DB, Redis)
+ * @description Webhook endpoint for YooKassa payment confirmations.
+ * Returns:
+ * - 200 OK: Webhook processed successfully
+ * - 400 Bad Request: Invalid JSON, missing fields, permanent business errors
+ * - 500 Internal Error: Transient business errors, unknown errors
+ * - 503 Service Unavailable: Infrastructure errors (DB, Redis)
  * @summary Yookassa Webhook
  * {@link /yookassa/webhook}
  */
 export function useYookassaWebhookYookassaWebhookPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<YookassaWebhookYookassaWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? yookassaWebhookYookassaWebhookPostMutationKey()
 
-  return useMutation<YookassaWebhookYookassaWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
-    mutationFn: async() => {
-      return yookassaWebhookYookassaWebhookPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? yookassaWebhookYookassaWebhookPostMutationKey()
+
+          return useMutation<YookassaWebhookYookassaWebhookPostMutationResponse, ResponseErrorConfig<Error>, void, TContext>({
+            mutationFn: async() => {
+              return yookassaWebhookYookassaWebhookPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLoginRequest
  * @description Request to login with email or username.
 */
 export type EmailLoginRequest = {

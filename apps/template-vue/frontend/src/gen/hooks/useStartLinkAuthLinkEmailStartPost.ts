@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartLinkAuthLinkEmailStartPostMutationRequest, StartLinkAuthLinkEmailStartPostMutationResponse, StartLinkAuthLinkEmailStartPost401, StartLinkAuthLinkEmailStartPost409, StartLinkAuthLinkEmailStartPost422, StartLinkAuthLinkEmailStartPost429 } from "../models/emailAuthController/StartLinkAuthLinkEmailStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { startLinkAuthLinkEmailStartPost } from "../client/startLinkAuthLinkEmailStartPost.ts";
@@ -18,25 +17,28 @@ export const startLinkAuthLinkEmailStartPostMutationKey = () => [{ url: '/auth/l
 export type StartLinkAuthLinkEmailStartPostMutationKey = ReturnType<typeof startLinkAuthLinkEmailStartPostMutationKey>
 
 /**
- * @description Start email linking flow for authenticated Telegram users.Sends verification code to provided email address.
+ * @description Start email linking flow for authenticated Telegram users.
+ * Sends verification code to provided email address.
  * @summary Start Link
  * {@link /auth/link/email/start}
  */
 export function useStartLinkAuthLinkEmailStartPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartLinkAuthLinkEmailStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkEmailStartPost401 | StartLinkAuthLinkEmailStartPost409 | StartLinkAuthLinkEmailStartPost422 | StartLinkAuthLinkEmailStartPost429>, {data: MaybeRefOrGetter<StartLinkAuthLinkEmailStartPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<StartLinkAuthLinkEmailStartPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<StartLinkAuthLinkEmailStartPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startLinkAuthLinkEmailStartPostMutationKey()
 
-  return useMutation<StartLinkAuthLinkEmailStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkEmailStartPost401 | StartLinkAuthLinkEmailStartPost409 | StartLinkAuthLinkEmailStartPost422 | StartLinkAuthLinkEmailStartPost429>, {data: StartLinkAuthLinkEmailStartPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return startLinkAuthLinkEmailStartPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startLinkAuthLinkEmailStartPostMutationKey()
+
+          return useMutation<StartLinkAuthLinkEmailStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkEmailStartPost401 | StartLinkAuthLinkEmailStartPost409 | StartLinkAuthLinkEmailStartPost422 | StartLinkAuthLinkEmailStartPost429>, {data: StartLinkAuthLinkEmailStartPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return startLinkAuthLinkEmailStartPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

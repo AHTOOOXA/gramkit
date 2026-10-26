@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetFriendsFriendsGetQueryResponse } from "../models/undefinedController/GetFriendsFriendsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetFriendsFriendsGetUrl() {
-  const res = { method: 'GET', url: `/friends` as const }  
+  const res = { method: 'GET', url: `/friends` as const }
   return res
 }
 
@@ -18,9 +18,11 @@ function getGetFriendsFriendsGetUrl() {
  * @summary Get Friends
  * {@link /friends}
  */
-export async function getFriendsFriendsGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetFriendsFriendsGetUrl().url.toString(), ... requestConfig })  
+export async function getFriendsFriendsGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetFriendsFriendsGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetFriendsFriendsGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

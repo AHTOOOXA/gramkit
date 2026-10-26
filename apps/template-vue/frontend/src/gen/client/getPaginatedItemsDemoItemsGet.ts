@@ -7,21 +7,27 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetPaginatedItemsDemoItemsGetQueryResponse, GetPaginatedItemsDemoItemsGetQueryParams, GetPaginatedItemsDemoItemsGet422 } from "../models/demoController/GetPaginatedItemsDemoItemsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetPaginatedItemsDemoItemsGetUrl() {
-  const res = { method: 'GET', url: `/demo/items` as const }  
+  const res = { method: 'GET', url: `/demo/items` as const }
   return res
 }
 
 /**
- * @description Paginated items endpoint for infinite scroll demo.Args:    cursor: Starting index (default 0)    limit: Items per page (1-50, default 10)    delay_ms: Artificial delay in milliseconds (0-3000, default 500)
+ * @description Paginated items endpoint for infinite scroll demo.
+ * Args:
+ * cursor: Starting index (default 0)
+ * limit: Items per page (1-50, default 10)
+ * delay_ms: Artificial delay in milliseconds (0-3000, default 500)
  * @summary Get Paginated Items
  * {@link /demo/items}
  */
-export async function getPaginatedItemsDemoItemsGet(params?: GetPaginatedItemsDemoItemsGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, unknown>({ method : "GET", url : getGetPaginatedItemsDemoItemsGetUrl().url.toString(), params, ... requestConfig })  
+export async function getPaginatedItemsDemoItemsGet(params?: GetPaginatedItemsDemoItemsGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetPaginatedItemsDemoItemsGetQueryResponse, ResponseErrorConfig<GetPaginatedItemsDemoItemsGet422>, unknown>({ method : "GET", url : getGetPaginatedItemsDemoItemsGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

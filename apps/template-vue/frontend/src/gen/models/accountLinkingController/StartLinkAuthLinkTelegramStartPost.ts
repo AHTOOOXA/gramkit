@@ -9,21 +9,25 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { TelegramLinkStartResponse } from "../TelegramLinkStartResponse.ts";
 
 /**
+ * TelegramLinkStartResponse
  * @description Successful Response
 */
 export type StartLinkAuthLinkTelegramStartPost200 = TelegramLinkStartResponse;
 
 /**
+ * ErrorResponse
  * @description Not authenticated
 */
 export type StartLinkAuthLinkTelegramStartPost401 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Already linked
 */
 export type StartLinkAuthLinkTelegramStartPost409 = ErrorResponse;
 
 /**
+ * ErrorResponse
  * @description Rate limited
 */
 export type StartLinkAuthLinkTelegramStartPost429 = ErrorResponse;

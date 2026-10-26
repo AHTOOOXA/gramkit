@@ -1,4 +1,8 @@
-"""Core admin command handlers for Telegram bot."""
+"""Core admin command handlers for Telegram bot: ``/backup`` and ``/stats``.
+
+Apps include this router AFTER their own admin router, so an app's own handler for the same
+command wins.
+"""
 
 from __future__ import annotations
 
@@ -38,3 +42,20 @@ async def backup_command(message: types.Message, user: UserSchema, services: Cor
     except Exception as e:
         logger.error(f"Failed to queue backup job: {e}", exc_info=True)
         await message.answer(f"❌ Failed to start backup: {str(e)}")
+
+
+@router.message(Command("stats"))
+async def stats_command(message: types.Message, user: UserSchema, services: CoreRequestsService):
+    """Handler for /stats command. Sends the daily digest (so far) to the requesting owner only."""
+    if not user.telegram_id or user.telegram_id not in settings.rbac.owner_ids:
+        await message.answer("You don't have permission to use this command")
+        return
+
+    try:
+        digest = await services.statistics.get_daily_digest()
+        text, rich_html = services.statistics.format_daily_digest(digest)
+        # Loud and only to the requester: they asked for it.
+        await services.messages.admin_broadcast(text, rich_html=rich_html, chat_ids=[user.telegram_id])
+    except Exception as e:
+        logger.error(f"Failed to manually generate daily statistics: {e}", exc_info=True)
+        await message.answer(f"❌ Failed to generate statistics: {e}", parse_mode=None)

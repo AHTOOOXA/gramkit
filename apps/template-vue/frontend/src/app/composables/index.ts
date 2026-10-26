@@ -10,6 +10,7 @@ export { useLanguageService, type SupportedLocale } from './useLanguageService';
 export { useTelegramLink } from './useTelegramLink';
 export { useMediaQuery } from './useMediaQuery';
 export { useMobile } from './useMobile';
+export { useSeenFeatures, useReveal, useWhatsNew, useNudge } from './useSeenFeatures';
 
 // Navigation config
 export {

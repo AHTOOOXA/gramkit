@@ -723,5 +723,384 @@
         "error": "Failed to link email. Please try again."
       }
     }
+  },
+  "admin": {
+    "nav": {
+      "title": "Admin Panel",
+      "overview": "Overview",
+      "users": "Users",
+      "analytics": "Analytics",
+      "auditLog": "Audit log",
+      "tasks": "Tasks",
+      "broadcasts": "Broadcasts",
+      "marketing": "Marketing"
+    },
+    "state": {
+      "error": "Failed to load data.",
+      "retry": "Retry",
+      "empty": "Nothing here yet.",
+      "forbidden": "You don't have access to this page."
+    },
+    "overview": {
+      "degraded": "Some metrics are unavailable right now; showing partial data.",
+      "sections": {
+        "users": "Users",
+        "subscriptions": "Subscriptions",
+        "revenue": "Revenue",
+        "productSales": "Product sales"
+      },
+      "kpi": {
+        "totalUsers": "Total users",
+        "newToday": "New today",
+        "newThisWeek": "New this week",
+        "newThisMonth": "New this month",
+        "dau": "DAU",
+        "wau": "WAU",
+        "mau": "MAU",
+        "activeSubscribers": "Active subscribers",
+        "revenueAlltime": "Revenue ({currency})",
+        "productSalesAlltime": "Sold: {product}"
+      },
+      "caveats": {
+        "partialDay": "\"Today\" is a partial, in-progress day (anchored at 2 AM).",
+        "activeProxy": "Approximate: derived from users' last-activity timestamp, not true sessions."
+      }
+    },
+    "analytics": {
+      "tabs": {
+        "revenue": "Revenue",
+        "subscriptions": "Subscriptions"
+      },
+      "revenue": {
+        "alltime": "Revenue ({currency}, all-time)",
+        "granularity": "Granularity",
+        "day": "Day",
+        "week": "Week",
+        "cash": "Cash revenue (per currency)",
+        "nonCash": "Non-cash (Stars / Gift)",
+        "nonCashCaveat": "Telegram Stars (XTR) and gifts are non-cash — shown separately, never folded into cash revenue.",
+        "kpisTitle": "Paying users & ARPPU (cash, per currency)",
+        "payingUsers": "Paying users",
+        "arppu": "ARPPU ({currency})",
+        "avgPayment": "Avg payment ({currency})",
+        "noPayingUsers": "No paying users yet — ARPPU is undefined.",
+        "growthTitle": "Revenue this period vs last (per currency)",
+        "thisMonth": "This month",
+        "thisWeek": "This week (7d)",
+        "noPrior": "No revenue in the prior window — growth is undefined."
+      },
+      "subscriptions": {
+        "trend": "Subscription trend (weekly)",
+        "new": "New",
+        "active": "Active",
+        "ended": "Ended",
+        "byStatus": "By status",
+        "gifted": "Gifted (total)",
+        "churn": "Churn by reason",
+        "healthTitle": "Subscription health (last 30 days)",
+        "activePaid": "Active paid",
+        "activeGifted": "Active gifted",
+        "giftedCaveat": "Comped GIFT subscriptions — non-cash.",
+        "churnRate": "Churn rate",
+        "churnCaveat": "Churned in the last {days} days ÷ active at the window start.",
+        "churnNoBase": "Nobody was active at the window start — churn rate is undefined.",
+        "netNew": "Net-new",
+        "netNewCaveat": "New − ended over the last {days} days (can be negative)."
+      },
+      "mrr": {
+        "title": "MRR (monthly recurring revenue)",
+        "label": "MRR ({currency})",
+        "caveat": "From {count} active paid subscriptions, normalized to a monthly equivalent from product pricing.",
+        "excluded": "{count} active paid sub(s) excluded (unresolvable product/price)."
+      }
+    },
+    "table": {
+      "prev": "Prev",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}",
+      "totalRows": "{count, plural, one {# row} other {# rows}}",
+      "exportCsv": "Export CSV",
+      "sortBy": "Sort by",
+      "sortDir": "Toggle sort direction"
+    },
+    "filters": {
+      "searchPlaceholder": "Search…",
+      "dateFrom": "From",
+      "dateTo": "To"
+    },
+    "actions": {
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "auditLog": {
+      "description": "Audit trail of mutating admin and owner actions.",
+      "actionFilter": "Action",
+      "allActions": "All actions",
+      "columns": {
+        "action": "Action",
+        "actor": "Actor",
+        "target": "Target",
+        "date": "Date",
+        "detail": "Detail"
+      }
+    },
+    "tasks": {
+      "description": "Maintenance jobs that run inside the live server. Dry-run first; applying is owner-only and every run is in the audit log.",
+      "destructive": "changes data",
+      "dryRun": "Dry run",
+      "apply": "Apply",
+      "run": "Run",
+      "running": "Running…",
+      "dryRunFirst": "Run a dry run first",
+      "applyConfirmTitle": "Apply “{name}”?",
+      "applyConfirmDesc": "This changes data and can't be undone. Check the dry-run result first.",
+      "resultDry": "Dry run result",
+      "resultApplied": "Applied",
+      "resultRun": "Result",
+      "ownerOnly": "Only the owner can run tasks.",
+      "empty": "No tasks registered.",
+      "history": "Run history"
+    },
+    "broadcasts": {
+      "description": "Compose broadcasts, schedule them for the morning or evening slot, or send one to everyone now.",
+      "new": "New broadcast",
+      "backToList": "Back to broadcasts",
+      "activeTitle": "Active",
+      "completedTitle": "Completed",
+      "priority": "Priority",
+      "deadline": "Deadline",
+      "slotWarning": "More than one active broadcast shares a time slot ({slots}). Only the highest-priority broadcast in each slot is sent per cycle.",
+      "status": {
+        "active": "Active",
+        "completed": "Completed"
+      },
+      "slot": {
+        "morning": "Morning (10 AM)",
+        "evening": "Evening (7 PM)",
+        "both": "Both (morning + evening)"
+      },
+      "type": {
+        "text": "Text",
+        "photo": "Photo",
+        "video": "Video",
+        "animation": "GIF / Animation",
+        "document": "Document"
+      },
+      "stats": {
+        "notSentYet": "Not sent yet",
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "cycles": "Cycles",
+        "lastSent": "Last sent"
+      },
+      "actions": {
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "cancelDone": "Broadcast cancelled",
+        "cancelConfirmTitle": "Cancel this broadcast?",
+        "cancelConfirmDesc": "It will stop sending. This cannot be undone."
+      },
+      "preview": {
+        "title": "Preview",
+        "empty": "Your message will appear here",
+        "mediaPlaceholder": "[{type}]"
+      },
+      "composer": {
+        "newTitle": "New broadcast",
+        "editTitle": "Edit broadcast",
+        "messageType": "Message type",
+        "text": "Message text",
+        "caption": "Caption",
+        "textPlaceholder": "Write your broadcast message…",
+        "captionPlaceholder": "Optional caption…",
+        "htmlFormatting": "Message uses HTML formatting",
+        "htmlAutoHint": "Tip: HTML tags like '<b>', '<i>', '<a href>' are detected and rendered automatically.",
+        "media": "Media",
+        "upload": "Upload file",
+        "uploading": "Uploading…",
+        "uploaded": "Uploaded",
+        "uploadDone": "Media uploaded",
+        "keyboard": "Inline keyboard",
+        "keyboardNone": "No keyboard",
+        "keyboardMain": "Open app button",
+        "keyboardDaily": "Open-app button (daily-notification link)",
+        "buttonText": "Button text",
+        "buttonTextPlaceholder": "Open App",
+        "defaultButton": "Open App",
+        "dailyButton": "🚀 Open App",
+        "timeSlot": "Time slot",
+        "bothHint": "'Both' creates two independent broadcasts (one morning, one evening). Editing or cancelling affects only one.",
+        "deadline": "Deadline",
+        "priority": "Priority",
+        "targetingNote": "No audience targeting yet: a scheduled broadcast goes to every user whose local time reaches the slot (users who have opened the app at least once), and Send now goes to everyone who hasn't blocked the bot.",
+        "schedule": "Schedule",
+        "save": "Save",
+        "previewToSelf": "Preview to me",
+        "previewSent": "Preview sent to your chat",
+        "sendNow": "Send now to everyone",
+        "sentNow": "Broadcast queued for immediate delivery",
+        "sendNowConfirmTitle": "Send to ALL users now?",
+        "sendNowConfirmDesc": "This immediately blasts the message to every user. There is no undo.",
+        "savedCreate": "Broadcast scheduled",
+        "savedBoth": "Two broadcasts scheduled (morning + evening)",
+        "savedEdit": "Broadcast updated",
+        "errorNoText": "Text broadcast needs a message",
+        "errorNoMedia": "Upload a media file first",
+        "errorNoDeadline": "Set a deadline",
+        "previewFailed": "Telegram didn't deliver the preview. Check that you haven't blocked the bot."
+      },
+      "detail": {
+        "title": "Broadcast #{id}",
+        "content": "Message",
+        "schedule": "Schedule",
+        "created": "Created",
+        "keyboard": "Keyboard",
+        "delivery": "Delivery",
+        "deliveryNote": "Telegram reports no reads or clicks, so only sends are counted.",
+        "notFound": "Broadcast not found",
+        "back": "Back to broadcast"
+      }
+    },
+    "marketing": {
+      "description": "One code per placement. Create the link before it goes out — this shows how many people it brought and whether it paid back.",
+      "new": "New link",
+      "copied": "Link copied",
+      "saved": "Saved",
+      "showArchived": "Show archived",
+      "empty": "No links yet — create the first one.",
+      "retentionTitle": "After {days} d: {returned} of {eligible}",
+      "form": {
+        "code": "Code",
+        "codeHint": "Latin letters, digits and _, e.g. partner_post3. Can't be changed later.",
+        "channel": "Where it ran",
+        "optional": "· optional",
+        "price": "Price, ₽",
+        "publishedOn": "Publish date",
+        "paybackHint": "Price and date are needed to count the 14-day payback from the publish date.",
+        "editTitle": "Link {code}",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "columns": {
+        "code": "Code",
+        "start": "Date",
+        "price": "Price",
+        "users": "Users",
+        "activated": "Active",
+        "returned": "Returned",
+        "payers": "Paid",
+        "cac": "CAC",
+        "revenueD14": "Revenue 14d",
+        "revenue": "Revenue",
+        "purchases": "Purchases",
+        "ltv": "LTV",
+        "roas": "Payback",
+        "actions": ""
+      },
+      "hints": {
+        "start": "The day the post went out. Greyed: the first sign-up, when no publish date is set.",
+        "activated": "Share of users who did something in the app (by default: opened the Mini App, so Mini App links sit near 100% and the number says most for bot links). Hover the number for the count.",
+        "returned": "Share who came back after 1 · 7 · 30 days. Only users who signed up long enough ago count; '—' means none yet. Sorts by 7 days.",
+        "payers": "Share of users who paid at least once.",
+        "cac": "What one user cost: price ÷ users.",
+        "revenueD14": "Revenue in the first 14 days from the date — how fast the post pays off.",
+        "revenue": "All revenue from the code's users, net of refunds and gifts. Stars and dollars converted to rubles at a rough rate.",
+        "purchases": "The part of revenue from purchases, without subscription auto-renewals. The gap to Revenue is renewals.",
+        "ltv": "Revenue per user: revenue ÷ users.",
+        "roas": "Revenue ÷ price: ×1 means the price is back. The tag: how many days it took; 'running' — not yet, within 14 days; 'not paid back' — not within 14 days."
+      },
+      "badge": {
+        "archived": "archived"
+      },
+      "payback": {
+        "paid_back": "in {days} d",
+        "in_progress": "running",
+        "not_paid_back": "not paid back"
+      },
+      "actions": {
+        "copyApp": "Copy the Mini App link",
+        "copyBot": "Copy the bot link",
+        "edit": "Edit",
+        "archive": "Archive",
+        "unarchive": "Unarchive",
+        "menu": "Actions"
+      }
+    },
+    "users": {
+      "description": "Search and manage users. Click a row to open the full profile.",
+      "backToList": "Back to users",
+      "roleFilter": "Role",
+      "typeFilter": "Type",
+      "allRoles": "All roles",
+      "allTypes": "All types",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "telegram": "Telegram ID",
+        "joined": "Joined"
+      },
+      "role": {
+        "user": "User",
+        "admin": "Admin",
+        "owner": "Owner"
+      },
+      "type": {
+        "registered": "Registered",
+        "guest": "Guest"
+      },
+      "profile": {
+        "telegram": "Telegram",
+        "email": "Email",
+        "joined": "Joined",
+        "subActive": "Subscribed"
+      },
+      "tabs": {
+        "payments": "Payments",
+        "subscriptions": "Subscriptions"
+      },
+      "payments": {
+        "date": "Date",
+        "product": "Product",
+        "amount": "Amount",
+        "status": "Status",
+        "menu": "Payment actions",
+        "refund": "Refund Stars",
+        "refundConfirmTitle": "Refund {amount} ⭐?",
+        "refundConfirmDesc": "The Stars go back to the user and the paid period is taken back (renewals at Telegram stop).",
+        "refundDone": "Stars refunded"
+      },
+      "subscriptions": {
+        "product": "Product",
+        "status": "Status",
+        "start": "Start",
+        "end": "End"
+      },
+      "actions": {
+        "title": "Actions",
+        "gift": "Gift subscription",
+        "giftDuration": "Duration",
+        "durationWeek": "Week",
+        "durationMonth": "Month",
+        "durationYear": "Year",
+        "durationMax": "Max (5y)",
+        "revoke": "Revoke subscription",
+        "role": "Role",
+        "changeRole": "Change role",
+        "reset": "Reset user",
+        "configOwnerWarning": "This user's Telegram ID is in RBAC__OWNER_IDS — a role change may revert to owner on the next restart.",
+        "giftConfirmTitle": "Gift this subscription?",
+        "giftConfirmDesc": "The user gets the subscription right away; it ends on its own after the chosen period.",
+        "revokeConfirmTitle": "Revoke the active subscription?",
+        "revokeConfirmDesc": "Renewal stops. The user keeps access until the end of the paid period.",
+        "roleConfirmTitle": "Change this role?",
+        "roleConfirmDesc": "This changes what the user can access across the app.",
+        "resetConfirmTitle": "Reset (hard-delete) this user?",
+        "resetConfirmDesc": "This permanently deletes the user and all related data. This cannot be undone.",
+        "giftDone": "Subscription gifted.",
+        "revokeDone": "Subscription revoked.",
+        "roleDone": "Role changed.",
+        "resetDone": "User reset."
+      }
+    }
   }
 }

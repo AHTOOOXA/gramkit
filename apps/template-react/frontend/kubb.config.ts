@@ -10,8 +10,9 @@ export default defineConfig({
 
   // Input OpenAPI specification
   input: {
-    // Use local API endpoint (backend must be running)
-    path: 'https://local.gramkit.dev/api/template-react/openapi.json',
+    // Local backend (make up APP=template-react → :8003). Without a stack, dump app.openapi()
+    // to a file and run `OPENAPI_PATH=<file> pnpm generate`.
+    path: process.env.OPENAPI_PATH ?? 'http://localhost:8003/openapi.json',
   },
 
   // Output directory for generated files

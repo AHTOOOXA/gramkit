@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartPurchasePaymentsStartPurchasePostMutationRequest, StartPurchasePaymentsStartPurchasePostMutationResponse, StartPurchasePaymentsStartPurchasePost422 } from "../models/paymentsController/StartPurchasePaymentsStartPurchasePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { startPurchasePaymentsStartPurchasePost } from "../client/startPurchasePaymentsStartPurchasePost.ts";
@@ -18,25 +17,29 @@ export const startPurchasePaymentsStartPurchasePostMutationKey = () => [{ url: '
 export type StartPurchasePaymentsStartPurchasePostMutationKey = ReturnType<typeof startPurchasePaymentsStartPurchasePostMutationKey>
 
 /**
- * @description Start a payment for a product.Creates a payment and returns a confirmation URL for the user to complete payment.Supports multiple payment providers (YooKassa, Telegram Stars, etc).
+ * @description Start a payment for a product.
+ * Creates a payment and returns a confirmation URL for the user to complete payment.
+ * Supports multiple payment providers (YooKassa, Telegram Stars, etc).
  * @summary Start Purchase
  * {@link /payments/start_purchase}
  */
 export function useStartPurchasePaymentsStartPurchasePost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartPurchasePaymentsStartPurchasePostMutationResponse, ResponseErrorConfig<StartPurchasePaymentsStartPurchasePost422>, {data: MaybeRefOrGetter<StartPurchasePaymentsStartPurchasePostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<StartPurchasePaymentsStartPurchasePostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<StartPurchasePaymentsStartPurchasePostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startPurchasePaymentsStartPurchasePostMutationKey()
 
-  return useMutation<StartPurchasePaymentsStartPurchasePostMutationResponse, ResponseErrorConfig<StartPurchasePaymentsStartPurchasePost422>, {data: StartPurchasePaymentsStartPurchasePostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return startPurchasePaymentsStartPurchasePost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startPurchasePaymentsStartPurchasePostMutationKey()
+
+          return useMutation<StartPurchasePaymentsStartPurchasePostMutationResponse, ResponseErrorConfig<StartPurchasePaymentsStartPurchasePost422>, {data: StartPurchasePaymentsStartPurchasePostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return startPurchasePaymentsStartPurchasePost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

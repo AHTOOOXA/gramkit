@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest, SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, SendVerificationCodeAuthLoginTelegramCodeSendPost422 } from "../models/authenticationController/SendVerificationCodeAuthLoginTelegramCodeSendPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getSendVerificationCodeAuthLoginTelegramCodeSendPostUrl() {
-  const res = { method: 'POST', url: `/auth/login/telegram/code/send` as const }  
+  const res = { method: 'POST', url: `/auth/login/telegram/code/send` as const }
   return res
 }
 
@@ -19,11 +19,11 @@ function getSendVerificationCodeAuthLoginTelegramCodeSendPostUrl() {
  * @summary Send Verification Code
  * {@link /auth/login/telegram/code/send}
  */
-export async function sendVerificationCodeAuthLoginTelegramCodeSendPost(data: SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest, config: Partial<RequestConfig<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, ResponseErrorConfig<SendVerificationCodeAuthLoginTelegramCodeSendPost422>, SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>({ method : "POST", url : getSendVerificationCodeAuthLoginTelegramCodeSendPostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function sendVerificationCodeAuthLoginTelegramCodeSendPost(data: SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest, config: Partial<RequestConfig<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse, ResponseErrorConfig<SendVerificationCodeAuthLoginTelegramCodeSendPost422>, SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest>({ method : "POST", url : getSendVerificationCodeAuthLoginTelegramCodeSendPostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

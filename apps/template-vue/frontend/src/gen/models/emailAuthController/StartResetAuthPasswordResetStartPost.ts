@@ -11,25 +11,32 @@ import type { PasswordResetStartRequest } from "../PasswordResetStartRequest.ts"
 import type { PasswordResetStartResponse } from "../PasswordResetStartResponse.ts";
 
 /**
+ * PasswordResetStartResponse
  * @description Successful Response
 */
 export type StartResetAuthPasswordResetStartPost200 = PasswordResetStartResponse;
 
 /**
+ * ErrorResponse
  * @description Email not found
 */
 export type StartResetAuthPasswordResetStartPost401 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type StartResetAuthPasswordResetStartPost422 = HTTPValidationError;
 
 /**
+ * ErrorResponse
  * @description Rate limited
 */
 export type StartResetAuthPasswordResetStartPost429 = ErrorResponse;
 
+/**
+ * PasswordResetStartRequest
+*/
 export type StartResetAuthPasswordResetStartPostMutationRequest = PasswordResetStartRequest;
 
 export type StartResetAuthPasswordResetStartPostMutationResponse = StartResetAuthPasswordResetStartPost200;

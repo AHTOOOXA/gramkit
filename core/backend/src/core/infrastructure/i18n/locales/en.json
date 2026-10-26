@@ -33,6 +33,33 @@
       "loading": "Loading...",
       "success": "Success!",
       "failed": "Failed"
+    },
+    "admin": {
+      "broadcasts": {
+        "done": "✅ Broadcast complete!\nSuccessfully delivered to {sent} out of {total} users ({rate}% success rate).",
+        "failed": "❌ Broadcast failed: {error}\n\nPlease check logs for details.",
+        "stopped": "⚠️ Broadcast stopped partway: delivered to {sent} out of {total} users.\nIf the worker restarts it, only the rest get it. A new send goes to everyone again.",
+        "open_app": "Open App"
+      },
+      "digest": {
+        "day": "Day",
+        "week": "7d",
+        "delta": "Δ",
+        "so_far": " (so far)",
+        "revenue": "Revenue",
+        "new_users": "New users",
+        "purchases": "Purchases",
+        "renewals": "Renewals",
+        "expired": "Expired",
+        "users_line": "👥 DAU {dau} · WAU {wau} · MAU {mau}",
+        "active_subs": "💎 {count} active subs",
+        "turned_off": " · {count} turned off auto-renew",
+        "warn_no_revenue": "No revenue in 7 days (there was some the week before)",
+        "warn_past_due_one": "{count} subscription past due — revenue at risk",
+        "warn_past_due_other": "{count} subscriptions past due — revenue at risk",
+        "footnote": "#digest · Δ = last 7 days vs the 7 days before",
+        "failed": "❌ Failed to gather statistics:"
+      }
     }
   }
 }

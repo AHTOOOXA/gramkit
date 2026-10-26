@@ -71,11 +71,15 @@ Add your own repositories in `src/app/infrastructure/database/repo/` and expose 
 - `messages` - Message queueing and broadcasting
 - `start` - Bot startup and initialization
 - `worker` - Background job management
+- `statistics` - Admin Overview snapshot and the daily owner digest (`/stats`, the 01:55 UTC job)
+- `analytics` - Admin money analytics (revenue, subscriptions, MRR)
+
+Add your own numbers to the Overview and the digest in `src/app/services/admin_metrics.py`
+(`register_overview_card` / `register_digest_row`).
 
 ### App Services - App-specific
 
 - `balance` - Balance operations (extends core)
-- `statistics` - Analytics and reporting
 - `notifications` - User notifications
 
 Add your own services in `src/app/services/` and expose them on `RequestsService`.

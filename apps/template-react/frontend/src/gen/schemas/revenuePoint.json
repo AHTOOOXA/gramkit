@@ -1,0 +1,1 @@
+{"properties":{"bucket":{"type":"string","title":"Bucket"},"amount":{"type":"number","title":"Amount"},"count":{"type":"integer","title":"Count"}},"type":"object","required":["bucket","amount","count"],"title":"RevenuePoint","description":"One bucket of revenue for a single (currency, provider) series.","x-readme-ref-name":"RevenuePoint"}

@@ -7,6 +7,7 @@
 
 
 /**
+ * ProtectedActionResponse
  * @description Response from protected action.
 */
 export type ProtectedActionResponse = {

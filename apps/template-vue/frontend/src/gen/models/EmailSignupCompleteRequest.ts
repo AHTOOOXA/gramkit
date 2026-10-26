@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailSignupCompleteRequest
  * @description Request to complete email signup.
 */
 export type EmailSignupCompleteRequest = {

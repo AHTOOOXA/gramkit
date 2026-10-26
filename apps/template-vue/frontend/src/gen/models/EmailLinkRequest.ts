@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLinkRequest
  * @description Request to start email linking for Telegram users.
 */
 export type EmailLinkRequest = {

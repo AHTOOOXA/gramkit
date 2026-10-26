@@ -11,25 +11,32 @@ import type { ErrorResponse } from "../ErrorResponse.ts";
 import type { HTTPValidationError } from "../HTTPValidationError.ts";
 
 /**
+ * EmailLoginResponse
  * @description Successful Response
 */
 export type LoginAuthLoginEmailPost200 = EmailLoginResponse;
 
 /**
+ * ErrorResponse
  * @description Invalid credentials
 */
 export type LoginAuthLoginEmailPost401 = ErrorResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type LoginAuthLoginEmailPost422 = HTTPValidationError;
 
 /**
+ * ErrorResponse
  * @description Account locked
 */
 export type LoginAuthLoginEmailPost423 = ErrorResponse;
 
+/**
+ * EmailLoginRequest
+*/
 export type LoginAuthLoginEmailPostMutationRequest = EmailLoginRequest;
 
 export type LoginAuthLoginEmailPostMutationResponse = LoginAuthLoginEmailPost200;

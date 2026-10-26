@@ -5,12 +5,11 @@
 * Do not edit manually.
 */
 
-import type { InviteResponse } from "./InviteResponse.ts";
 
 /**
  * @description Successful Response
 */
-export type CreateInviteCreateInviteGet200 = InviteResponse;
+export type CreateInviteCreateInviteGet200 = string;
 
 export type CreateInviteCreateInviteGetQueryResponse = CreateInviteCreateInviteGet200;
 

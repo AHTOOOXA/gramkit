@@ -24,11 +24,13 @@ export type GetStockDemoStockGetQueryParams = {
 };
 
 /**
+ * StockResponse
  * @description Successful Response
 */
 export type GetStockDemoStockGet200 = StockResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type GetStockDemoStockGet422 = HTTPValidationError;

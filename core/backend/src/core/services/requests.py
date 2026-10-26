@@ -9,13 +9,20 @@ from arq import ArqRedis
 
 from core.domain.products import ProductCatalog
 from core.infrastructure.database.repo.requests import CoreRequestsRepo
+from core.services.admin import AdminService
+from core.services.admin_tasks import AdminTasksService
+from core.services.analytics import AnalyticsService
+from core.services.audit_log import AuditLogService
 from core.services.auth import AuthService
+from core.services.broadcasts import BroadcastsService
 from core.services.groups import GroupService
 from core.services.invites import InvitesService
+from core.services.marketing_links import MarketingLinksConfig, MarketingLinksService
 from core.services.messages import MessageService
 from core.services.payments import PaymentsService
 from core.services.sessions import SessionService
 from core.services.start import StartService
+from core.services.statistics import StatisticsService
 from core.services.subscriptions import SubscriptionsService
 from core.services.users import UserService
 from core.services.worker import WorkerService
@@ -71,6 +78,7 @@ class CoreRequestsService:
         arq: ArqRedis = None,
         products: ProductCatalog = None,
         internal_referal_ids: Collection[str] = (),
+        marketing_links_config: MarketingLinksConfig | None = None,
     ):
         self.repo = repo
         self.producer = producer
@@ -80,6 +88,9 @@ class CoreRequestsService:
         self.products = products
         # The app's own re-engagement link codes — see StartService.
         self.internal_referal_ids = internal_referal_ids
+        # How the app measures marketing links (activation / return queries, rates) — see
+        # MarketingLinksService. None: activity = the user opened the app.
+        self.marketing_links_config = marketing_links_config
 
     @cached_property
     def users(self) -> UserService:
@@ -136,6 +147,41 @@ class CoreRequestsService:
         """Session service for managing user sessions in Redis (business logic)."""
         return SessionService(redis=self.redis)
 
+    @cached_property
+    def audit_log(self) -> AuditLogService:
+        """Audit-log service for recording and listing mutating admin actions."""
+        return AuditLogService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def admin(self) -> AdminService:
+        """Admin users service: aggregation reads + audited mutations."""
+        return AdminService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def statistics(self) -> StatisticsService:
+        """Admin statistics: the Overview snapshot and the daily owner digest (+ app-registered extras)."""
+        return StatisticsService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def analytics(self) -> AnalyticsService:
+        """Admin money analytics: revenue, subscriptions, MRR (Redis-cached heavy reads)."""
+        return AnalyticsService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def admin_tasks(self) -> AdminTasksService:
+        """Admin tasks service: lists registered ``@admin_task`` functions and runs them (audited)."""
+        return AdminTasksService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def broadcasts(self) -> BroadcastsService:
+        """Broadcasts service: the admin composer (scheduled + send-now promotional broadcasts)."""
+        return BroadcastsService(self.repo, self.producer, self, self.bot)
+
+    @cached_property
+    def marketing_links(self) -> MarketingLinksService:
+        """Marketing links service: acquisition codes, their links, per-code results and owner alerts."""
+        return MarketingLinksService(self.repo, self.producer, self, self.bot)
+
     def get_all_services(self) -> dict[str, Any]:
         """Get all core services as dict (useful for debugging/introspection).
 
@@ -153,4 +199,11 @@ class CoreRequestsService:
             "start": self.start,
             "messages": self.messages,
             "sessions": self.sessions,
+            "audit_log": self.audit_log,
+            "admin": self.admin,
+            "statistics": self.statistics,
+            "analytics": self.analytics,
+            "admin_tasks": self.admin_tasks,
+            "broadcasts": self.broadcasts,
+            "marketing_links": self.marketing_links,
         }

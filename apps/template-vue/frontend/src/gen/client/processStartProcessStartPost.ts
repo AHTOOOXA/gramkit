@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { ProcessStartProcessStartPostMutationRequest, ProcessStartProcessStartPostMutationResponse, ProcessStartProcessStartPost422 } from "../models/undefinedController/ProcessStartProcessStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getProcessStartProcessStartPostUrl() {
-  const res = { method: 'POST', url: `/process_start` as const }  
+  const res = { method: 'POST', url: `/process_start` as const }
   return res
 }
 
@@ -18,11 +18,11 @@ function getProcessStartProcessStartPostUrl() {
  * @summary Process Start
  * {@link /process_start}
  */
-export async function processStartProcessStartPost(data?: ProcessStartProcessStartPostMutationRequest, config: Partial<RequestConfig<ProcessStartProcessStartPostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, ProcessStartProcessStartPostMutationRequest>({ method : "POST", url : getProcessStartProcessStartPostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function processStartProcessStartPost(data: ProcessStartProcessStartPostMutationRequest, config: Partial<RequestConfig<ProcessStartProcessStartPostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, ProcessStartProcessStartPostMutationRequest>({ method : "POST", url : getProcessStartProcessStartPostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

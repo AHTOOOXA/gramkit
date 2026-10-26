@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetCurrentUserUsersMeGetQueryResponse } from "../models/usersController/GetCurrentUserUsersMeGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetCurrentUserUsersMeGetUrl() {
-  const res = { method: 'GET', url: `/users/me` as const }  
+  const res = { method: 'GET', url: `/users/me` as const }
   return res
 }
 
@@ -19,9 +19,11 @@ function getGetCurrentUserUsersMeGetUrl() {
  * @summary Get Current User
  * {@link /users/me}
  */
-export async function getCurrentUserUsersMeGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetCurrentUserUsersMeGetUrl().url.toString(), ... requestConfig })  
+export async function getCurrentUserUsersMeGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetCurrentUserUsersMeGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getGetCurrentUserUsersMeGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

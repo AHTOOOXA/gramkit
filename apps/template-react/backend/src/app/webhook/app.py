@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 
 from app.exceptions import BackendException
 from app.infrastructure.database.repo.requests import RequestsRepo
+from app.services import admin_tasks as _admin_tasks  # noqa: F401  registers this app's @admin_task functions
 from app.webhook import routers
 from app.webhook.auth import get_user as app_get_user
 from app.webhook.dependencies.service import get_services as app_get_services
@@ -19,6 +20,9 @@ from core.infrastructure.auth.telegram import TelegramAuthenticator
 from core.infrastructure.config import settings
 from core.infrastructure.fastapi import create_api
 from core.infrastructure.fastapi import dependencies as core_deps
+from core.infrastructure.fastapi.routers import (
+    admin as core_admin,
+)
 from core.infrastructure.fastapi.routers import (
     auth_email,
     auth_telegram,
@@ -28,6 +32,10 @@ from core.infrastructure.fastapi.routers import (
     users,
     webhooks,
 )
+
+# ``_admin_tasks`` above registers this app's tasks in core's registry (``/admin/tasks``). Keep
+# its ``from ... import ... as _x`` form: a bare ``import app.services...`` binds ``app``, which
+# this module rebinds to the FastAPI instance below.
 
 # Get version for API documentation
 release_version = "unknown"
@@ -71,6 +79,7 @@ app = create_api(
         webhooks.yookassa_router,
         webhooks.telegram_stars_router,
         routers.base.router,
+        core_admin.router,  # core admin API; mounted before the app admin router (see routers/admin.py)
         routers.admin.router,
         routers.demo.router,
     ],

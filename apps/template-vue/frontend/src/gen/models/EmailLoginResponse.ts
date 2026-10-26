@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailLoginResponse
  * @description Response for successful login.
 */
 export type EmailLoginResponse = {

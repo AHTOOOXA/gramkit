@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * PasswordResetCompleteResponse
+*/
 export type PasswordResetCompleteResponse = {
     /**
      * @default true

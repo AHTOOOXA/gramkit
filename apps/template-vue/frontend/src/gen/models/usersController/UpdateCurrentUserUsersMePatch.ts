@@ -10,15 +10,20 @@ import type { UpdateUserRequest } from "../UpdateUserRequest.ts";
 import type { UserSchema } from "../UserSchema.ts";
 
 /**
+ * UserSchema
  * @description Successful Response
 */
 export type UpdateCurrentUserUsersMePatch200 = UserSchema;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type UpdateCurrentUserUsersMePatch422 = HTTPValidationError;
 
+/**
+ * UpdateUserRequest
+*/
 export type UpdateCurrentUserUsersMePatchMutationRequest = UpdateUserRequest;
 
 export type UpdateCurrentUserUsersMePatchMutationResponse = UpdateCurrentUserUsersMePatch200;

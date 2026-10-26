@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailResendRequest
  * @description Request to resend verification code.
 */
 export type EmailResendRequest = {

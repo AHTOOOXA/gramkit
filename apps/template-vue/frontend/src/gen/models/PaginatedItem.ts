@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * PaginatedItem
+*/
 export type PaginatedItem = {
     /**
      * @type integer

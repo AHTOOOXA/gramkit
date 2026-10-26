@@ -10,15 +10,20 @@ import type { SendCodeRequest } from "../SendCodeRequest.ts";
 import type { SendCodeResponse } from "../SendCodeResponse.ts";
 
 /**
+ * SendCodeResponse
  * @description Successful Response
 */
 export type SendVerificationCodeAuthLoginTelegramCodeSendPost200 = SendCodeResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type SendVerificationCodeAuthLoginTelegramCodeSendPost422 = HTTPValidationError;
 
+/**
+ * SendCodeRequest
+*/
 export type SendVerificationCodeAuthLoginTelegramCodeSendPostMutationRequest = SendCodeRequest;
 
 export type SendVerificationCodeAuthLoginTelegramCodeSendPostMutationResponse = SendVerificationCodeAuthLoginTelegramCodeSendPost200;

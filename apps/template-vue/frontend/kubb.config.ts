@@ -10,9 +10,10 @@ export default defineConfig({
 
   // Input OpenAPI specification
   input: {
-    // Use local API endpoint (backend must be running)
+    // Use local API endpoint (backend must be running).
+    // Without a stack, dump app.openapi() to a file and run `OPENAPI_PATH=<file> pnpm generate`.
     // For schema generation via tunnel: https://local.gramkit.dev/api/template/openapi.json
-    path: "http://localhost:8002/openapi.json",
+    path: process.env.OPENAPI_PATH ?? "http://localhost:8002/openapi.json",
   },
 
   // Output directory for generated files

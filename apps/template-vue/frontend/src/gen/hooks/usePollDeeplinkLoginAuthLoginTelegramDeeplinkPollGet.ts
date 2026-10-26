@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422 } from "../models/authenticationController/PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet } from "../client/pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,40 +17,45 @@ export const pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey = (params
 
 export type PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey = ReturnType<typeof pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey>
 
-export function pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryOptions(params: MaybeRefOrGetter<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey(params)
-  return queryOptions<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, typeof queryKey>({
-  enabled: !!(params),
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet(toValue(params), toValue(config))
-   },
-  })
+export function pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryOptions(params: MaybeRefOrGetter<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
+
+        const queryKey = pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey(params)
+        return queryOptions<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
- * @description Check status of deep link login token.Frontend should poll this endpoint after redirecting user to Telegram.When status is "verified", session cookie is set and user is logged in.
+ * @description Check status of deep link login token.
+ * Frontend should poll this endpoint after redirecting user to Telegram.
+ * When status is "verified", session cookie is set and user is logged in.
  * @summary Poll Deeplink Login
  * {@link /auth/login/telegram/deeplink/poll}
  */
 export function usePollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet<TData = PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, TQueryData = PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, TQueryKey extends QueryKey = PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey>(params: MaybeRefOrGetter<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey(params)
 
-  const query = useQuery({
-   ...pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...pollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>, TData, PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<PollDeeplinkLoginAuthLoginTelegramDeeplinkPollGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

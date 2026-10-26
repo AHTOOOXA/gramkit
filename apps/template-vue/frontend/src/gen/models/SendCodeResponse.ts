@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * SendCodeResponse
+*/
 export type SendCodeResponse = {
     /**
      * @type string

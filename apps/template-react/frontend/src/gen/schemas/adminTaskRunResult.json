@@ -1,0 +1,1 @@
+{"properties":{"task":{"type":"string","title":"Task"},"dry_run":{"type":"boolean","title":"Dry Run"},"result":{"additionalProperties":true,"type":"object","title":"Result"}},"type":"object","required":["task","dry_run","result"],"title":"AdminTaskRunResult","description":"Outcome of running a task.","x-readme-ref-name":"AdminTaskRunResult"}

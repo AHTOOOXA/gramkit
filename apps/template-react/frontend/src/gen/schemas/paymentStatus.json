@@ -1,0 +1,1 @@
+{"type":"string","enum":["CREATED","WAITING_FOR_ACTION","SUCCEEDED","FAILED","CANCELED","REFUNDED"],"title":"PaymentStatus","x-readme-ref-name":"PaymentStatus"}

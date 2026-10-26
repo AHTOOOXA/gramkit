@@ -15,10 +15,7 @@ export type EmailLoginResponse = {
     */
     user_id: string;
     username: (string | null);
-    /**
-     * @type string
-    */
-    email: string;
+    email: (string | null);
     /**
      * @default "Login successful"
      * @type string | undefined

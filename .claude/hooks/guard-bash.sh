@@ -42,7 +42,7 @@ while IFS= read -r seg; do
         deny "Run migrations through make: make migration msg=\"…\" APP=<app> · make upgrade APP=<app> · make downgrade APP=<app>."
     fi
     if [[ "$seg" =~ ^ssh[[:space:]].*app\.scripts ]]; then
-        ask "python -m app.scripts boots a second full app next to the live one; in a memory-limited prod container that can OOM-kill the live webhook. Confirm the container has the headroom (see .claude/rules/prod-scripts.md)."
+        ask "python -m app.scripts boots a second full app next to the live one; in a memory-limited prod container that can OOM-kill the live webhook. Confirm the container has the headroom, or prefer an @admin_task in app/services/admin_tasks.py, run at /admin/tasks (see .claude/rules/prod-scripts.md)."
     fi
     if [[ "$seg" =~ ^git[[:space:]]+reset[[:space:]].*--hard ]] || [[ "$seg" =~ ^git[[:space:]]+clean[[:space:]]+-[a-zA-Z]*f[a-zA-Z]*d?[[:space:]]*$ ]]; then
         ask "This discards uncommitted work, possibly another session's. Confirm it's scoped to your own changes."

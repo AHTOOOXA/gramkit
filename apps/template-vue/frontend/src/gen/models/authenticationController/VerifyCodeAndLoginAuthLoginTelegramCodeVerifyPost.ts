@@ -10,15 +10,20 @@ import type { VerifyCodeRequest } from "../VerifyCodeRequest.ts";
 import type { VerifyCodeResponse } from "../VerifyCodeResponse.ts";
 
 /**
+ * VerifyCodeResponse
  * @description Successful Response
 */
 export type VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost200 = VerifyCodeResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost422 = HTTPValidationError;
 
+/**
+ * VerifyCodeRequest
+*/
 export type VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationRequest = VerifyCodeRequest;
 
 export type VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPostMutationResponse = VerifyCodeAndLoginAuthLoginTelegramCodeVerifyPost200;

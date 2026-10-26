@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { CreateInviteCreateInviteGetQueryResponse } from "../models/undefinedController/CreateInviteCreateInviteGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getCreateInviteCreateInviteGetUrl() {
-  const res = { method: 'GET', url: `/create_invite` as const }  
+  const res = { method: 'GET', url: `/create_invite` as const }
   return res
 }
 
@@ -18,9 +18,11 @@ function getCreateInviteCreateInviteGetUrl() {
  * @summary Create Invite
  * {@link /create_invite}
  */
-export async function createInviteCreateInviteGet(config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<CreateInviteCreateInviteGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getCreateInviteCreateInviteGetUrl().url.toString(), ... requestConfig })  
+export async function createInviteCreateInviteGet(config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<CreateInviteCreateInviteGetQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : getCreateInviteCreateInviteGetUrl().url.toString(), ... requestConfig })
   return res.data
 }

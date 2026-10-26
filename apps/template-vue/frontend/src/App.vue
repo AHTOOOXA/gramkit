@@ -108,14 +108,14 @@ function onBeforeSegue(): void {
         :toast-options="{ duration: 4000 }"
       />
       <DebugPanel />
-      <AppShell>
+      <AppShell :variant="route.meta.shellVariant ?? 'default'">
         <RouterView v-slot="{ Component }">
           <transition
             name="default-segue"
             @before-enter="onBeforeSegue"
           >
             <div
-              :key="$route.fullPath"
+              :key="$route.matched.length > 1 ? $route.matched[0].path : $route.fullPath"
               class="h-full flex flex-col"
             >
               <component :is="Component" />

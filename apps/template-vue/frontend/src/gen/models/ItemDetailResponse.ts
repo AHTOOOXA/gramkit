@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * ItemDetailResponse
+*/
 export type ItemDetailResponse = {
     /**
      * @type integer

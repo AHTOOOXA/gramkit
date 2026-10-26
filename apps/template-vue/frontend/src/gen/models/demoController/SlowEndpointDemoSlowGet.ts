@@ -19,11 +19,13 @@ export type SlowEndpointDemoSlowGetQueryParams = {
 };
 
 /**
+ * SlowResponse
  * @description Successful Response
 */
 export type SlowEndpointDemoSlowGet200 = SlowResponse;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type SlowEndpointDemoSlowGet422 = HTTPValidationError;

@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartLinkAuthLinkTelegramStartPostMutationResponse, StartLinkAuthLinkTelegramStartPost401, StartLinkAuthLinkTelegramStartPost409, StartLinkAuthLinkTelegramStartPost429 } from "../models/accountLinkingController/StartLinkAuthLinkTelegramStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import { startLinkAuthLinkTelegramStartPost } from "../client/startLinkAuthLinkTelegramStartPost.ts";
 import { useMutation } from "@tanstack/vue-query";
@@ -17,25 +16,29 @@ export const startLinkAuthLinkTelegramStartPostMutationKey = () => [{ url: '/aut
 export type StartLinkAuthLinkTelegramStartPostMutationKey = ReturnType<typeof startLinkAuthLinkTelegramStartPostMutationKey>
 
 /**
- * @description Start Telegram account linking flow.Generates a link token and returns bot URL with deep link.User should open the bot URL to complete linking.
+ * @description Start Telegram account linking flow.
+ * Generates a link token and returns bot URL with deep link.
+ * User should open the bot URL to complete linking.
  * @summary Start Link
  * {@link /auth/link/telegram/start}
  */
 export function useStartLinkAuthLinkTelegramStartPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartLinkAuthLinkTelegramStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkTelegramStartPost401 | StartLinkAuthLinkTelegramStartPost409 | StartLinkAuthLinkTelegramStartPost429>, void, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch },
+  client?: Partial<RequestConfig> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startLinkAuthLinkTelegramStartPostMutationKey()
 
-  return useMutation<StartLinkAuthLinkTelegramStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkTelegramStartPost401 | StartLinkAuthLinkTelegramStartPost409 | StartLinkAuthLinkTelegramStartPost429>, void, TContext>({
-    mutationFn: async() => {
-      return startLinkAuthLinkTelegramStartPost(config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startLinkAuthLinkTelegramStartPostMutationKey()
+
+          return useMutation<StartLinkAuthLinkTelegramStartPostMutationResponse, ResponseErrorConfig<StartLinkAuthLinkTelegramStartPost401 | StartLinkAuthLinkTelegramStartPost409 | StartLinkAuthLinkTelegramStartPost429>, void, TContext>({
+            mutationFn: async() => {
+              return startLinkAuthLinkTelegramStartPost(config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

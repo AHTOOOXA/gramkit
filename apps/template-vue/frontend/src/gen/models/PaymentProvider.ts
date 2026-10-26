@@ -7,11 +7,14 @@
 
 
 export const paymentProviderEnum = {
-    "YOOKASSA": "YOOKASSA",
-    "TELEGRAM_STARS": "TELEGRAM_STARS",
-    "GIFT": "GIFT"
+    YOOKASSA: "YOOKASSA",
+    TELEGRAM_STARS: "TELEGRAM_STARS",
+    GIFT: "GIFT"
 } as const;
 
 export type PaymentProviderEnumKey = (typeof paymentProviderEnum)[keyof typeof paymentProviderEnum];
 
+/**
+ * PaymentProvider
+*/
 export type PaymentProvider = PaymentProviderEnumKey;

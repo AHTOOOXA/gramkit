@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { UpdateCurrentUserUsersMePatchMutationRequest, UpdateCurrentUserUsersMePatchMutationResponse, UpdateCurrentUserUsersMePatch422 } from "../models/usersController/UpdateCurrentUserUsersMePatch.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { updateCurrentUserUsersMePatch } from "../client/updateCurrentUserUsersMePatch.ts";
@@ -24,19 +23,21 @@ export type UpdateCurrentUserUsersMePatchMutationKey = ReturnType<typeof updateC
  */
 export function useUpdateCurrentUserUsersMePatch<TContext>(options: 
 {
-  mutation?: MutationObserverOptions<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, {data?: MaybeRefOrGetter<UpdateCurrentUserUsersMePatchMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<UpdateCurrentUserUsersMePatchMutationRequest>> & { client?: typeof fetch },
+  mutation?: MutationObserverOptions<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, {data: MaybeRefOrGetter<UpdateCurrentUserUsersMePatchMutationRequest>}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<UpdateCurrentUserUsersMePatchMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? updateCurrentUserUsersMePatchMutationKey()
 
-  return useMutation<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, {data?: UpdateCurrentUserUsersMePatchMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return updateCurrentUserUsersMePatch(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? updateCurrentUserUsersMePatchMutationKey()
+
+          return useMutation<UpdateCurrentUserUsersMePatchMutationResponse, ResponseErrorConfig<UpdateCurrentUserUsersMePatch422>, {data: UpdateCurrentUserUsersMePatchMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return updateCurrentUserUsersMePatch(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

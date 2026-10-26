@@ -7,6 +7,7 @@
 
 
 /**
+ * SetRoleResponse
  * @description Response after changing role.
 */
 export type SetRoleResponse = {

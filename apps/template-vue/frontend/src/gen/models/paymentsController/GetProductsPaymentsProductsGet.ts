@@ -8,6 +8,7 @@
 import type { ProductSchema } from "../ProductSchema.ts";
 
 /**
+ * Response Get Products Payments Products Get
  * @description Successful Response
 */
 export type GetProductsPaymentsProductsGet200 = ProductSchema[];

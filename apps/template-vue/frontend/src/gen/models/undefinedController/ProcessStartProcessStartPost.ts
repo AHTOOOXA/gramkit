@@ -10,15 +10,20 @@ import type { StartData } from "../StartData.ts";
 import type { StartParamsRequest } from "../StartParamsRequest.ts";
 
 /**
+ * StartData
  * @description Successful Response
 */
 export type ProcessStartProcessStartPost200 = StartData;
 
 /**
+ * HTTPValidationError
  * @description Validation Error
 */
 export type ProcessStartProcessStartPost422 = HTTPValidationError;
 
+/**
+ * StartParamsRequest
+*/
 export type ProcessStartProcessStartPostMutationRequest = StartParamsRequest;
 
 export type ProcessStartProcessStartPostMutationResponse = ProcessStartProcessStartPost200;

@@ -7,23 +7,24 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { CompleteLinkAuthLinkEmailCompletePostMutationRequest, CompleteLinkAuthLinkEmailCompletePostMutationResponse, CompleteLinkAuthLinkEmailCompletePost400, CompleteLinkAuthLinkEmailCompletePost401, CompleteLinkAuthLinkEmailCompletePost409, CompleteLinkAuthLinkEmailCompletePost410, CompleteLinkAuthLinkEmailCompletePost422 } from "../models/emailAuthController/CompleteLinkAuthLinkEmailCompletePost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getCompleteLinkAuthLinkEmailCompletePostUrl() {
-  const res = { method: 'POST', url: `/auth/link/email/complete` as const }  
+  const res = { method: 'POST', url: `/auth/link/email/complete` as const }
   return res
 }
 
 /**
- * @description Complete email linking flow.Verifies code and sets password for email login.
+ * @description Complete email linking flow.
+ * Verifies code and sets password for email login.
  * @summary Complete Link
  * {@link /auth/link/email/complete}
  */
-export async function completeLinkAuthLinkEmailCompletePost(data: CompleteLinkAuthLinkEmailCompletePostMutationRequest, config: Partial<RequestConfig<CompleteLinkAuthLinkEmailCompletePostMutationRequest>> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const requestData = data  
-  
-  const res = await request<CompleteLinkAuthLinkEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteLinkAuthLinkEmailCompletePost400 | CompleteLinkAuthLinkEmailCompletePost401 | CompleteLinkAuthLinkEmailCompletePost409 | CompleteLinkAuthLinkEmailCompletePost410 | CompleteLinkAuthLinkEmailCompletePost422>, CompleteLinkAuthLinkEmailCompletePostMutationRequest>({ method : "POST", url : getCompleteLinkAuthLinkEmailCompletePostUrl().url.toString(), data : requestData, ... requestConfig })  
+export async function completeLinkAuthLinkEmailCompletePost(data: CompleteLinkAuthLinkEmailCompletePostMutationRequest, config: Partial<RequestConfig<CompleteLinkAuthLinkEmailCompletePostMutationRequest>> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+  const requestData = data
+
+  const res = await request<CompleteLinkAuthLinkEmailCompletePostMutationResponse, ResponseErrorConfig<CompleteLinkAuthLinkEmailCompletePost400 | CompleteLinkAuthLinkEmailCompletePost401 | CompleteLinkAuthLinkEmailCompletePost409 | CompleteLinkAuthLinkEmailCompletePost410 | CompleteLinkAuthLinkEmailCompletePost422>, CompleteLinkAuthLinkEmailCompletePostMutationRequest>({ method : "POST", url : getCompleteLinkAuthLinkEmailCompletePostUrl().url.toString(), data : requestData, ... requestConfig })
   return res.data
 }

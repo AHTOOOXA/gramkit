@@ -7,10 +7,10 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { AddFriendAddFriendPostMutationResponse, AddFriendAddFriendPostQueryParams, AddFriendAddFriendPost422 } from "../models/undefinedController/AddFriendAddFriendPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getAddFriendAddFriendPostUrl() {
-  const res = { method: 'POST', url: `/add_friend` as const }  
+  const res = { method: 'POST', url: `/add_friend` as const }
   return res
 }
 
@@ -18,9 +18,11 @@ function getAddFriendAddFriendPostUrl() {
  * @summary Add Friend
  * {@link /add_friend}
  */
-export async function addFriendAddFriendPost(params: AddFriendAddFriendPostQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<AddFriendAddFriendPostMutationResponse, ResponseErrorConfig<AddFriendAddFriendPost422>, unknown>({ method : "POST", url : getAddFriendAddFriendPostUrl().url.toString(), params, ... requestConfig })  
+export async function addFriendAddFriendPost(params: AddFriendAddFriendPostQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<AddFriendAddFriendPostMutationResponse, ResponseErrorConfig<AddFriendAddFriendPost422>, unknown>({ method : "POST", url : getAddFriendAddFriendPostUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

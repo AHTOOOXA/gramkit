@@ -4,7 +4,7 @@ Defines the contract that app-specific product implementations must satisfy.
 Uses Protocol for structural subtyping - no inheritance required.
 """
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Any, Protocol
 from uuid import UUID
 
@@ -44,6 +44,8 @@ class PaymentProduct(Protocol):
 #   async take_back(payment, subscriptions_service) -> str | None
 #                                                          what a refund takes back (returns the note
 #                                                          for the owner); None = the subscription period
+#   prices: Mapping[str, CurrencyPrice]                    price per currency; admin MRR prices a
+#                                                          subscription only in its own currency
 
 
 def product_invoice_text(product: PaymentProduct | None, locale: str | None) -> tuple[str, str] | None:
@@ -59,6 +61,26 @@ def product_daily_purchase_limit(product: PaymentProduct | None) -> int | None:
 async def product_take_back(product: PaymentProduct | None, payment: Any, subscriptions_service: Any) -> str | None:
     take_back: Callable[[Any, Any], Awaitable[str | None]] | None = getattr(product, "take_back", None)
     return await take_back(payment, subscriptions_service) if take_back is not None else None
+
+
+def product_price_in(product: PaymentProduct | None, currency: str) -> CurrencyPrice | None:
+    """Price in exactly ``currency`` — never ``get_price_for()``'s fallback to another currency.
+
+    MRR must not price a RUB subscription with a USD price. Reads the optional ``prices`` mapping
+    (currency -> price) when the product has one; otherwise asks ``get_price_for`` and keeps the
+    answer only when it is in ``currency``. ``None`` when there is no such price.
+    """
+    if product is None:
+        return None
+    prices = getattr(product, "prices", None)
+    if isinstance(prices, Mapping):
+        price: CurrencyPrice | None = prices.get(currency)
+        return price
+    try:
+        fallback = product.get_price_for(currency)
+    except Exception:  # e.g. StopIteration from next(iter({})) on a product without prices
+        return None
+    return fallback if fallback is not None and getattr(fallback, "currency", None) == currency else None
 
 
 class ProductCatalog(Protocol):

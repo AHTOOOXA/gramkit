@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * PasswordResetStartResponse
+*/
 export type PasswordResetStartResponse = {
     /**
      * @type string

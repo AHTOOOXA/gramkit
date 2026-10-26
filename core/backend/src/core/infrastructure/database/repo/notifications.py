@@ -40,6 +40,34 @@ class NotificationDeliveryRepo(BaseRepo[NotificationDelivery]):
         await self.session.flush()
         return row
 
+    async def delivered_user_ids(
+        self, template: str, message_key: str, user_ids: Iterable[UUID] | None = None
+    ) -> set[UUID]:
+        """Users with a DELIVERED row of ``template`` + ``message_key`` (optionally only among ``user_ids``).
+
+        A send-now run logs every recipient under its own message key, so a re-run of the same
+        job (arq retries a cancelled job from the start) skips whoever already got it.
+        """
+        stmt = select(NotificationDelivery.user_id).where(
+            NotificationDelivery.template == template,
+            NotificationDelivery.message_key == message_key,
+            NotificationDelivery.delivered.is_(True),
+        )
+        if user_ids is not None:
+            ids = list(user_ids)
+            if not ids:
+                return set()
+            stmt = stmt.where(NotificationDelivery.user_id.in_(ids))
+        result = await self.session.execute(stmt)
+        return set(result.scalars().all())
+
+    async def count_for_key(self, template: str, message_key: str) -> int:
+        """Rows (any outcome) logged for ``template`` + ``message_key``: > 0 means the run already started."""
+        stmt = select(func.count()).where(
+            NotificationDelivery.template == template, NotificationDelivery.message_key == message_key
+        )
+        return (await self.session.execute(stmt)).scalar_one()
+
     async def last_sent_by_user(
         self, template: str, user_ids: Iterable[UUID], *, delivered_only: bool = True
     ) -> dict[UUID, datetime]:

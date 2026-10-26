@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * LogoutResponse
+*/
 export type LogoutResponse = {
     /**
      * @type string

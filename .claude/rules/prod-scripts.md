@@ -2,9 +2,11 @@
 paths:
   - "apps/*/backend/src/app/scripts/**"
   - "core/backend/src/core/scripts/**"
+  - "apps/*/backend/src/app/services/admin_tasks.py"
+  - "core/backend/src/core/services/admin_tasks.py"
 ---
 
-# Running backend scripts (local + server)
+# Running backend scripts and admin tasks (local + server)
 
 One-off backend tasks (cleanups, backfills, backups, benchmarks, data
 migrations) live as **scripts** with full infrastructure access (DB, Redis, bot, ARQ).
@@ -62,13 +64,36 @@ This `docker exec`s into the local `<app>-webhook` container and runs
 
 ## Running on a server
 
-> ⚠️ **Memory.** `python -m app.scripts …` boots a second full app (bot, Redis,
-> RabbitMQ, ARQ, DB engine) next to the live one in the same container. In a
-> memory-limited container (e.g. a 512 MB webhook) that can run out of memory,
-> and the OOM killer may take down the **live** webhook instead of the script.
-> Give the container headroom first, or run the script in a one-off container
-> from the same image, or turn the fix into an owner-only admin endpoint that
-> runs inside the live process (dry run + apply, audit-logged).
+> ⚠️ **For data fixes on a running server, write an admin task, not a script.**
+> - **Admin task:** `@admin_task(name, description, destructive=...)` on
+>   `async def fn(session, *, dry_run) -> dict` in `app/services/admin_tasks.py`
+>   (the framework is `core/backend/src/core/services/admin_tasks.py`; the module is
+>   imported at startup by `app/webhook/app.py`, which registers its tasks). It runs
+>   inside the live webhook, so there's no second app and no OOM risk. It's owner-only,
+>   dry run then apply, and every run is audit-logged as `admin_task:<name>`. Run it
+>   from the template-vue admin **Tasks** tab (`/admin/tasks`); on template-react, call
+>   `POST /admin/tasks/{name}` (body `{"dry_run": true|false}`, defaults to a dry run)
+>   until its screen lands.
+> - A task runs in the request's transaction: its writes commit together with the
+>   audit row, and an exception rolls both back. The returned dict is stored in the
+>   audit row (JSONB), so keep it JSON-serialisable, and keep the task bounded (it
+>   holds the request until it finishes).
+> - **Why not a script:** `python -m app.scripts …` boots a second full app (bot,
+>   Redis, RabbitMQ, ARQ, DB engine) next to the live one in the same container. In a
+>   memory-limited container (e.g. a 512 MB webhook) that can run out of memory, and
+>   the OOM killer may take down the **live** webhook instead of the script. Use a
+>   script on a server only when the container has the headroom, or in a one-off
+>   container from the same image.
+
+### Safe sequence (admin task)
+1. **Deploy** the release with the task and confirm the version (`GET /health`).
+2. **Back up**: the owner-only Telegram **`/backup`** command DMs the `.sql.gz`.
+3. **Dry run** (Tasks tab, or `POST /admin/tasks/{name}` with `{"dry_run": true}`)
+   and review the output.
+4. **Apply** (Tasks tab → Apply → confirm, or `{"dry_run": false}`). The run is
+   audit-logged; the task's "Run history" link opens its audit-log rows.
+
+### Scripts on a server — only with memory headroom
 
 Scripts are **baked into the backend image** (the Dockerfile copies
 `apps/<app>/backend/`, sets `PYTHONPATH` to the app src, `WORKDIR` to
@@ -95,7 +120,7 @@ cd /workspace/apps/<app>/backend && python -m app.scripts <name> <args>
 A safe dry run (no `--confirm`) also tells you whether the script is deployed — if
 it prints "Script not found", the deployed build doesn't have it yet.
 
-### Safe sequence for a destructive change
+### Safe sequence for a destructive change (script)
 1. **Deploy** and confirm the version (`/health`).
 2. **Back up** — `make script name=backup_database …` on the server, or the
    owner-only Telegram **`/backup`** command, which DMs the `.sql.gz`.

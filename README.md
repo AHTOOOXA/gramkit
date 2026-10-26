@@ -33,7 +33,7 @@ Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 | **Vue** | Vue 3 + Vite + Pinia | Lighter bundle, simpler state | [vue.antonchaynik.ru](https://vue.antonchaynik.ru) |
 
 Both include:
-- **5 production pages** — Home, demos, profile, admin, auth flows
+- **5 production pages** — Home, demos, profile, admin panel (overview, users, analytics, audit log, tasks, broadcasts, marketing links), auth flows
 - **17 tech demos** — Caching, mutations, infinite scroll, streaming, suspense
 - **Full auth system** — Email+OTP, Telegram OAuth, password reset, session management
 - **Tailwind CSS v4 + shadcn** — Consistent design system, dark mode

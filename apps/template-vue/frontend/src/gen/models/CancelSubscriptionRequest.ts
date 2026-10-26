@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * CancelSubscriptionRequest
+*/
 export type CancelSubscriptionRequest = {
     /**
      * @description Cancellation reason code

@@ -5,10 +5,9 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetNewsDemoNewsGetQueryResponse, GetNewsDemoNewsGetQueryParams, GetNewsDemoNewsGet422 } from "../models/demoController/GetNewsDemoNewsGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
-import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryReturnType } from "@tanstack/vue-query";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { QueryKey, QueryClient, UseQueryOptions, UseQueryReturnType } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { getNewsDemoNewsGet } from "../client/getNewsDemoNewsGet.ts";
 import { queryOptions, useQuery } from "@tanstack/vue-query";
@@ -18,16 +17,17 @@ export const getNewsDemoNewsGetQueryKey = (params?: MaybeRefOrGetter<GetNewsDemo
 
 export type GetNewsDemoNewsGetQueryKey = ReturnType<typeof getNewsDemoNewsGetQueryKey>
 
-export function getNewsDemoNewsGetQueryOptions(params?: MaybeRefOrGetter<GetNewsDemoNewsGetQueryParams>, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const queryKey = getNewsDemoNewsGetQueryKey(params)
-  return queryOptions<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, GetNewsDemoNewsGetQueryResponse, typeof queryKey>({
+export function getNewsDemoNewsGetQueryOptions(params?: MaybeRefOrGetter<GetNewsDemoNewsGetQueryParams>, config: Partial<RequestConfig> & { client?: Client } = {}) {
 
-   queryKey,
-   queryFn: async ({ signal }) => {
-      config.signal = signal
-      return getNewsDemoNewsGet(toValue(params), toValue(config))
-   },
-  })
+        const queryKey = getNewsDemoNewsGetQueryKey(params)
+        return queryOptions<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, GetNewsDemoNewsGetQueryResponse, typeof queryKey>({
+        
+        queryKey,
+        queryFn: async ({ signal }) => {
+            return getNewsDemoNewsGet(toValue(params), { ...config, signal: config.signal ?? signal })
+         },
+        })
+
 }
 
 /**
@@ -37,21 +37,23 @@ export function getNewsDemoNewsGetQueryOptions(params?: MaybeRefOrGetter<GetNews
  */
 export function useGetNewsDemoNewsGet<TData = GetNewsDemoNewsGetQueryResponse, TQueryData = GetNewsDemoNewsGetQueryResponse, TQueryKey extends QueryKey = GetNewsDemoNewsGetQueryKey>(params?: MaybeRefOrGetter<GetNewsDemoNewsGetQueryParams>, options: 
 {
-  query?: Partial<QueryObserverOptions<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
-  client?: Partial<RequestConfig> & { client?: typeof fetch }
+  query?: Partial<UseQueryOptions<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
+  client?: Partial<RequestConfig> & { client?: Client }
 }
  = {}) {
-  const { query: queryConfig = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...queryOptions } = queryConfig
-  const queryKey = queryOptions?.queryKey ?? getNewsDemoNewsGetQueryKey(params)
 
-  const query = useQuery({
-   ...getNewsDemoNewsGetQueryOptions(params, config),
-   queryKey,
-   ...queryOptions
-  } as unknown as QueryObserverOptions, queryClient) as UseQueryReturnType<TData, ResponseErrorConfig<GetNewsDemoNewsGet422>> & { queryKey: TQueryKey }
+         const { query: queryConfig = {}, client: config = {} } = options ?? {}
+         const { client: queryClient, ...resolvedOptions } = queryConfig
+         const queryKey = (resolvedOptions && 'queryKey' in resolvedOptions ? toValue(resolvedOptions.queryKey) : undefined) ?? getNewsDemoNewsGetQueryKey(params)
 
-  query.queryKey = queryKey as TQueryKey
+         const query = useQuery({
+          ...getNewsDemoNewsGetQueryOptions(params, config),
+          ...resolvedOptions,
+          queryKey
+         } as unknown as UseQueryOptions<GetNewsDemoNewsGetQueryResponse, ResponseErrorConfig<GetNewsDemoNewsGet422>, TData, GetNewsDemoNewsGetQueryResponse, TQueryKey>, toValue(queryClient)) as UseQueryReturnType<TData, ResponseErrorConfig<GetNewsDemoNewsGet422>> & { queryKey: TQueryKey }
 
-  return query
+         query.queryKey = queryKey as TQueryKey
+
+         return query
+         
 }

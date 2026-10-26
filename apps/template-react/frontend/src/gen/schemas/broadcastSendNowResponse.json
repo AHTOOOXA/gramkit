@@ -1,0 +1,1 @@
+{"properties":{"queued":{"type":"boolean","title":"Queued"}},"type":"object","required":["queued"],"title":"BroadcastSendNowResponse","x-readme-ref-name":"BroadcastSendNowResponse"}

@@ -7,6 +7,7 @@
 
 
 /**
+ * Response Create Invite Create Invite Get
  * @description Successful Response
 */
 export type CreateInviteCreateInviteGet200 = string;

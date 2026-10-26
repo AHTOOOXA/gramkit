@@ -3,9 +3,9 @@ import { usePostHog } from '@core/analytics';
 import Profile from '@app/presentation/screens/Profile.vue';
 import NotFound from '@app/presentation/screens/NotFound.vue';
 import TestGeneration from '@app/presentation/screens/TestGeneration.vue';
-import Admin from '@app/presentation/screens/Admin.vue';
 import Marketing from '@app/presentation/screens/Marketing.vue';
 import Login from '@app/presentation/screens/Login.vue';
+import { adminSections } from '@app/admin/sections';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -38,9 +38,15 @@ const routes: RouteRecordRaw[] = [
     component: Profile,
   },
   {
+    // Admin panel: AdminShell (guard, title, tabs) with one child route per
+    // section in `@app/admin/sections` (core sections + app-sections.ts).
     path: '/admin',
-    name: 'admin',
-    component: Admin,
+    component: () => import('@app/presentation/screens/admin/AdminShell.vue'),
+    meta: { shellVariant: 'wide' },
+    children: [
+      { path: '', name: 'admin', redirect: { name: 'admin-overview' } },
+      ...adminSections.map((s) => ({ path: s.path, name: s.name, component: s.loader })),
+    ],
   },
   {
     path: '/test-gen',

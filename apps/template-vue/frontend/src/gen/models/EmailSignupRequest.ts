@@ -7,6 +7,7 @@
 
 
 /**
+ * EmailSignupRequest
  * @description Request to start email signup flow.
 */
 export type EmailSignupRequest = {

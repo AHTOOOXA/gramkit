@@ -1,1 +1,1 @@
-{"type":"string","enum":["NONE","PENDING","ACTIVE","CANCELED","EXPIRED"],"title":"SubscriptionStatus","x-readme-ref-name":"SubscriptionStatus"}
+{"type":"string","enum":["NONE","PENDING","ACTIVE","PAST_DUE","CANCELED","EXPIRED"],"title":"SubscriptionStatus","x-readme-ref-name":"SubscriptionStatus"}

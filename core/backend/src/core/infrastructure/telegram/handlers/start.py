@@ -79,6 +79,10 @@ async def start_command(
     Referral code format:
         /start r-123456 → referral_code = "r-123456"
 
+    The app's own link codes (``services.start.internal_referal_ids``: notification and broadcast
+    buttons) are never stored as an acquisition source, the same rule ``StartService`` applies
+    to the Mini App's ``?startapp=r-<code>``.
+
     Example:
         Configure in app's bot setup:
         >>> from functools import partial
@@ -112,6 +116,8 @@ async def start_command(
 
     # Process referral code or invite code if provided
     referral_code = command.args
+    if referral_code in services.start.internal_referal_ids:
+        referral_code = None  # the app's own link brought an existing user back: not acquisition
     if referral_code:
         if referral_code.startswith("i_"):
             # Process invite code

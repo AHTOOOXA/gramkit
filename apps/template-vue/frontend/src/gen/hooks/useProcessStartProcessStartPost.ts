@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { ProcessStartProcessStartPostMutationRequest, ProcessStartProcessStartPostMutationResponse, ProcessStartProcessStartPost422 } from "../models/undefinedController/ProcessStartProcessStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { processStartProcessStartPost } from "../client/processStartProcessStartPost.ts";
@@ -23,19 +22,21 @@ export type ProcessStartProcessStartPostMutationKey = ReturnType<typeof processS
  */
 export function useProcessStartProcessStartPost<TContext>(options: 
 {
-  mutation?: MutationObserverOptions<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, {data?: MaybeRefOrGetter<ProcessStartProcessStartPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<ProcessStartProcessStartPostMutationRequest>> & { client?: typeof fetch },
+  mutation?: MutationObserverOptions<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, {data: MaybeRefOrGetter<ProcessStartProcessStartPostMutationRequest>}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<ProcessStartProcessStartPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? processStartProcessStartPostMutationKey()
 
-  return useMutation<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, {data?: ProcessStartProcessStartPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return processStartProcessStartPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? processStartProcessStartPostMutationKey()
+
+          return useMutation<ProcessStartProcessStartPostMutationResponse, ResponseErrorConfig<ProcessStartProcessStartPost422>, {data: ProcessStartProcessStartPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return processStartProcessStartPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

@@ -1,0 +1,1 @@
+{"properties":{"duration":{"type":"string","enum":["week","month","year","max"],"title":"Duration"}},"type":"object","required":["duration"],"title":"GiftSubscriptionRequest","description":"Gift a free subscription for a named duration.","x-readme-ref-name":"GiftSubscriptionRequest"}

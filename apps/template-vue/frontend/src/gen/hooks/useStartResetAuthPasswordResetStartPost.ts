@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { StartResetAuthPasswordResetStartPostMutationRequest, StartResetAuthPasswordResetStartPostMutationResponse, StartResetAuthPasswordResetStartPost401, StartResetAuthPasswordResetStartPost422, StartResetAuthPasswordResetStartPost429 } from "../models/emailAuthController/StartResetAuthPasswordResetStartPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { startResetAuthPasswordResetStartPost } from "../client/startResetAuthPasswordResetStartPost.ts";
@@ -18,25 +17,29 @@ export const startResetAuthPasswordResetStartPostMutationKey = () => [{ url: '/a
 export type StartResetAuthPasswordResetStartPostMutationKey = ReturnType<typeof startResetAuthPasswordResetStartPostMutationKey>
 
 /**
- * @description Start password reset flow.Sends verification code to provided email address.Returns reset token for subsequent requests.
+ * @description Start password reset flow.
+ * Sends verification code to provided email address.
+ * Returns reset token for subsequent requests.
  * @summary Start Reset
  * {@link /auth/password/reset/start}
  */
 export function useStartResetAuthPasswordResetStartPost<TContext>(options: 
 {
   mutation?: MutationObserverOptions<StartResetAuthPasswordResetStartPostMutationResponse, ResponseErrorConfig<StartResetAuthPasswordResetStartPost401 | StartResetAuthPasswordResetStartPost422 | StartResetAuthPasswordResetStartPost429>, {data: MaybeRefOrGetter<StartResetAuthPasswordResetStartPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<StartResetAuthPasswordResetStartPostMutationRequest>> & { client?: typeof fetch },
+  client?: Partial<RequestConfig<StartResetAuthPasswordResetStartPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? startResetAuthPasswordResetStartPostMutationKey()
 
-  return useMutation<StartResetAuthPasswordResetStartPostMutationResponse, ResponseErrorConfig<StartResetAuthPasswordResetStartPost401 | StartResetAuthPasswordResetStartPost422 | StartResetAuthPasswordResetStartPost429>, {data: StartResetAuthPasswordResetStartPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return startResetAuthPasswordResetStartPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? startResetAuthPasswordResetStartPostMutationKey()
+
+          return useMutation<StartResetAuthPasswordResetStartPostMutationResponse, ResponseErrorConfig<StartResetAuthPasswordResetStartPost401 | StartResetAuthPasswordResetStartPost422 | StartResetAuthPasswordResetStartPost429>, {data: StartResetAuthPasswordResetStartPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return startResetAuthPasswordResetStartPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }

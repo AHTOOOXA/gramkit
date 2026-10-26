@@ -1,0 +1,1 @@
+{"properties":{"active_subscribers":{"type":"integer","title":"Active Subscribers"}},"type":"object","required":["active_subscribers"],"title":"SubscriptionsStatsSchema","x-readme-ref-name":"SubscriptionsStatsSchema"}

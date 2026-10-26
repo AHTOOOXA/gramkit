@@ -29,14 +29,27 @@ from core.services.requests import CoreRequestsService
 
 
 async def get_repo(request: Request) -> AsyncGenerator[CoreRequestsRepo]:
-    """Get repository aggregator from app.state.
+    """Open the request session: one ``AsyncSession`` and one transaction.
 
     Apps must configure app.state with:
     - session_pool: AsyncSession factory
     - repo_class: Repository aggregator class (default: CoreRequestsRepo)
 
-    This dependency is generic and should work for most apps without override.
-    Override only if you need custom repository initialization logic.
+    The transaction commits when this dependency exits (rollback on exception). *When* it
+    exits is decided where it is used, by the ``Depends`` scope, not here:
+
+    - ``Depends(get_repo, scope="function")`` (the default chain, ``get_services``): the exit
+      runs when the endpoint returns, **before the response is sent**. A client that
+      refetches right after a 200 reads committed data, and a failing commit (e.g. an
+      ``IntegrityError`` raised by the flush on commit) reaches the client as a 500 instead
+      of a 200 for data that was never saved.
+    - ``Depends(get_repo, scope="request")``: the exit runs **after the response is sent**.
+      Only for streaming endpoints (``StreamingResponse``) whose body generator keeps using
+      the session after the endpoint returned; the commit then happens after the stream.
+
+    A bare ``Depends(get_repo)`` means request scope, and FastAPI caches the two scopes
+    separately: an endpoint that reaches ``get_repo`` at both scopes gets **two** sessions
+    (and can block on its own row locks). Pick one scope per endpoint.
 
     Yields:
         Repository aggregator instance with active session
@@ -50,7 +63,7 @@ async def get_repo(request: Request) -> AsyncGenerator[CoreRequestsRepo]:
 
 
 async def get_services(
-    repo: CoreRequestsRepo = Depends(get_repo),
+    repo: CoreRequestsRepo = Depends(get_repo, scope="function"),
 ) -> CoreRequestsService:
     """Get services aggregator. Apps MUST override with app-specific service.
 
@@ -60,8 +73,12 @@ async def get_services(
     Override example:
         from app.services.requests import RequestsService
 
-        async def app_get_services(repo=Depends(get_repo)):
-            return RequestsService(repo)
+        async def app_get_services(repo=Depends(get_repo, scope="function")):
+            return RequestsService(repo)  # return, not yield: see below
+
+    Keep the override a plain ``async def`` that returns. FastAPI refuses a ``yield``
+    dependency (request scope) that depends on a function-scoped one, and the function scope
+    is what commits before the response is sent (see ``get_repo``).
 
         app.dependency_overrides[core_deps.get_services] = app_get_services
 

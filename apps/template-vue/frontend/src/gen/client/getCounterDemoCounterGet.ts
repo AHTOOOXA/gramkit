@@ -7,21 +7,26 @@
 
 import fetch from "@kubb/plugin-client/clients/axios";
 import type { GetCounterDemoCounterGetQueryResponse, GetCounterDemoCounterGetQueryParams, GetCounterDemoCounterGet422 } from "../models/demoController/GetCounterDemoCounterGet.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 
 function getGetCounterDemoCounterGetUrl() {
-  const res = { method: 'GET', url: `/demo/counter` as const }  
+  const res = { method: 'GET', url: `/demo/counter` as const }
   return res
 }
 
 /**
- * @description Get current counter value for cache demo.Args:    counter_id: Unique counter ID (default: "default"). Use different IDs               to avoid conflicts between users/sessions.
+ * @description Get current counter value for cache demo.
+ * Args:
+ * counter_id: Unique counter ID (default: "default"). Use different IDs
+ * to avoid conflicts between users/sessions.
  * @summary Get Counter
  * {@link /demo/counter}
  */
-export async function getCounterDemoCounterGet(params?: GetCounterDemoCounterGetQueryParams, config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
-  const { client: request = fetch, ...requestConfig } = config  
-  
-  const res = await request<GetCounterDemoCounterGetQueryResponse, ResponseErrorConfig<GetCounterDemoCounterGet422>, unknown>({ method : "GET", url : getGetCounterDemoCounterGetUrl().url.toString(), params, ... requestConfig })  
+export async function getCounterDemoCounterGet(params?: GetCounterDemoCounterGetQueryParams, config: Partial<RequestConfig> & { client?: Client } = {}) {
+  const { client: request = fetch, ...requestConfig } = config
+
+
+
+  const res = await request<GetCounterDemoCounterGetQueryResponse, ResponseErrorConfig<GetCounterDemoCounterGet422>, unknown>({ method : "GET", url : getGetCounterDemoCounterGetUrl().url.toString(), params, ... requestConfig })
   return res.data
 }

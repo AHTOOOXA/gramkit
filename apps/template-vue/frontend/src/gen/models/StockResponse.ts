@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * StockResponse
+*/
 export type StockResponse = {
     /**
      * @type string

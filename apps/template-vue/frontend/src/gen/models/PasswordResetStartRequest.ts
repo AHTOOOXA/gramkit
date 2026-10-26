@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * PasswordResetStartRequest
+*/
 export type PasswordResetStartRequest = {
     /**
      * @type string, email

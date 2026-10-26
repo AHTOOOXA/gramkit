@@ -6,6 +6,9 @@
 */
 
 
+/**
+ * WeatherResponse
+*/
 export type WeatherResponse = {
     /**
      * @type string

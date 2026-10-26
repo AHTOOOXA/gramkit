@@ -5,9 +5,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
 import type { ResendCodeAuthSignupEmailResendPostMutationRequest, ResendCodeAuthSignupEmailResendPostMutationResponse, ResendCodeAuthSignupEmailResendPost400, ResendCodeAuthSignupEmailResendPost410, ResendCodeAuthSignupEmailResendPost422, ResendCodeAuthSignupEmailResendPost429 } from "../models/emailAuthController/ResendCodeAuthSignupEmailResendPost.ts";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import type { Client, RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
 import type { MutationObserverOptions, QueryClient } from "@tanstack/vue-query";
 import type { MaybeRefOrGetter } from "vue";
 import { resendCodeAuthSignupEmailResendPost } from "../client/resendCodeAuthSignupEmailResendPost.ts";
@@ -18,25 +17,29 @@ export const resendCodeAuthSignupEmailResendPostMutationKey = () => [{ url: '/au
 export type ResendCodeAuthSignupEmailResendPostMutationKey = ReturnType<typeof resendCodeAuthSignupEmailResendPostMutationKey>
 
 /**
- * @description Resend verification code.For signup flow: provide signup_token.For link flow: requires authentication (uses current user_id).
+ * @description Resend verification code.
+ * For signup flow: provide signup_token.
+ * For link flow: requires authentication (uses current user_id).
  * @summary Resend Code
  * {@link /auth/signup/email/resend}
  */
 export function useResendCodeAuthSignupEmailResendPost<TContext>(options: 
 {
-  mutation?: MutationObserverOptions<ResendCodeAuthSignupEmailResendPostMutationResponse, ResponseErrorConfig<ResendCodeAuthSignupEmailResendPost400 | ResendCodeAuthSignupEmailResendPost410 | ResendCodeAuthSignupEmailResendPost422 | ResendCodeAuthSignupEmailResendPost429>, {data?: MaybeRefOrGetter<ResendCodeAuthSignupEmailResendPostMutationRequest>}, TContext> & { client?: QueryClient },
-  client?: Partial<RequestConfig<ResendCodeAuthSignupEmailResendPostMutationRequest>> & { client?: typeof fetch },
+  mutation?: MutationObserverOptions<ResendCodeAuthSignupEmailResendPostMutationResponse, ResponseErrorConfig<ResendCodeAuthSignupEmailResendPost400 | ResendCodeAuthSignupEmailResendPost410 | ResendCodeAuthSignupEmailResendPost422 | ResendCodeAuthSignupEmailResendPost429>, {data: MaybeRefOrGetter<ResendCodeAuthSignupEmailResendPostMutationRequest>}, TContext> & { client?: QueryClient },
+  client?: Partial<RequestConfig<ResendCodeAuthSignupEmailResendPostMutationRequest>> & { client?: Client },
 }
  = {}) {
-  const { mutation = {}, client: config = {} } = options ?? {}
-  const { client: queryClient, ...mutationOptions } = mutation;
-  const mutationKey = mutationOptions?.mutationKey ?? resendCodeAuthSignupEmailResendPostMutationKey()
 
-  return useMutation<ResendCodeAuthSignupEmailResendPostMutationResponse, ResponseErrorConfig<ResendCodeAuthSignupEmailResendPost400 | ResendCodeAuthSignupEmailResendPost410 | ResendCodeAuthSignupEmailResendPost422 | ResendCodeAuthSignupEmailResendPost429>, {data?: ResendCodeAuthSignupEmailResendPostMutationRequest}, TContext>({
-    mutationFn: async({ data }) => {
-      return resendCodeAuthSignupEmailResendPost(data, config)
-    },
-    mutationKey,
-    ...mutationOptions
-  }, queryClient)
+          const { mutation = {}, client: config = {} } = options ?? {}
+          const { client: queryClient, ...mutationOptions } = mutation;
+          const mutationKey = mutationOptions?.mutationKey ?? resendCodeAuthSignupEmailResendPostMutationKey()
+
+          return useMutation<ResendCodeAuthSignupEmailResendPostMutationResponse, ResponseErrorConfig<ResendCodeAuthSignupEmailResendPost400 | ResendCodeAuthSignupEmailResendPost410 | ResendCodeAuthSignupEmailResendPost422 | ResendCodeAuthSignupEmailResendPost429>, {data: ResendCodeAuthSignupEmailResendPostMutationRequest}, TContext>({
+            mutationFn: async({ data }) => {
+              return resendCodeAuthSignupEmailResendPost(data, config)
+            },
+            mutationKey,
+            ...mutationOptions
+          }, queryClient)
+      
 }
