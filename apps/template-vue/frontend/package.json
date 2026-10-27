@@ -53,13 +53,13 @@
     "eslint-plugin-vue": "^10.11.1",
     "openapi-typescript": "^7.13.0",
     "reka-ui": "^2.10.5",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
     "tailwindcss-motion": "^1.1.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.70.1",
-    "vite": "^5.4.21",
+    "vite": "^6.4.4",
     "vue-tsc": "^2.2.12"
   }
 }

@@ -23,5 +23,17 @@
   "packageManager": "pnpm@10.22.0",
   "devDependencies": {
     "@playwright/test": "^1.63.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "dompurify": "^3.4.17",
+      "shell-quote": "^1.11.0",
+      "undici@6": "^6.29.1",
+      "undici@7": "^7.30.1",
+      "fast-uri": "^3.1.9",
+      "follow-redirects": "^1.16.1",
+      "hono": "^4.13.11",
+      "source-map-js": "^1.2.2"
+    }
   }
 }
