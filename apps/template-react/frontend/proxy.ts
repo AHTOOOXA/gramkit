@@ -12,7 +12,13 @@ const intlMiddleware = createMiddleware(routing);
  * Route access levels:
  * - Public routes (/,/demo): accessible to everyone, no redirects
  * - Guest-only routes (/login, /marketing): redirect authenticated users to home
- * - Auth-required routes (/profile, /admin): redirect guests to login
+ * - Everything else passes through. Auth-required pages (/profile, /admin) guard
+ *   themselves on the client (AuthRequired, AdminShell → useAdminGuard) and the
+ *   backend RBAC answers 403. The proxy can't tell a guest from a user: the
+ *   session cookie is set by the API on its own host (api.example.com, host-only
+ *   unless SESSION__COOKIE_DOMAIN is set), and a Telegram Mini App sends initData
+ *   only with API requests, never with page navigations. Redirecting "guests"
+ *   here sent every logged-in user from /admin and /profile to /login.
  */
 export default function proxy(request: NextRequest) {
   // Apply i18n middleware for locale routing
@@ -41,16 +47,11 @@ export default function proxy(request: NextRequest) {
   const publicRoutes = ['/', '/demo'];
   // Guest-only: redirect authenticated users to home
   const guestOnlyRoutes = ['/login', '/marketing'];
-  // Auth-required: redirect guests to login
-  const authRequiredRoutes = ['/profile', '/admin', '/test-gen'];
 
   const isPublicRoute = publicRoutes.some(
     (route) => pathWithoutLocale === route || (route !== '/' && pathWithoutLocale.startsWith(route + '/'))
   );
   const isGuestOnlyRoute = guestOnlyRoutes.some(
-    (route) => pathWithoutLocale === route || pathWithoutLocale.startsWith(route + '/')
-  );
-  const isAuthRequiredRoute = authRequiredRoutes.some(
     (route) => pathWithoutLocale === route || pathWithoutLocale.startsWith(route + '/')
   );
 
@@ -64,11 +65,6 @@ export default function proxy(request: NextRequest) {
   // Rule 2: Guest-only routes - redirect authenticated users to home
   if (isGuestOnlyRoute && isAuthenticated) {
     return createRedirect(request, `/${locale}`);
-  }
-
-  // Rule 3: Auth-required routes - redirect guests to login
-  if (isAuthRequiredRoute && !isAuthenticated) {
-    return createRedirect(request, `/${locale}/login`);
   }
 
   // Default: allow through (unknown routes)

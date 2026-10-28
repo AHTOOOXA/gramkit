@@ -13,7 +13,7 @@ import { useAuth } from './useAuth';
  *
  * This is a UX guard only — the backend RBAC (`AdminUser`/`OwnerUser`) is the
  * real authority; a non-admin who reaches an admin route just gets 403s + this
- * redirect. (`proxy.ts` only sends guests to /login.)
+ * redirect (guests included: `proxy.ts` can't see the API's session cookie).
  *
  * Port of template-vue's `useAdminGuard`.
  *
