@@ -80,8 +80,9 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy standalone build artifacts
-# Note: standalone output includes the server and minimal node_modules
-COPY --from=builder /workspace/apps/template-react/frontend/public ./public
+# Note: standalone output includes the server and minimal node_modules. The server runs from
+# apps/template-react/frontend (monorepo layout), so public/ and .next/static go next to it.
+COPY --from=builder /workspace/apps/template-react/frontend/public ./apps/template-react/frontend/public
 COPY --from=builder --chown=nextjs:nodejs /workspace/apps/template-react/frontend/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /workspace/apps/template-react/frontend/.next/static ./apps/template-react/frontend/.next/static
 
