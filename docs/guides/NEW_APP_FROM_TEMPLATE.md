@@ -68,7 +68,6 @@ Replace all container name references:
 
 Current port usage:
 ```
-tarot:          Frontend 5173, Backend 3779, DB 5432, Redis 6379
 template-vue:   Frontend 5175, Backend 8002, DB 5454, Redis 6390
 template-react: Frontend 5176, Backend 8003, DB 5455, Redis 6391
 ```
@@ -761,7 +760,7 @@ This is the single source of truth - AppNav reads from this config.
 
 **Note:** Shells handle padding automatically based on the layout.
 
-**Example: MaxStat uses hamburger** because it has 10+ admin tabs.
+**Example:** an app with 10+ admin tabs uses the hamburger.
 
 ### Backend (both templates)
 ```bash
@@ -1178,10 +1177,8 @@ make schema APP=myapp  # Regenerate frontend types
 
 | App | Frontend | Backend | Database | Redis |
 |-----|----------|---------|----------|-------|
-| tarot | 5173 | 3779 | 5432 | 6379 |
 | template-vue | 5174 | 8002 | 5454 | 6390 |
 | template-react | 3001 | 8003 | 5455 | 6391 |
-| maxstat | 3002 | - | - | - |
 | **Next available** | **3004** | **8005** | **5457** | **6393** |
 
 ---
