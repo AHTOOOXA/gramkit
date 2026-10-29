@@ -33,6 +33,7 @@ from core.infrastructure.logging import get_logger, setup_logging
 from core.infrastructure.posthog import setup_posthog
 from core.infrastructure.rabbit.producer import RabbitMQProducer
 from core.infrastructure.redis import RedisClient
+from core.infrastructure.telegram.retry import with_retries
 from core.scripts.base import BaseScript
 
 # Note: setup_logging() and setup_posthog() are now called in ScriptRunner.__init__
@@ -131,7 +132,7 @@ class ScriptRunner:
         }
 
         try:
-            ctx["bot"] = Bot(token=self.tgbot_config.token)
+            ctx["bot"] = with_retries(Bot(token=self.tgbot_config.token))
             logger.info("Bot initialized")
 
             ctx["redis"] = RedisClient(self.redis_config)

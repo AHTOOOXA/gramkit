@@ -16,6 +16,7 @@ from core.infrastructure.telegram.middlewares import (
     I18nMiddleware,
     ServiceMiddleware,
 )
+from core.infrastructure.telegram.retry import with_retries
 
 
 class BotConfig(Protocol):
@@ -107,7 +108,7 @@ async def create_tg_bot(
         await deps.close()
     """
     # Create bot
-    bot = Bot(token=config.token, default=DefaultBotProperties(parse_mode="HTML"))
+    bot = with_retries(Bot(token=config.token, default=DefaultBotProperties(parse_mode="HTML")))
 
     # Create dispatcher with Redis storage
     storage = RedisStorage.from_url(

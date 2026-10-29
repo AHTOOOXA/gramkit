@@ -4,10 +4,11 @@ from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 
 from core.infrastructure.config import settings
+from core.infrastructure.telegram.retry import with_retries
 
 
 async def get_bot() -> AsyncGenerator[Bot]:
-    bot = Bot(token=settings.bot.token, default=DefaultBotProperties(parse_mode="Markdown"))
+    bot = with_retries(Bot(token=settings.bot.token, default=DefaultBotProperties(parse_mode="Markdown")))
     try:
         yield bot
     finally:

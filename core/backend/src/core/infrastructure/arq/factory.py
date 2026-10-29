@@ -13,6 +13,7 @@ from core.infrastructure.database.setup import create_engine, create_session_poo
 from core.infrastructure.dependencies import Dependencies
 from core.infrastructure.logging import get_logger
 from core.infrastructure.telegram.admin_messages import announce_start
+from core.infrastructure.telegram.retry import with_retries
 
 logger = get_logger(__name__)
 
@@ -235,7 +236,7 @@ def create_worker_settings(
         logger.info("Worker started")
 
         # Initialize long-lived clients
-        ctx["bot"] = Bot(token=bot_config.token)
+        ctx["bot"] = with_retries(Bot(token=bot_config.token))
         if version:
             await announce_start("worker", version, ctx["bot"])
 

@@ -10,6 +10,7 @@ from core.infrastructure.database.models.enums import PaymentEventType, PaymentP
 from core.infrastructure.database.models.payments import Payment
 from core.infrastructure.logging import get_logger
 from core.infrastructure.telegram.admin_messages import esc, tags
+from core.infrastructure.telegram.retry import with_retries
 from core.services.payments.types import PaymentProviderInterface
 
 logger = get_logger(__name__)
@@ -51,7 +52,7 @@ class TelegramStarsProvider(PaymentProviderInterface):
         self.repo = repo
         self.services = services
         self.products = products
-        self.bot = Bot(token=settings.bot.token)
+        self.bot = with_retries(Bot(token=settings.bot.token))
 
     async def create_payment(
         self, payment: Payment, return_url: str = None, locale: str | None = None

@@ -22,6 +22,7 @@ from aiogram.exceptions import TelegramAPIError, TelegramBadRequest
 from aiogram.types import InputRichMessage
 
 from core.infrastructure.logging import get_logger
+from core.infrastructure.telegram.retry import with_retries
 
 logger = get_logger(__name__)
 
@@ -189,7 +190,7 @@ async def announce_start(service: str, version: str, bot: Bot | None = None) -> 
     own_bot = bot is None
     try:
         if own_bot:
-            bot = Bot(token=settings.bot.token)
+            bot = with_retries(Bot(token=settings.bot.token))
         text = (
             f"🚀 <b>{esc(getattr(settings, 'app_name', 'app'))} {esc(version)}</b> · {esc(service)} started"
             f" <i>({esc(settings.observability.logfire_environment)})</i>\n{tags('deploy')}"
@@ -212,7 +213,7 @@ async def alert_owners(text: str) -> None:
         return
     bot = None
     try:
-        bot = Bot(token=settings.bot.token)
+        bot = with_retries(Bot(token=settings.bot.token))
         await send_admin_message(bot, text)
     except Exception as e:
         logger.error(f"Failed to alert owners: {e}")
