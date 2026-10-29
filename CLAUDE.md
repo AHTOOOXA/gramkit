@@ -15,7 +15,7 @@ Monorepo: `core/` (shared platform) + `apps/` (per-product). This file is the **
 
 **Big UI work goes in vertical slices, not layers.** The first deliverable is one screen or flow finished end to end, something a person can open and judge. Don't start with "foundations for every screen".
 
-**Prefer built-ins over hand-rolled flows:** `/code-review` (`--fix` applies), `/security-review`, `/deep-research`, the `qa` agent / `/verify` to confirm a UI change in the browser.
+**Prefer built-ins over hand-rolled flows:** `/code-review` (`--fix` applies), `/security-review`, `/deep-research`, `/verify`, or the Chrome DevTools MCP (`chrome-headless`: open the page, take screenshots) to confirm a UI change in the browser.
 
 **Reporting back:** after a UI change, say **where to look** (URL/route), **what changed** and **what to check**.
 

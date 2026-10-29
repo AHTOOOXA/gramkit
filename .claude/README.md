@@ -1,6 +1,6 @@
 # `.claude/` — Claude Code config for this monorepo
 
-This directory holds the project's Claude Code setup: path-scoped rules, hooks, an agent and settings. The always-on rules live in the root `CLAUDE.md` — read that first.
+This directory holds the project's Claude Code setup: path-scoped rules, hooks and settings. The always-on rules live in the root `CLAUDE.md` — read that first.
 
 ## What's here
 
@@ -25,14 +25,11 @@ This directory holds the project's Claude Code setup: path-scoped rules, hooks, 
 │   ├── guard-edit.sh       # PreToolUse(Edit|Write): blocks hand edits of generated src/gen
 │   └── session-start.sh    # SessionStart: branch, ahead/behind, dirty files, shared-checkout warning
 │
-├── agents/                 # Custom subagents (registered via `name:` frontmatter)
-│   └── qa.md               # Change-aware visual QA via the Chrome DevTools MCP
-│
 ├── settings.json           # Plugins (LSPs), hooks, worktree.baseRef = head
 └── settings.local.json     # Your local permission allowlist (gitignored, machine-specific)
 ```
 
-Also at the repo root: `.mcp.json` (Chrome DevTools servers for the `qa` agent) and `.worktreeinclude` (the `.env`
+Also at the repo root: `.mcp.json` (the Chrome DevTools MCP server, for checking UI changes in a browser) and `.worktreeinclude` (the `.env`
 files copied into every `claude -w` worktree).
 
 The hooks need `jq` and `bash` on your `PATH`.

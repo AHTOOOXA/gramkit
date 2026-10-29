@@ -164,6 +164,9 @@ you built from a template.
 
 ### Changed
 
+- Claude Code: the `qa` agent (`.claude/agents/qa.md`) is gone. Check a UI change in the browser with the
+  Chrome DevTools MCP from `.mcp.json` (open the page, take screenshots) or `/verify`.
+
 - Admin list search matches `%` and `_` literally.
 - `PATCH /users/me/seen-features` answers 403 for the guest user. Every logged-out web visitor is the same
   guest row, so one visitor's dismissal would have hidden the moment for all of them.

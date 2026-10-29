@@ -143,8 +143,7 @@ change needs `make migration APP=<app>` in every app.
 CLAUDE.md          → always-on rules, conventions, make workflow
 .claude/rules/     → layer conventions, auto-loaded by path (backend, testing, vue, react, errors, ...)
 .claude/hooks/     → hard stops for the "never" rules (git add -A, --no-verify, raw pytest, editing gen/)
-.claude/agents/    → qa (change-aware visual QA in Chrome)
-.mcp.json          → Chrome DevTools MCP servers for the qa agent
+.mcp.json          → Chrome DevTools MCP (headless) for checking UI changes in a browser
 ```
 
 Generic work leans on Claude Code's built-ins: `/code-review`, `/security-review`, `/deep-research`,
@@ -209,8 +208,7 @@ pnpm typecheck                 # Type checking
 gramkit/
 ├── .claude/
 │   ├── rules/           # Layer conventions, auto-loaded by path
-│   ├── hooks/           # Guard + session-start hooks
-│   └── agents/          # Subagents (qa)
+│   └── hooks/           # Guard + session-start hooks
 ├── core/
 │   ├── backend/         # Shared Python (FastAPI, SQLAlchemy)
 │   ├── frontend/        # Shared Vue.js code
@@ -242,7 +240,7 @@ gramkit/
 - **Type-safe end-to-end** — Change backend, frontend types update automatically
 - **Monorepo done right** — Shared core without dependency hell
 - **Escape hatches** — Every feature can be disabled or swapped
-- **Claude Code native** — Rules, hooks and a QA agent tuned to this codebase
+- **Claude Code native** — Rules and guard hooks tuned to this codebase
 - **Two frameworks** — Same patterns in Vue and React, pick your preference
 
 ## Changelog
