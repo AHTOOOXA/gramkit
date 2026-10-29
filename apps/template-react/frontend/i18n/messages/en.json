@@ -5,7 +5,7 @@
     "demo": "Demo",
     "profile": "Profile",
     "admin": "Admin",
-    "getStarted": "Get Started",
+    "getStarted": "Sign in",
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
@@ -13,7 +13,10 @@
     "name": "Template App"
   },
   "footer": {
-    "rights": "All rights reserved."
+    "license": "MIT license",
+    "github": "GitHub",
+    "vueDemo": "Vue demo",
+    "changelog": "Changelog"
   },
   "demo": {
     "title": "Tech Demo",
@@ -302,19 +305,24 @@
     }
   },
   "homePage": {
-    "badge": "Production-Ready Template",
-    "title": "React Template",
-    "heroSubtitle": "Production-ready web app template with mobile-first design and Telegram Mini App support",
-    "getStarted": "Get Started",
-    "explorePatterns": "Explore Patterns",
+    "meta": {
+      "title": "Gramkit — Telegram Mini App + web starter on FastAPI and Next.js",
+      "description": "Open-source monorepo starter for Telegram Mini Apps and web apps: FastAPI, Next.js or Vue, Postgres, Redis, aiogram. Auth, Telegram Stars and YooKassa payments, an admin panel, OpenAPI-generated TypeScript hooks. MIT."
+    },
+    "badge": "Open source · MIT",
+    "title": "Gramkit",
+    "heroSubtitle": "Telegram Mini App + web starter on FastAPI and Next.js: auth, payments, an admin panel and a bot, type-safe end to end",
+    "getStarted": "Create your app",
     "tryVueVersion": "Try Vue Version",
+    "github": "GitHub",
+    "inProduction": "Runs in production:",
     "features": {
       "title": "What You Get",
-      "subtitle": "Battle-tested features, not boilerplate",
+      "subtitle": "What the template ships with",
       "items": {
         "authentication": {
           "name": "Authentication",
-          "description": "Email + OTP verification, Telegram OAuth, password reset flows"
+          "description": "Email + OTP verification, Telegram OAuth, password reset, account linking"
         },
         "rbac": {
           "name": "Role-Based Access",
@@ -346,12 +354,52 @@
         }
       }
     },
+    "pillars": {
+      "title": "Admin, Payments & Bot",
+      "subtitle": "Admin panel, payments and the bot, from the same core/",
+      "admin": {
+        "title": "Admin panel",
+        "lead": "Users, payments, broadcasts and an audit log, in the browser.",
+        "items": [
+          "Overview KPIs, revenue, subscription and MRR charts",
+          "Users: search and filters, payments, gift or revoke a subscription, change roles",
+          "Broadcasts: compose, preview, send now or in the morning or evening slot",
+          "Marketing links: one code per placement, with the signups and payback it brought",
+          "Maintenance tasks with a dry run; applying is owner-only",
+          "An audit log of every admin action"
+        ]
+      },
+      "payments": {
+        "title": "Payments",
+        "lead": "One PaymentsService over Telegram Stars and YooKassa.",
+        "items": [
+          "Stars: one-time purchases and subscriptions that renew and cancel correctly, plus refunds",
+          "YooKassa: cards, the embedded widget, auto-renewal and refund webhooks",
+          "An idempotency key on every charge; webhooks re-fetch the payment instead of trusting the body",
+          "Failed renewals go past due, with a grace period and daily retries",
+          "At most one live subscription per user, enforced by the database",
+          "Purchase, renewal, cancel and failure alerts in your Telegram"
+        ]
+      },
+      "bot": {
+        "title": "Bot & notifications",
+        "lead": "aiogram 3, on the same users and the same database.",
+        "items": [
+          "Scheduled messages in each user's local morning or evening",
+          "Text, photos or native polls, with a delivery log for frequency caps",
+          "Users who blocked the bot are skipped, and picked up again when they're back",
+          "Retries on network errors, 5xx and short flood limits",
+          "Nightly database backups sent to the owners, plus a /backup command",
+          "A deploy announcement each time production starts"
+        ]
+      }
+    },
     "architecture": {
       "title": "Modern Stack, Clean Architecture",
       "subtitle": "End-to-end type safety from database to UI",
       "monorepoTitle": "Monorepo Structure",
       "highlightsTitle": "Technical Highlights",
-      "highlightsSubtitle": "Not just a stack — solutions to real problems",
+      "highlightsSubtitle": "How the code is organised",
       "highlights": {
         "endToEnd": {
           "title": "End-to-End Type Safety",
@@ -417,7 +465,7 @@
         "yourAppDetails": "tunnel • :1234 • api"
       },
       "turbopack": {
-        "title": "Next.js 16.1 + Turbopack",
+        "title": "Next.js 16 + Turbopack",
         "highlights": [
           {
             "title": "Persistent Cache",
@@ -436,7 +484,7 @@
     },
     "included": {
       "title": "Everything Wired Up",
-      "subtitle": "Not just scaffolding — real, working features",
+      "subtitle": "Pages, demos and auth flows in the template",
       "pages": {
         "title": "5 Pages",
         "subtitle": "Production-ready routes",
@@ -444,8 +492,8 @@
           "Home marketing page",
           "Tech demos (17 patterns)",
           "Profile management",
-          "Admin dashboard",
-          "Extensible structure"
+          "Admin panel (7 sections)",
+          "Auth: login, sign-up, password reset"
         ]
       },
       "demos": {
@@ -473,58 +521,16 @@
     },
     "claudeCode": {
       "title": "Built for Claude Code",
-      "subtitle": "Rules, hooks, skills and agents — conventions load on their own, the never-rules are enforced",
+      "subtitle": "CLAUDE.md, path-scoped rules and guard hooks, tuned to this repo",
       "orchestration": {
-        "title": "How the Setup Is Layered",
-        "layer0": "CLAUDE.md → monorepo guide: how to work, commands, never-rules",
-        "layer1": "rules/ → layer conventions, auto-loaded by file path",
-        "layer2": "hooks/ → block the never-rules and explain the fix",
-        "layer3": "skills/ + agents/ → project workflows, developer-agent, qa"
-      },
-      "slashCommands": {
-        "title": "Slash Commands",
-        "items": {
-          "codeReview": {
-            "cmd": "/code-review",
-            "desc": "Review the diff; --fix applies the findings"
-          },
-          "codeReviewUltra": {
-            "cmd": "/code-review ultra",
-            "desc": "Deep multi-agent review in the cloud"
-          },
-          "simplify": {
-            "cmd": "/simplify",
-            "desc": "Reuse, simplification and efficiency cleanups"
-          },
-          "securityReview": {
-            "cmd": "/security-review",
-            "desc": "Security pass over pending changes"
-          },
-          "loop": {
-            "cmd": "/loop",
-            "desc": "Repeat a prompt or command on an interval"
-          },
-          "init": {
-            "cmd": "/init",
-            "desc": "Write a CLAUDE.md for a new app"
-          }
-        }
-      },
-      "structuredTasks": {
-        "title": "Task Docs",
-        "description": "Bigger work is planned in a free-form doc in docs/tasks/{name}/: brief → decisions → slices. A HANDOFF.md lets the next session pick it up."
-      },
-      "developerAgent": {
-        "title": "Developer Agent",
-        "intro": "Takes a self-contained slice in its own context. Returns a summary, not code dumps.",
-        "items": [
-          "Loads the layer rules for the files it touches",
-          "After changes: make test, make lint, make schema",
-          "Commits: conventional format, its own paths only"
-        ]
+        "title": ".claude/ setup",
+        "layer0": "CLAUDE.md → monorepo guide: commands, conventions, never-rules",
+        "layer1": "rules/ → layer conventions, loaded by file path",
+        "layer2": "hooks/ → block git add -A, git stash, --no-verify, raw pytest/alembic and edits to src/gen",
+        "layer3": "settings.json → session-start hook, pyright and TypeScript LSPs"
       },
       "patternDocs": {
-        "title": "10 Layer Rules in .claude/rules/",
+        "title": "10 layer rules in .claude/rules/",
         "docs": [
           "analytics.md",
           "backend.md",
@@ -537,88 +543,42 @@
           "testing.md",
           "vue.md"
         ]
-      },
-      "example": {
-        "title": "Example: Adding a Feature",
-        "plan": {
-          "cmd": "Plan agent",
-          "desc": "\"add user notifications\"",
-          "result": "→ Writes the design to docs/tasks/notifications/"
-        },
-        "developerAgent": {
-          "cmd": "developer-agent",
-          "desc": "Builds one slice end to end, runs tests",
-          "result": "→ Returns a summary with file:line refs"
-        },
-        "qa": {
-          "cmd": "qa agent",
-          "desc": "Checks the changed screens in the browser",
-          "result": "→ Reports what it saw, with screenshots"
-        },
-        "review": {
-          "cmd": "/code-review",
-          "desc": "Reviews the diff before the PR",
-          "result": "→ Findings ranked by severity"
-        }
       }
     },
     "quickStart": {
       "title": "Get Started",
-      "subtitle": "Prerequisites: Docker, pnpm, make",
+      "subtitle": "Prerequisites: Docker, Node.js with pnpm, make",
       "run": {
-        "title": "Run the Template",
-        "subtitle": "Start development in 3 steps",
-        "steps": [
-          {
-            "num": 0,
-            "title": "Setup Cloudflare Tunnel",
-            "desc": "Required for Telegram Mini App testing — exposes localhost via HTTPS"
-          },
-          {
-            "num": 1,
-            "title": "Clone & install",
-            "code": "pnpm install"
-          },
-          {
-            "num": 2,
-            "title": "Configure environment",
-            "code": "cp .env.example .env"
-          },
-          {
-            "num": 3,
-            "title": "Start everything",
-            "code": "make up APP=template-react"
-          }
+        "title": "Run the template",
+        "commands": [
+          "git clone https://github.com/AHTOOOXA/gramkit",
+          "cd gramkit",
+          "pnpm install",
+          "cp .env.example .env",
+          "cp apps/template-react/.env.example apps/template-react/.env",
+          "make up APP=template-react"
         ],
-        "openAt": "Open http://localhost:3001/template-react"
+        "note": "Opens at http://localhost:3001/template-react. Testing inside Telegram needs HTTPS: add a Cloudflare tunnel token to .env (optional).",
+        "prompt": "Set up this repo on my machine: run pnpm install, create .env and apps/template-react/.env from the examples, start the template with make up APP=template-react and give me the local URL. Then list the .env keys I still need to fill in (bot token, payments, email) and what each one turns on."
       },
       "create": {
-        "title": "Create Your Own App",
-        "subtitle": "Use template as foundation",
-        "steps": [
-          {
-            "num": 1,
-            "title": "Copy template",
-            "code": "cp -r apps/template-react apps/your-app"
-          },
-          {
-            "num": 2,
-            "title": "Update configs",
-            "code": "package.json, docker-compose, .env"
-          },
-          {
-            "num": 3,
-            "title": "Create database",
-            "code": "make upgrade APP=your-app"
-          },
-          {
-            "num": 4,
-            "title": "Start building",
-            "code": "Remove demo code, add your features"
-          }
+        "title": "Create your app",
+        "commands": [
+          "cp -r apps/template-react apps/myapp",
+          "# rename the project and containers, pick free ports",
+          "make upgrade APP=myapp",
+          "make up APP=myapp"
         ],
-        "seeDetails": "See CLAUDE.md for details"
-      }
+        "note": "Full checklist: docs/guides/NEW_APP_FROM_TEMPLATE.md",
+        "prompt": "Create a new app called myapp from apps/template-react, following docs/guides/NEW_APP_FROM_TEMPLATE.md: rename the project and containers, pick free ports, set up its .env, run make upgrade APP=myapp and start it with make up APP=myapp."
+      },
+      "prompt": {
+        "label": "Or ask Claude Code",
+        "copy": "Copy prompt",
+        "copied": "Copied",
+        "copyFailed": "Couldn't copy. Select the text instead."
+      },
+      "copy": "Copy commands"
     },
     "testing": {
       "title": "Testing That Works",
@@ -648,15 +608,9 @@
         "quickDesc": "Sub-second feedback"
       }
     },
-    "cta": {
-      "title": "Ready to Explore?",
-      "tryDemos": "Try Live Demos",
-      "demoSubtitle": "caching, WebSocket, AI streaming",
-      "testAuth": "Test Auth Flows",
-      "authSubtitle": "friend invites & auth"
-    },
     "footer": {
-      "text": "React Template",
+      "text": "Gramkit · React template",
+      "githubLink": "GitHub",
       "vueLink": "Vue version also available"
     }
   },

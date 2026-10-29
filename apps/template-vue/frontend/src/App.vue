@@ -13,6 +13,7 @@ import { HOME_ROUTE } from '@app/router/router';
 import DebugPanel from '@app/presentation/components/DebugPanel.vue';
 import ErrorScreen from '@app/presentation/components/shared/ErrorScreen.vue';
 import LoadingScreen from '@app/presentation/components/shared/LoadingScreen.vue';
+import MarketingFooter from '@app/presentation/components/home/MarketingFooter.vue';
 
 const platform = usePlatform();
 const { showBackButton, hideBackButton } = platform;
@@ -122,6 +123,9 @@ function onBeforeSegue(): void {
             </div>
           </transition>
         </RouterView>
+        <template v-if="route.name === 'marketing'" #footer>
+          <MarketingFooter />
+        </template>
       </AppShell>
     </template>
   </div>

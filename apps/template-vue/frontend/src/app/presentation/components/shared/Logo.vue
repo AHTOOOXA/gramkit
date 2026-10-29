@@ -24,7 +24,7 @@ const textSize = computed(() => props.size === 'sm' ? 'text-base' : 'text-lg');
   >
     <FlaskConical :class="[iconSize, 'text-primary']" />
     <span v-if="showText" :class="[textSize, 'font-semibold text-foreground']">
-      Template
+      Gramkit
     </span>
   </RouterLink>
 </template>

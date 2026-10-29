@@ -5,9 +5,15 @@
     "demo": "Demo",
     "profile": "Profile",
     "admin": "Admin",
-    "getStarted": "Get Started",
+    "getStarted": "Sign in",
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
+  },
+  "footer": {
+    "license": "MIT license",
+    "github": "GitHub",
+    "reactDemo": "React demo",
+    "changelog": "Changelog"
   },
   "demo": {
     "title": "Tech Demo",
@@ -120,7 +126,7 @@
       "noteText": "500 errors retry up to 3 times with exponential backoff. 404 errors fail immediately because they're not recoverable."
     },
     "suspense": {
-      "title": "Loading States",
+      "title": "Loading After a Cache Clear",
       "description": "Demonstrates TanStack Query loading states with cache clearing.",
       "suspenseLoading": "Loading...",
       "errorOccurred": "An error occurred",
@@ -168,18 +174,24 @@
     }
   },
   "homePage": {
-    "badge": "Production-Ready Template",
-    "title": "Vue Template",
-    "subtitle": "Production-ready web app template with mobile-first design and Telegram Mini App support",
-    "getStarted": "Get Started",
-    "explorePatterns": "Explore Patterns",
+    "meta": {
+      "title": "Gramkit — Telegram Mini App + web starter on FastAPI and Vue",
+      "description": "Open-source monorepo starter for Telegram Mini Apps and web apps: FastAPI, Vue or Next.js, Postgres, Redis, aiogram. Auth, Telegram Stars and YooKassa payments, an admin panel, OpenAPI-generated TypeScript hooks. MIT."
+    },
+    "badge": "Open source · MIT",
+    "title": "Gramkit",
+    "heroSubtitle": "Telegram Mini App + web starter on FastAPI and Vue: auth, payments, an admin panel and a bot, type-safe end to end",
+    "getStarted": "Create your app",
+    "tryReactVersion": "Try React Version",
+    "github": "GitHub",
+    "inProduction": "Runs in production:",
     "features": {
       "title": "What You Get",
-      "subtitle": "Battle-tested features, not boilerplate",
+      "subtitle": "What the template ships with",
       "items": {
         "authentication": {
           "name": "Authentication",
-          "description": "Email + OTP verification, Telegram OAuth, password reset flows"
+          "description": "Email + OTP verification, Telegram OAuth, password reset, account linking"
         },
         "rbac": {
           "name": "Role-Based Access",
@@ -193,7 +205,7 @@
           "name": "Mobile-First Design",
           "description": "Responsive layouts, bottom nav, Telegram Mini App detection"
         },
-        "typesat": {
+        "typeSafe": {
           "name": "Type-Safe API",
           "description": "Auto-generated TypeScript hooks from OpenAPI schema"
         },
@@ -211,9 +223,52 @@
         }
       }
     },
+    "pillars": {
+      "title": "Admin, Payments & Bot",
+      "subtitle": "Admin panel, payments and the bot, from the same core/",
+      "admin": {
+        "title": "Admin panel",
+        "lead": "Users, payments, broadcasts and an audit log, in the browser.",
+        "items": [
+          "Overview KPIs, revenue, subscription and MRR charts",
+          "Users: search and filters, payments, gift or revoke a subscription, change roles",
+          "Broadcasts: compose, preview, send now or in the morning or evening slot",
+          "Marketing links: one code per placement, with the signups and payback it brought",
+          "Maintenance tasks with a dry run; applying is owner-only",
+          "An audit log of every admin action"
+        ]
+      },
+      "payments": {
+        "title": "Payments",
+        "lead": "One PaymentsService over Telegram Stars and YooKassa.",
+        "items": [
+          "Stars: one-time purchases and subscriptions that renew and cancel correctly, plus refunds",
+          "YooKassa: cards, the embedded widget, auto-renewal and refund webhooks",
+          "An idempotency key on every charge; webhooks re-fetch the payment instead of trusting the body",
+          "Failed renewals go past due, with a grace period and daily retries",
+          "At most one live subscription per user, enforced by the database",
+          "Purchase, renewal, cancel and failure alerts in your Telegram"
+        ]
+      },
+      "bot": {
+        "title": "Bot & notifications",
+        "lead": "aiogram 3, on the same users and the same database.",
+        "items": [
+          "Scheduled messages in each user's local morning or evening",
+          "Text, photos or native polls, with a delivery log for frequency caps",
+          "Users who blocked the bot are skipped, and picked up again when they're back",
+          "Retries on network errors, 5xx and short flood limits",
+          "Nightly database backups sent to the owners, plus a /backup command",
+          "A deploy announcement each time production starts"
+        ]
+      }
+    },
     "architecture": {
       "title": "Modern Stack, Clean Architecture",
       "subtitle": "End-to-end type safety from database to UI",
+      "monorepoTitle": "Monorepo Structure",
+      "highlightsTitle": "Technical Highlights",
+      "highlightsSubtitle": "How the code is organised",
       "highlights": {
         "endToEnd": {
           "title": "End-to-End Type Safety",
@@ -246,11 +301,11 @@
       "subtitle": "Localhost for speed, tunnel for Telegram testing",
       "localhost": {
         "title": "Direct Localhost",
-        "subtitle": "Native Vite — fastest iteration, no Docker overhead",
+        "subtitle": "Native Vite dev server — fastest iteration, no Docker overhead",
         "recommended": "Recommended",
-        "url": "http://localhost:5174/template",
+        "url": "http://localhost:5174/template-vue/",
         "benefits": [
-          "~10x faster warm starts with Vite cache",
+          "Instant HMR from Vite",
           "Direct API calls (CORS enabled in dev)",
           "Frontend runs natively on macOS"
         ]
@@ -258,7 +313,7 @@
       "tunnel": {
         "title": "Tunnel Mode",
         "subtitle": "Via nginx + Cloudflare tunnel — for Telegram Mini App testing",
-        "url": "https://local.yourdomain.com/template",
+        "url": "https://local.yourdomain.com/template-vue/",
         "benefits": [
           "HTTPS with valid certificate",
           "Telegram WebApp authentication",
@@ -268,29 +323,37 @@
       "gateway": {
         "title": "Gateway Hub",
         "subtitle": "nginx landing page with quick access to all apps",
-        "description": "Access at https://local.yourdomain.com/ — one hub for tunnel links, localhost ports, and API docs"
+        "description": "Access at https://local.yourdomain.com/ — one hub for tunnel links, localhost ports, and API docs",
+        "apps": {
+          "react": "template-react",
+          "vue": "template-vue",
+          "yourApp": "your-app"
+        },
+        "appDetails": "tunnel • :3001 • api",
+        "vueDetails": "tunnel • :5174 • api",
+        "yourAppDetails": "tunnel • :1234 • api"
       },
-      "turbopack": {
-        "title": "Vite + Vitest",
+      "devServer": {
+        "title": "Vue 3 + Vite",
         "highlights": [
           {
-            "title": "Fast Builds",
-            "description": "Vite hot module replacement for instant feedback"
+            "title": "Instant HMR",
+            "description": "Vite hot module replacement keeps component state between edits"
           },
           {
             "title": "Native Performance",
             "description": "Frontends run locally on macOS, not in Docker containers"
           },
           {
-            "title": "Vue 3 Ready",
-            "description": "Composition API, script setup, and latest Vue features"
+            "title": "Composition API",
+            "description": "script setup, TypeScript and composables throughout"
           }
         ]
       }
     },
     "included": {
       "title": "Everything Wired Up",
-      "subtitle": "Not just scaffolding — real, working features",
+      "subtitle": "Pages, demos and auth flows in the template",
       "pages": {
         "title": "5 Pages",
         "subtitle": "Production-ready routes",
@@ -298,8 +361,8 @@
           "Home marketing page",
           "Tech demos (17 patterns)",
           "Profile management",
-          "Admin dashboard",
-          "Extensible structure"
+          "Admin panel (7 sections)",
+          "Auth: login, sign-up, password reset"
         ]
       },
       "demos": {
@@ -327,58 +390,16 @@
     },
     "claudeCode": {
       "title": "Built for Claude Code",
-      "subtitle": "Rules, hooks, skills and agents — conventions load on their own, the never-rules are enforced",
+      "subtitle": "CLAUDE.md, path-scoped rules and guard hooks, tuned to this repo",
       "orchestration": {
-        "title": "How the Setup Is Layered",
-        "layer0": "CLAUDE.md → monorepo guide: how to work, commands, never-rules",
-        "layer1": "rules/ → layer conventions, auto-loaded by file path",
-        "layer2": "hooks/ → block the never-rules and explain the fix",
-        "layer3": "skills/ + agents/ → project workflows, developer-agent, qa"
-      },
-      "slashCommands": {
-        "title": "Slash Commands",
-        "items": {
-          "codeReview": {
-            "cmd": "/code-review",
-            "desc": "Review the diff; --fix applies the findings"
-          },
-          "codeReviewUltra": {
-            "cmd": "/code-review ultra",
-            "desc": "Deep multi-agent review in the cloud"
-          },
-          "simplify": {
-            "cmd": "/simplify",
-            "desc": "Reuse, simplification and efficiency cleanups"
-          },
-          "securityReview": {
-            "cmd": "/security-review",
-            "desc": "Security pass over pending changes"
-          },
-          "loop": {
-            "cmd": "/loop",
-            "desc": "Repeat a prompt or command on an interval"
-          },
-          "init": {
-            "cmd": "/init",
-            "desc": "Write a CLAUDE.md for a new app"
-          }
-        }
-      },
-      "structuredTasks": {
-        "title": "Task Docs",
-        "description": "Bigger work is planned in a free-form doc in docs/tasks/{name}/: brief → decisions → slices. A HANDOFF.md lets the next session pick it up."
-      },
-      "developerAgent": {
-        "title": "Developer Agent",
-        "items": [
-          "Takes a self-contained slice in its own context. Returns a summary, not code dumps.",
-          "Loads the layer rules for the files it touches",
-          "After changes: make test, make lint, make schema",
-          "Commits: conventional format, its own paths only"
-        ]
+        "title": ".claude/ setup",
+        "layer0": "CLAUDE.md → monorepo guide: commands, conventions, never-rules",
+        "layer1": "rules/ → layer conventions, loaded by file path",
+        "layer2": "hooks/ → block git add -A, git stash, --no-verify, raw pytest/alembic and edits to src/gen",
+        "layer3": "settings.json → session-start hook, pyright and TypeScript LSPs"
       },
       "patternDocs": {
-        "title": "10 Layer Rules in .claude/rules/",
+        "title": "10 layer rules in .claude/rules/",
         "docs": [
           "analytics.md",
           "backend.md",
@@ -395,61 +416,38 @@
     },
     "quickStart": {
       "title": "Get Started",
-      "subtitle": "Prerequisites: Docker, pnpm, make",
+      "subtitle": "Prerequisites: Docker, Node.js with pnpm, make",
       "run": {
-        "title": "Run the Template",
-        "subtitle": "Start development in 3 steps",
-        "steps": [
-          {
-            "num": 0,
-            "title": "Setup Cloudflare Tunnel",
-            "desc": "Required for Telegram Mini App testing — exposes localhost via HTTPS"
-          },
-          {
-            "num": 1,
-            "title": "Clone & install",
-            "code": "pnpm install"
-          },
-          {
-            "num": 2,
-            "title": "Configure environment",
-            "code": "cp .env.example .env"
-          },
-          {
-            "num": 3,
-            "title": "Start everything",
-            "code": "make up APP=template"
-          }
+        "title": "Run the template",
+        "commands": [
+          "git clone https://github.com/AHTOOOXA/gramkit",
+          "cd gramkit",
+          "pnpm install",
+          "cp .env.example .env",
+          "cp apps/template-vue/.env.example apps/template-vue/.env",
+          "make up APP=template-vue"
         ],
-        "openAt": "Open http://localhost:5174/template"
+        "note": "Opens at http://localhost:5174/template-vue/. Testing inside Telegram needs HTTPS: add a Cloudflare tunnel token to .env (optional).",
+        "prompt": "Set up this repo on my machine: run pnpm install, create .env and apps/template-vue/.env from the examples, start the template with make up APP=template-vue and give me the local URL. Then list the .env keys I still need to fill in (bot token, payments, email) and what each one turns on."
       },
       "create": {
-        "title": "Create Your Own App",
-        "subtitle": "Use template as foundation",
-        "steps": [
-          {
-            "num": 1,
-            "title": "Copy template",
-            "code": "cp -r apps/template-vue apps/your-app"
-          },
-          {
-            "num": 2,
-            "title": "Update configs",
-            "code": "package.json, docker-compose, .env"
-          },
-          {
-            "num": 3,
-            "title": "Create database",
-            "code": "make upgrade APP=your-app"
-          },
-          {
-            "num": 4,
-            "title": "Start building",
-            "code": "Remove demo code, add your features"
-          }
+        "title": "Create your app",
+        "commands": [
+          "cp -r apps/template-vue apps/myapp",
+          "# rename the project and containers, pick free ports",
+          "make upgrade APP=myapp",
+          "make up APP=myapp"
         ],
-        "seeDetails": "See CLAUDE.md for details"
-      }
+        "note": "Full checklist: docs/guides/NEW_APP_FROM_TEMPLATE.md",
+        "prompt": "Create a new app called myapp from apps/template-vue, following docs/guides/NEW_APP_FROM_TEMPLATE.md: rename the project and containers, pick free ports, set up its .env, run make upgrade APP=myapp and start it with make up APP=myapp."
+      },
+      "prompt": {
+        "label": "Or ask Claude Code",
+        "copy": "Copy prompt",
+        "copied": "Copied",
+        "copyFailed": "Couldn't copy. Select the text instead."
+      },
+      "copy": "Copy commands"
     },
     "testing": {
       "title": "Testing That Works",
@@ -479,12 +477,10 @@
         "quickDesc": "Sub-second feedback"
       }
     },
-    "cta": {
-      "title": "Ready to Explore?",
-      "tryDemos": "Try Live Demos",
-      "demoSubtitle": "caching, WebSocket, AI streaming",
-      "testAuth": "Test Auth Flows",
-      "authSubtitle": "friend invites & auth"
+    "footer": {
+      "text": "Gramkit · Vue template",
+      "githubLink": "GitHub",
+      "reactLink": "React version also available"
     }
   },
   "profile": {

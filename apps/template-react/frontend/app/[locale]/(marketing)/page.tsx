@@ -19,17 +19,23 @@ import {
   Laptop,
   LayoutGrid,
   FlaskConical,
+  LayoutDashboard,
+  CreditCard,
+  Bell,
+  Check,
   type LucideIcon,
 } from 'lucide-react';
-import { SiVuedotjs } from 'react-icons/si';
+import { SiGithub, SiVuedotjs } from 'react-icons/si';
 import { useTranslations } from 'next-intl';
 
-import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth, useScrollReveal } from '@/hooks';
+import { useScrollReveal } from '@/hooks';
 import { ArchitectureDiagram } from '@/components/home/ArchitectureDiagram';
-import { AnimatedTerminal } from '@/components/home/AnimatedTerminal';
+import { CommandBlock } from '@/components/home/CommandBlock';
+import { CopyPrompt } from '@/components/home/CopyPrompt';
+import { GITHUB_URL, VUE_DEMO_URL } from '@/config/constants';
+import { PRODUCTION_SITE } from '@/config/showcase';
 import { cn } from '@/lib/utils';
 
 // =============================================================================
@@ -78,7 +84,6 @@ function ScrollReveal({
 }
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuth();
   const t = useTranslations('homePage');
 
   const featureItems: {
@@ -94,6 +99,12 @@ export default function HomePage() {
     { key: 'i18n', icon: Palette },
     { key: 'tanstack', icon: Database },
     { key: 'dx', icon: Terminal },
+  ];
+
+  const pillarItems: { key: 'admin' | 'payments' | 'bot'; icon: LucideIcon }[] = [
+    { key: 'admin', icon: LayoutDashboard },
+    { key: 'payments', icon: CreditCard },
+    { key: 'bot', icon: Bell },
   ];
 
   // Staggered delays for feature cards
@@ -125,18 +136,36 @@ export default function HomePage() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
           <Button asChild size="lg" className={btnPrimary}>
-            <Link href={isAuthenticated ? '/demo' : '/login'}>
-              {isAuthenticated ? t('explorePatterns') : t('getStarted')}
+            <a href="#get-started">
+              {t('getStarted')}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            </a>
           </Button>
           <Button asChild variant="outline" size="lg" className={btnSecondary}>
-            <a href="https://vue.antonchaynik.ru" target="_blank" rel="noopener noreferrer">
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+              <SiGithub className="w-4 h-4 mr-2" />
+              {t('github')}
+            </a>
+          </Button>
+          <Button asChild variant="outline" size="lg" className={btnSecondary}>
+            <a href={VUE_DEMO_URL} target="_blank" rel="noopener noreferrer">
               <SiVuedotjs className="w-4 h-4 mr-2" />
               {t('tryVueVersion')}
             </a>
           </Button>
         </div>
+
+        <p className="text-sm text-muted-foreground">
+          {t('inProduction')}{' '}
+          <a
+            href={PRODUCTION_SITE.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            {PRODUCTION_SITE.label}
+          </a>
+        </p>
       </section>
 
       {/* Key Features Section - Above fold, interactive cards */}
@@ -183,6 +212,45 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Admin, payments, bot - what a paid Mini App needs */}
+      <ScrollReveal delay={0}>
+        <section className="space-y-6 md:space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('pillars.title')}</h2>
+            <p className="text-muted-foreground text-lg">{t('pillars.subtitle')}</p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
+            {pillarItems.map((pillar) => (
+              <Card
+                key={pillar.key}
+                className={cn(cardInfo, 'border-primary/20 bg-gradient-to-br from-card to-primary/[0.02]')}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg bg-primary/15">
+                      <pillar.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <CardTitle className="text-lg">{t(`pillars.${pillar.key}.title`)}</CardTitle>
+                  </div>
+                  <CardDescription>{t(`pillars.${pillar.key}.lead`)}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {(t.raw(`pillars.${pillar.key}.items`) as string[]).map((item, idx) => (
+                      <li key={idx} className="flex gap-2">
+                        <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* Architecture Overview Section - Info cards */}
       <ScrollReveal delay={0}>
@@ -569,153 +637,24 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto space-y-4 md:space-y-6">
-            {/* Architecture Overview */}
+          <div className="max-w-4xl mx-auto">
             <Card className={cardInfo}>
               <CardHeader>
                 <CardTitle className="text-xl">{t('claudeCode.orchestration.title')}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="bg-muted p-4 rounded-lg font-mono text-xs overflow-x-auto">
-                  <div className="text-muted-foreground">
-                    <span className="text-primary">Layer 0:</span> {t('claudeCode.orchestration.layer0')}
-                  </div>
-                  <div className="text-muted-foreground ml-4">
-                    ├── <span className="text-primary">Layer 1:</span> {t('claudeCode.orchestration.layer1')}
-                  </div>
-                  <div className="text-muted-foreground ml-4">
-                    ├── <span className="text-primary">Layer 2:</span> {t('claudeCode.orchestration.layer2')}
-                  </div>
-                  <div className="text-muted-foreground ml-4">
-                    └── <span className="text-primary">Layer 3:</span> {t('claudeCode.orchestration.layer3')}
-                  </div>
+              <CardContent className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg font-mono text-xs overflow-x-auto space-y-0.5 text-muted-foreground">
+                  <div>{t('claudeCode.orchestration.layer0')}</div>
+                  <div className="ml-4">├── {t('claudeCode.orchestration.layer1')}</div>
+                  <div className="ml-4">├── {t('claudeCode.orchestration.layer2')}</div>
+                  <div className="ml-4">└── {t('claudeCode.orchestration.layer3')}</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-              <Card className={cardInfo}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t('claudeCode.slashCommands.title')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.codeReview.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.codeReview.desc')}</p>
-                    </div>
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.codeReviewUltra.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.codeReviewUltra.desc')}</p>
-                    </div>
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.simplify.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.simplify.desc')}</p>
-                    </div>
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.securityReview.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.securityReview.desc')}</p>
-                    </div>
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.loop.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.loop.desc')}</p>
-                    </div>
-                    <div>
-                      <code className="text-primary">{t('claudeCode.slashCommands.items.init.cmd')}</code>
-                      <p className="text-muted-foreground">{t('claudeCode.slashCommands.items.init.desc')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className={cardInfo}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t('claudeCode.structuredTasks.title')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground">
-                    {t('claudeCode.structuredTasks.description')}
-                  </p>
-                  <div className="bg-muted p-3 rounded text-xs font-mono">
-                    <div className="text-muted-foreground">docs/tasks/user-settings/</div>
-                    <div className="text-muted-foreground ml-2">├── README.md <span className="text-primary"># brief → decisions → slices</span></div>
-                    <div className="text-muted-foreground ml-2">└── HANDOFF.md <span className="text-primary"># for the next session</span></div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className={cardInfo}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t('claudeCode.developerAgent.title')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-xs text-muted-foreground">
-                  <p>{t('claudeCode.developerAgent.intro')}</p>
-                  <ul className="space-y-1">
-                    {(t.raw('claudeCode.developerAgent.items') as string[]).map((item, idx) => (
-                      <li key={idx}>
-                        • <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className={cardInfo}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t('claudeCode.patternDocs.title')}</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">{t('claudeCode.patternDocs.title')}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {(t.raw('claudeCode.patternDocs.docs') as string[]).map((doc, idx) => (
-                      <code key={idx} className="bg-muted px-1.5 py-0.5 rounded text-xs">{doc}</code>
+                    {(t.raw('claudeCode.patternDocs.docs') as string[]).map((doc) => (
+                      <code key={doc} className="bg-muted px-1.5 py-0.5 rounded text-xs">{doc}</code>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Workflow Example */}
-            <Card className={cardInfo}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">{t('claudeCode.example.title')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-4 gap-3 text-xs">
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.plan.cmd')}</code>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.plan.desc')}
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.plan.result')}
-                    </p>
-                  </div>
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.developerAgent.cmd')}</code>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.developerAgent.desc')}
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.developerAgent.result')}
-                    </p>
-                  </div>
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.qa.cmd')}</code>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.qa.desc')}
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.qa.result')}
-                    </p>
-                  </div>
-                  <div className="bg-muted p-3 rounded">
-                    <code className="text-primary">{t('claudeCode.example.review.cmd')}</code>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.review.desc')}
-                    </p>
-                    <p className="text-muted-foreground mt-1">
-                      {t('claudeCode.example.review.result')}
-                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -724,112 +663,34 @@ export default function HomePage() {
         </section>
       </ScrollReveal>
 
-      {/* Quick Start Section - Info cards */}
+      {/* Get Started: run the template, or copy it into your own app */}
       <ScrollReveal delay={400}>
-        <section className="space-y-6 md:space-y-8">
+        <section id="get-started" className="scroll-mt-24 space-y-6 md:space-y-8">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">{t('quickStart.title')}</h2>
-            <p className="text-muted-foreground text-lg">
-              {t('quickStart.subtitle')}
-            </p>
+            <p className="text-muted-foreground text-lg">{t('quickStart.subtitle')}</p>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
-            {/* Animated Terminal - Hero Visual */}
-            <AnimatedTerminal />
-
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-              <Card className={cardInfo}>
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
+            {(['run', 'create'] as const).map((block) => (
+              <Card
+                key={block}
+                className={cn(
+                  'min-w-0',
+                  cardInfo,
+                  block === 'create' && 'border-primary/30 bg-gradient-to-br from-card to-primary/[0.03]'
+                )}
+              >
                 <CardHeader>
-                  <CardTitle className="text-lg">{t('quickStart.run.title')}</CardTitle>
-                  <CardDescription>{t('quickStart.run.subtitle')}</CardDescription>
+                  <CardTitle className="text-lg">{t(`quickStart.${block}.title`)}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {(t.raw('quickStart.run.steps') as {num: number; title: string; code?: string; desc?: string}[]).map((step, idx) => (
-                      <div key={idx} className="flex gap-3">
-                        <span className={cn(
-                          "flex-shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-medium",
-                          step.num === 0 ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
-                        )}>
-                          {step.num}
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{step.title}</p>
-                          {step.code ? (
-                            <code className="text-xs text-muted-foreground">{step.code}</code>
-                          ) : (
-                            <p className="text-xs text-muted-foreground">{step.desc}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      {t('quickStart.run.openAt')}
-                    </p>
-                  </div>
+                  <CommandBlock commands={t.raw(`quickStart.${block}.commands`) as string[]} />
+                  <p className="text-xs text-muted-foreground">{t(`quickStart.${block}.note`)}</p>
+                  <CopyPrompt prompt={t(`quickStart.${block}.prompt`)} />
                 </CardContent>
               </Card>
-
-              <Card className={cardInfo}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{t('quickStart.create.title')}</CardTitle>
-                  <CardDescription>{t('quickStart.create.subtitle')}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    {(t.raw('quickStart.create.steps') as {num: number; title: string; code: string}[]).map((step, idx) => (
-                      <div key={idx} className="flex gap-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
-                          {step.num}
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{step.title}</p>
-                          <code className="text-xs text-muted-foreground">
-                            {step.code}
-                          </code>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      {t('quickStart.create.seeDetails')}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
-
-      {/* Footer CTA */}
-      <ScrollReveal delay={500}>
-        <section>
-          <div className="group relative overflow-hidden bg-muted/50 rounded-xl p-8 text-center transition-all duration-300 hover:bg-muted/70 hover:shadow-xl hover:shadow-primary/15">
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-            <div className="relative space-y-4">
-              <h3 className="text-2xl font-bold">{t('cta.title')}</h3>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                <Button asChild size="lg" className={btnPrimary}>
-                  <Link href="/demo">
-                    <span className="hidden sm:inline">{t('cta.tryDemos')}: {t('cta.demoSubtitle')}</span>
-                    <span className="sm:hidden">{t('cta.tryDemos')}</span>
-                    <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className={btnSecondary}>
-                  <Link href="/profile">
-                    <span className="hidden sm:inline">{t('cta.testAuth')}: {t('cta.authSubtitle')}</span>
-                    <span className="sm:hidden">{t('cta.testAuth')}</span>
-                  </Link>
-                </Button>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
       </ScrollReveal>
@@ -838,7 +699,16 @@ export default function HomePage() {
       <footer className="text-center py-6 text-sm text-muted-foreground">
         {t('footer.text')} •{' '}
         <a
-          href="https://vue.antonchaynik.ru"
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          {t('footer.githubLink')}
+        </a>{' '}
+        •{' '}
+        <a
+          href={VUE_DEMO_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"

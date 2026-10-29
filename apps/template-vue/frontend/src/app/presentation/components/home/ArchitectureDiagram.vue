@@ -20,7 +20,7 @@ const TREE_DATA: TreeNode = {
       icon: '📁',
       children: [
         {
-          name: 'template/',
+          name: 'template-vue/',
           description: 'Vue starter template (you are here)',
           icon: '📂',
           children: [
@@ -63,7 +63,7 @@ const TREE_DATA: TreeNode = {
         },
         {
           name: 'your-new-app/',
-          description: '← Clone template to start',
+          description: '← Clone template-vue to start',
           icon: '🚀',
         },
       ],
@@ -78,20 +78,21 @@ const TREE_DATA: TreeNode = {
           description: 'Python shared code',
           icon: '📂',
           children: [
-            { name: 'auth/', description: 'Auth service & JWT', icon: '📂' },
-            { name: 'models/', description: 'SQLAlchemy base models', icon: '📂' },
-            { name: 'repos/', description: 'Repository pattern base', icon: '📂' },
-            { name: 'services/', description: 'Base services', icon: '📂' },
-            { name: 'telegram/', description: 'Telegram integration', icon: '📂' },
+            { name: 'auth/', description: 'RBAC: user, admin, owner', icon: '📂' },
+            { name: 'services/', description: 'Users, payments, notifications, admin', icon: '📂' },
+            { name: 'infrastructure/', description: 'DB, sessions, Redis, ARQ, Telegram bot', icon: '📂' },
+            { name: 'schemas/', description: 'Pydantic API schemas', icon: '📂' },
           ],
         },
         {
-          name: 'frontend-vue/src/',
-          description: 'Vue shared components',
+          name: 'frontend/src/',
+          description: 'Vue shared code',
           icon: '📂',
           children: [
-            { name: 'components/', description: 'Shared UI components', icon: '📂' },
-            { name: 'composables/', description: 'Shared composables', icon: '📂' },
+            { name: 'platform/', description: 'Telegram / web detection, mock', icon: '📂' },
+            { name: 'errors/', description: 'API error classification', icon: '📂' },
+            { name: 'analytics/', description: 'PostHog', icon: '📂' },
+            { name: 'composables/', description: 'Admin lists, CSV export, seen features', icon: '📂' },
           ],
         },
       ],

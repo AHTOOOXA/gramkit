@@ -22,7 +22,7 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
       <FlaskConical className={cn(iconSize, 'text-primary')} />
       {showText && (
         <span className={cn(textSize, 'font-semibold text-foreground')}>
-          Template
+          Gramkit
         </span>
       )}
     </Link>

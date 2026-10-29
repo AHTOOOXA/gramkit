@@ -54,6 +54,12 @@ const nextConfig: NextConfig = {
   // React strict mode
   reactStrictMode: true,
 
+  // Strip debug console.log/info/debug from production bundles; keep warnings and errors
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
+
   // Allow cross-origin requests from nginx proxy
   allowedDevOrigins: ['local.gramkit.dev'],
 

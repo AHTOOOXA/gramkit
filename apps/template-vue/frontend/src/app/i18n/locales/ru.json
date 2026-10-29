@@ -5,9 +5,15 @@
     "demo": "Демо",
     "profile": "Профиль",
     "admin": "Админ",
-    "getStarted": "Начать",
+    "getStarted": "Войти",
     "openMenu": "Открыть меню",
     "closeMenu": "Закрыть меню"
+  },
+  "footer": {
+    "license": "Лицензия MIT",
+    "github": "GitHub",
+    "reactDemo": "Демо на React",
+    "changelog": "Что нового"
   },
   "demo": {
     "title": "Техническое демо",
@@ -120,7 +126,7 @@
       "noteText": "Ошибки 500 повторяются до 3 раз с экспоненциальной задержкой. Ошибки 404 завершаются сразу, так как они невосстановимы."
     },
     "suspense": {
-      "title": "Состояния загрузки",
+      "title": "Загрузка после сброса кэша",
       "description": "Демонстрация состояний загрузки TanStack Query с очисткой кэша.",
       "suspenseLoading": "Загрузка...",
       "errorOccurred": "Произошла ошибка",
@@ -168,18 +174,24 @@
     }
   },
   "homePage": {
-    "badge": "Готовый шаблон",
-    "title": "Vue Шаблон",
-    "subtitle": "Готовый шаблон веб-приложения с адаптивным дизайном и поддержкой Telegram Mini App",
-    "getStarted": "Начать",
-    "explorePatterns": "Смотреть паттерны",
+    "meta": {
+      "title": "Gramkit — стартер Telegram Mini App и веба на FastAPI и Vue",
+      "description": "Open-source монорепо-стартер для Telegram Mini App и веб-приложений: FastAPI, Vue или Next.js, Postgres, Redis, aiogram. Вход, оплата Telegram Stars и ЮKassa, админка, TypeScript-хуки из OpenAPI. MIT."
+    },
+    "badge": "Open source · MIT",
+    "title": "Gramkit",
+    "heroSubtitle": "Стартер Telegram Mini App и веб-приложения на FastAPI и Vue: авторизация, платежи, админка и бот, типобезопасно от базы до UI",
+    "getStarted": "Создать приложение",
+    "tryReactVersion": "Версия на React",
+    "github": "GitHub",
+    "inProduction": "Работает в продакшене:",
     "features": {
       "title": "Что включено",
-      "subtitle": "Не заглушки — работающий код",
+      "subtitle": "Что есть в шаблоне",
       "items": {
         "authentication": {
           "name": "Авторизация",
-          "description": "Email с кодом подтверждения, Telegram OAuth, восстановление пароля"
+          "description": "Email с кодом подтверждения, Telegram OAuth, восстановление пароля, привязка аккаунтов"
         },
         "rbac": {
           "name": "Разграничение доступа",
@@ -193,7 +205,7 @@
           "name": "Адаптивный дизайн",
           "description": "Мобильная версия в приоритете, нижняя навигация, определение Telegram Mini App"
         },
-        "typesat": {
+        "typeSafe": {
           "name": "Типизированный API",
           "description": "Автогенерация TypeScript хуков из OpenAPI схемы"
         },
@@ -211,9 +223,52 @@
         }
       }
     },
+    "pillars": {
+      "title": "Админка, платежи и бот",
+      "subtitle": "Админка, платежи и бот на общем core/",
+      "admin": {
+        "title": "Админка",
+        "lead": "Пользователи, платежи, рассылки и журнал действий в браузере.",
+        "items": [
+          "KPI на обзоре, графики выручки, подписок и MRR",
+          "Пользователи: поиск и фильтры, платежи, подарить или отозвать подписку, сменить роль",
+          "Рассылки: редактор, превью, отправка сразу или в утренний либо вечерний слот",
+          "Маркетинговые ссылки: свой код на каждое размещение — видно, сколько людей пришло и окупилось ли",
+          "Служебные задачи с пробным прогоном; применять может только владелец",
+          "Журнал всех действий админов"
+        ]
+      },
+      "payments": {
+        "title": "Платежи",
+        "lead": "Один PaymentsService для Telegram Stars и YooKassa.",
+        "items": [
+          "Stars: разовые покупки и подписки, которые корректно продлеваются и отменяются, плюс возвраты",
+          "YooKassa: карты, встроенный виджет, автопродление и вебхуки возвратов",
+          "Ключ идемпотентности на каждом списании; вебхук перезапрашивает платёж, а не верит телу запроса",
+          "Неудачное продление переводит подписку в просрочку, с льготным периодом и ежедневными повторами",
+          "Не больше одной активной подписки на пользователя — это гарантирует база",
+          "Уведомления о покупках, продлениях, отменах и сбоях прямо в Telegram"
+        ]
+      },
+      "bot": {
+        "title": "Бот и уведомления",
+        "lead": "aiogram 3 на тех же пользователях и той же базе.",
+        "items": [
+          "Сообщения по расписанию — утром или вечером по местному времени пользователя",
+          "Текст, фото или нативные опросы, с журналом доставки для лимитов частоты",
+          "Тех, кто заблокировал бота, он пропускает, а когда они возвращаются — снова пишет им",
+          "Повторы при сетевых ошибках, 5xx и коротких flood-лимитах",
+          "Ночные бэкапы базы владельцам в Telegram и команда /backup",
+          "Анонс деплоя при каждом старте прода"
+        ]
+      }
+    },
     "architecture": {
       "title": "Современный стек, чистая архитектура",
       "subtitle": "Сквозная типизация от базы данных до интерфейса",
+      "monorepoTitle": "Структура монорепозитория",
+      "highlightsTitle": "Технические особенности",
+      "highlightsSubtitle": "Как устроен код",
       "highlights": {
         "endToEnd": {
           "title": "Сквозная типизация",
@@ -248,9 +303,9 @@
         "title": "Локальная разработка",
         "subtitle": "Нативный Vite — максимальная скорость без Docker",
         "recommended": "Рекомендуется",
-        "url": "http://localhost:5174/template",
+        "url": "http://localhost:5174/template-vue/",
         "benefits": [
-          "В 10 раз быстрее запуск с кешем Vite",
+          "Мгновенный HMR от Vite",
           "Прямые вызовы API (CORS включён для разработки)",
           "Фронтенд работает нативно на macOS"
         ]
@@ -258,7 +313,7 @@
       "tunnel": {
         "title": "Режим туннеля",
         "subtitle": "Через nginx + Cloudflare — для тестирования Telegram Mini App",
-        "url": "https://local.yourdomain.com/template",
+        "url": "https://local.yourdomain.com/template-vue/",
         "benefits": [
           "HTTPS с валидным сертификатом",
           "Авторизация Telegram WebApp",
@@ -268,29 +323,37 @@
       "gateway": {
         "title": "Шлюз приложений",
         "subtitle": "Страница nginx с быстрым доступом ко всем приложениям",
-        "description": "Доступно по https://local.yourdomain.com/ — единая точка для ссылок туннеля, локальных портов и API документации"
+        "description": "Доступно по https://local.yourdomain.com/ — единая точка для ссылок туннеля, локальных портов и API документации",
+        "apps": {
+          "react": "template-react",
+          "vue": "template-vue",
+          "yourApp": "your-app"
+        },
+        "appDetails": "туннель • :3001 • api",
+        "vueDetails": "туннель • :5174 • api",
+        "yourAppDetails": "туннель • :1234 • api"
       },
-      "turbopack": {
-        "title": "Vite + Vitest",
+      "devServer": {
+        "title": "Vue 3 + Vite",
         "highlights": [
           {
-            "title": "Быстрая сборка",
-            "description": "Горячая замена модулей Vite для мгновенной обратной связи"
+            "title": "Мгновенный HMR",
+            "description": "Горячая замена модулей Vite сохраняет состояние компонентов между правками"
           },
           {
-            "title": "Нативная производительность",
-            "description": "Фронтенд работает локально на macOS, а не в Docker-контейнерах"
+            "title": "Нативная скорость",
+            "description": "Фронтенды работают локально на macOS, а не в Docker-контейнерах"
           },
           {
-            "title": "Vue 3 из коробки",
-            "description": "Composition API, script setup и все современные возможности Vue"
+            "title": "Composition API",
+            "description": "script setup, TypeScript и композаблы по всему коду"
           }
         ]
       }
     },
     "included": {
       "title": "Всё уже настроено",
-      "subtitle": "Не просто заготовка — реальные, работающие функции",
+      "subtitle": "Страницы, демо и авторизация в шаблоне",
       "pages": {
         "title": "5 страниц",
         "subtitle": "Готовые к продакшену маршруты",
@@ -298,8 +361,8 @@
           "Главная страница",
           "Технические демо (17 паттернов)",
           "Управление профилем",
-          "Панель администратора",
-          "Расширяемая структура"
+          "Админка (7 разделов)",
+          "Авторизация: вход, регистрация, сброс пароля"
         ]
       },
       "demos": {
@@ -326,59 +389,17 @@
       }
     },
     "claudeCode": {
-      "title": "Создано для Claude Code",
-      "subtitle": "Правила, хуки, скиллы и агенты — соглашения подгружаются сами, запреты соблюдаются автоматически",
+      "title": "Готово для Claude Code",
+      "subtitle": "CLAUDE.md, правила по путям файлов и защитные хуки под этот репозиторий",
       "orchestration": {
-        "title": "Как устроена настройка",
-        "layer0": "CLAUDE.md — гид по монорепо: как работать, команды, запреты",
-        "layer1": "rules/ — соглашения по слоям, подгружаются по пути файла",
-        "layer2": "hooks/ — блокируют запрещённое и подсказывают, как надо",
-        "layer3": "skills/ + agents/ — сценарии проекта, developer-agent, qa"
-      },
-      "slashCommands": {
-        "title": "Slash-команды",
-        "items": {
-          "codeReview": {
-            "cmd": "/code-review",
-            "desc": "Ревью диффа; --fix применяет находки"
-          },
-          "codeReviewUltra": {
-            "cmd": "/code-review ultra",
-            "desc": "Глубокое ревью несколькими агентами в облаке"
-          },
-          "simplify": {
-            "cmd": "/simplify",
-            "desc": "Переиспользование, упрощение, эффективность"
-          },
-          "securityReview": {
-            "cmd": "/security-review",
-            "desc": "Проверка изменений на безопасность"
-          },
-          "loop": {
-            "cmd": "/loop",
-            "desc": "Повторять промпт или команду по интервалу"
-          },
-          "init": {
-            "cmd": "/init",
-            "desc": "Написать CLAUDE.md для нового приложения"
-          }
-        }
-      },
-      "structuredTasks": {
-        "title": "Документы задач",
-        "description": "Крупная работа планируется в свободном документе в docs/tasks/{name}/: бриф → решения → срезы. HANDOFF.md помогает следующей сессии продолжить."
-      },
-      "developerAgent": {
-        "title": "Developer Agent",
-        "items": [
-          "Берёт самостоятельный срез работы в отдельном контексте. Возвращает сводку, а не дампы кода.",
-          "Подгружает правила слоёв для файлов, которые трогает",
-          "После изменений: make test, make lint, make schema",
-          "Коммиты: conventional-формат, только свои файлы"
-        ]
+        "title": "Настройка .claude/",
+        "layer0": "CLAUDE.md → гайд по монорепо: команды, соглашения, запреты",
+        "layer1": "rules/ → соглашения по слоям, подгружаются по пути файла",
+        "layer2": "hooks/ → блокируют git add -A, git stash, --no-verify, голые pytest/alembic и правки src/gen",
+        "layer3": "settings.json → хук при старте сессии, LSP для pyright и TypeScript"
       },
       "patternDocs": {
-        "title": "10 правил слоёв в .claude/rules/",
+        "title": "10 правил по слоям в .claude/rules/",
         "docs": [
           "analytics.md",
           "backend.md",
@@ -394,62 +415,39 @@
       }
     },
     "quickStart": {
-      "title": "Быстрый старт",
-      "subtitle": "Требования: Docker, pnpm, make",
+      "title": "Начать",
+      "subtitle": "Нужны Docker, Node.js с pnpm и make",
       "run": {
         "title": "Запустить шаблон",
-        "subtitle": "Начало работы за 3 шага",
-        "steps": [
-          {
-            "num": 0,
-            "title": "Настроить Cloudflare Tunnel",
-            "desc": "Нужен для тестирования Telegram Mini App — открывает localhost через HTTPS"
-          },
-          {
-            "num": 1,
-            "title": "Клонировать и установить",
-            "code": "pnpm install"
-          },
-          {
-            "num": 2,
-            "title": "Настроить окружение",
-            "code": "cp .env.example .env"
-          },
-          {
-            "num": 3,
-            "title": "Запустить всё",
-            "code": "make up APP=template"
-          }
+        "commands": [
+          "git clone https://github.com/AHTOOOXA/gramkit",
+          "cd gramkit",
+          "pnpm install",
+          "cp .env.example .env",
+          "cp apps/template-vue/.env.example apps/template-vue/.env",
+          "make up APP=template-vue"
         ],
-        "openAt": "Открыть http://localhost:5174/template"
+        "note": "Откроется на http://localhost:5174/template-vue/. Для теста внутри Telegram нужен HTTPS: добавьте в .env токен Cloudflare-туннеля (по желанию).",
+        "prompt": "Настрой этот репозиторий у меня на машине: выполни pnpm install, создай .env и apps/template-vue/.env из примеров, запусти шаблон через make up APP=template-vue и дай мне локальный URL. Потом перечисли ключи в .env, которые мне ещё нужно заполнить (токен бота, платежи, почта), и что включает каждый из них."
       },
       "create": {
         "title": "Создать своё приложение",
-        "subtitle": "Использовать шаблон как основу",
-        "steps": [
-          {
-            "num": 1,
-            "title": "Скопировать шаблон",
-            "code": "cp -r apps/template-vue apps/your-app"
-          },
-          {
-            "num": 2,
-            "title": "Обновить конфигурацию",
-            "code": "package.json, docker-compose, .env"
-          },
-          {
-            "num": 3,
-            "title": "Создать базу данных",
-            "code": "make upgrade APP=your-app"
-          },
-          {
-            "num": 4,
-            "title": "Начать разработку",
-            "code": "Удалить демо-код, добавить свои функции"
-          }
+        "commands": [
+          "cp -r apps/template-vue apps/myapp",
+          "# переименуйте проект и контейнеры, выберите свободные порты",
+          "make upgrade APP=myapp",
+          "make up APP=myapp"
         ],
-        "seeDetails": "Подробнее в CLAUDE.md"
-      }
+        "note": "Полный чек-лист: docs/guides/NEW_APP_FROM_TEMPLATE.md",
+        "prompt": "Создай новое приложение myapp на основе apps/template-vue по гайду docs/guides/NEW_APP_FROM_TEMPLATE.md: переименуй проект и контейнеры, подбери свободные порты, настрой его .env, выполни make upgrade APP=myapp и запусти через make up APP=myapp."
+      },
+      "prompt": {
+        "label": "Или попросите Claude Code",
+        "copy": "Скопировать промпт",
+        "copied": "Скопировано",
+        "copyFailed": "Не удалось скопировать. Выделите текст вручную."
+      },
+      "copy": "Скопировать команды"
     },
     "testing": {
       "title": "Тесты, которые работают",
@@ -479,12 +477,10 @@
         "quickDesc": "Мгновенная обратная связь"
       }
     },
-    "cta": {
-      "title": "Готовы попробовать?",
-      "tryDemos": "Смотреть демо",
-      "demoSubtitle": "кеширование, WebSocket, потоковая передача от AI",
-      "testAuth": "Проверить авторизацию",
-      "authSubtitle": "приглашения друзей и вход"
+    "footer": {
+      "text": "Gramkit · Vue-шаблон",
+      "githubLink": "GitHub",
+      "reactLink": "Также доступна версия на React"
     }
   },
   "profile": {
