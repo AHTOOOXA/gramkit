@@ -195,7 +195,7 @@ async def schedule_notification(
     # Schedule worker task with delay
     await services.worker.enqueue_job(
         "send_delayed_notification",
-        user_id=user.telegram_id,
+        telegram_user_id=user.telegram_id,
         delay_seconds=delay,
         _defer_by=delay,  # ARQ defer parameter
     )
