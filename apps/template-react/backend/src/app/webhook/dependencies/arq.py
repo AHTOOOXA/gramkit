@@ -1,4 +1,4 @@
-from arq import ArqRedis
+from arq.connections import ArqRedis  # not `from arq`: pyright, without the venv, resolves `arq` to this file
 from fastapi import Request
 
 
