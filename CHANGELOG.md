@@ -5,6 +5,47 @@ sync and lists changes to `core/`, the two templates, `scripts/`, CI and the Cla
 grouped as **Added / Changed / Fixed / Breaking**; read **Breaking** before you pull a sync into an app
 you built from a template.
 
+## 2026-11 — performance under load: per-process clients, one bounded DB pool, ASGI middleware, access log
+
+Together these let the same box serve about 6× more users in a Conduit benchmark.
+
+### Breaking (code)
+
+- Copy the template's `app/webhook/dependencies/{bot,arq,database,redis}.py` into an app built from an earlier
+  template. `get_bot` / `get_arq_pool` now return the process-wide clients from `request.app.state` (`None`
+  under an ASGI test client, which runs no lifespan, and `get_bot` also with an empty `BOT__TOKEN`).
+  `get_repo(request)` opens sessions from `request.app.state.session_pool`, the one engine `create_api` builds,
+  instead of a second module-level engine. Tests that override these dependencies keep working.
+- The default pool is 10 connections + 10 overflow per process (was 20 + 200). Set `DB__POOL_SIZE` /
+  `DB__MAX_OVERFLOW` so the sum over every process (webhook, bot, worker) stays under Postgres'
+  `max_connections`. Past the pool, a request waits for a connection instead of opening a new one.
+- Run uvicorn with `--no-access-log` (core now logs each request) and, in deployed compose files,
+  `--timeout-keep-alive 95`.
+
+### Added
+
+- `core.infrastructure.fastapi.clients`: `create_api`'s lifespan opens one `Bot` (with Telegram retries) and one
+  arq pool per webhook process and closes them on shutdown. A `Bot()` per request loaded the CA bundle into a
+  new SSL context every time, and `create_pool()` per request opened a new Redis connection.
+- `DatabaseSettings.pool_size` / `max_overflow` (`DB__POOL_SIZE`, `DB__MAX_OVERFLOW`).
+- `AccessLogMiddleware`: one line per request with method, path (no query string), status and duration, tagged
+  with the request id and user. A streaming response is logged when the stream ends.
+- `ObservabilitySettings.sentry_traces_sample_rate` (default `0.05`) and `sentry_profiles_sample_rate`
+  (default `0.0`).
+- `OpenAISettings.base_url` (`OPENAI__BASE_URL`) for any OpenAI-compatible endpoint.
+
+### Changed
+
+- The request-id and security-header middlewares are pure ASGI instead of `BaseHTTPMiddleware`, which ran the
+  rest of the app in a separate task and piped every response body through a memory stream. Headers are the same.
+- Sentry traces 5% of requests and doesn't profile by default (was 100% / 50%). Errors are reported at any rate.
+- After startup the webhook runs `gc.collect()` + `gc.freeze()`, so a full GC no longer walks the startup
+  objects (it blocked the event loop for 118-145 ms per collection).
+- Logs are plain text, without ANSI colours, when debug is off. The per-request "user authenticated" lines are
+  now debug level, because the access-log line already carries the user.
+- The template Dockerfiles pin `python:3.14.10-slim`. Deployed compose files keep idle connections 95 s, past a
+  typical proxy's 90 s, so the proxy never reuses a connection uvicorn already closed.
+
 ## Unreleased — admin area (core admin API, admin tasks, broadcasts, marketing links, overview + analytics + daily digest, template-vue and template-react screens), seen_features composables
 
 ### Breaking (migrations required)

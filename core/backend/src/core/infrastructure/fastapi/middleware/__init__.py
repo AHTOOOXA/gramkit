@@ -1,5 +1,6 @@
 """FastAPI middlewares."""
 
+from core.infrastructure.fastapi.middleware.access_log import AccessLogMiddleware
 from core.infrastructure.fastapi.middleware.request_id import (
     REQUEST_ID_HEADER,
     RequestIdConfig,
@@ -11,6 +12,7 @@ from core.infrastructure.fastapi.middleware.static import CachedStaticFiles
 from core.infrastructure.fastapi.middleware.tracker import RequestTracker, RequestTrackerMiddleware
 
 __all__ = [
+    "AccessLogMiddleware",
     "SecurityHeadersMiddleware",
     "SecurityConfig",
     "CachedStaticFiles",

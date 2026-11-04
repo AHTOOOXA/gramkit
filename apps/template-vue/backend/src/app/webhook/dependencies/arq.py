@@ -1,18 +1,11 @@
-from arq import create_pool
-from arq.connections import ArqRedis, RedisSettings
-
-from core.infrastructure.config import settings
+from arq import ArqRedis
+from fastapi import Request
 
 
-async def get_arq_pool():
-    arq: ArqRedis = await create_pool(
-        RedisSettings(
-            host=settings.redis.host,
-            port=settings.redis.port,
-            password=settings.redis.password,
-        )
-    )
-    try:
-        yield arq
-    finally:
-        await arq.close()
+async def get_arq_pool(request: Request) -> ArqRedis | None:
+    """The worker's arq pool, created once in create_api's lifespan (core.infrastructure.fastapi.clients).
+
+    Never create_pool() per request: that is a new Redis connection (DNS lookup + PING) every time. None
+    under an ASGI test client (no lifespan; tests override this dependency).
+    """
+    return getattr(request.app.state, "arq", None)

@@ -1,16 +1,14 @@
 from collections.abc import AsyncGenerator
 
+from fastapi import Request
+
 from app.infrastructure.database.repo.requests import RequestsRepo
-from app.infrastructure.database.setup import create_engine, create_session_pool
-from core.infrastructure.config import settings
-
-engine = create_engine(settings.db)
-session_pool = create_session_pool(engine)
 
 
-async def get_repo() -> AsyncGenerator[RequestsRepo]:
+async def get_repo(request: Request) -> AsyncGenerator[RequestsRepo]:
     """Open the request session: one session, one transaction, committed when this dependency exits
-    (rolled back on an exception).
+    (rolled back on an exception). The session comes from the app's one engine, the one ``create_api``
+    builds (``app.state.session_pool``), so a webhook process has a single, bounded pool.
 
     When it exits is decided where it is used, by the ``Depends`` scope:
 
@@ -27,6 +25,6 @@ async def get_repo() -> AsyncGenerator[RequestsRepo]:
     request scope, and FastAPI caches the two scopes apart, so the endpoint would open a second
     session next to ``get_user``'s (and can block on its own row locks).
     """
-    async with session_pool() as session:
+    async with request.app.state.session_pool() as session:
         async with session.begin():
             yield RequestsRepo(session)

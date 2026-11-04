@@ -118,7 +118,7 @@ services:
     command: >
       sh -c "
         alembic upgrade head &&
-        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8003 --workers 1 --timeout-graceful-shutdown 30
+        uvicorn app.webhook.app:app --no-access-log --timeout-keep-alive 95 --host 0.0.0.0 --port 8003 --workers 1 --timeout-graceful-shutdown 30
       "
     deploy:
       resources:

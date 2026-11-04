@@ -4,5 +4,5 @@ from core.infrastructure.redis import RedisClient
 redis_client = RedisClient(settings.redis)
 
 
-async def get_redis_client():
-    yield redis_client
+async def get_redis_client() -> RedisClient:
+    return redis_client

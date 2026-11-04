@@ -6,7 +6,8 @@
 #
 # Build stage installs dependencies, runtime stage runs the application
 
-FROM python:3.14-slim as builder
+# Pinned: 3.14.0-3.14.4 shipped the incremental GC that 3.14.5 reverted for memory growth in production.
+FROM python:3.14.10-slim as builder
 
 # Install build dependencies for Python packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -37,7 +38,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --all-extras
 
 # Development stage - includes hot reload
-FROM python:3.14-slim as development
+FROM python:3.14.10-slim as development
 
 # Install postgresql-client for pg_dump (database backups)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -63,7 +64,7 @@ WORKDIR /app
 CMD ["python", "-u", "src/app/webhook/app.py"]
 
 # Production stage - minimal Python image
-FROM python:3.14-slim as production
+FROM python:3.14.10-slim as production
 
 # Install postgresql-client for pg_dump (database backups)
 RUN apt-get update && apt-get install -y --no-install-recommends \

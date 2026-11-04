@@ -1,5 +1,6 @@
 """FastAPI application factory."""
 
+import gc
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -18,7 +19,9 @@ from starlette.middleware.cors import CORSMiddleware
 
 from core.infrastructure.config import settings
 from core.infrastructure.database.setup import create_engine, create_session_pool
+from core.infrastructure.fastapi.clients import close_clients, open_clients
 from core.infrastructure.fastapi.middleware import (
+    AccessLogMiddleware,
     CachedStaticFiles,
     RequestIdMiddleware,
     RequestTracker,
@@ -112,8 +115,8 @@ def create_api(
             # Never attach request bodies: they carry users' own free text (questions, chat messages)
             # that must not leave our server.
             max_request_body_size="never",
-            traces_sample_rate=1.0,  # 100% - fine for low traffic (<1k DAU)
-            profiles_sample_rate=0.5,  # 50% - profiles are heavier
+            traces_sample_rate=settings.observability.sentry_traces_sample_rate,
+            profiles_sample_rate=settings.observability.sentry_profiles_sample_rate,
             integrations=[
                 StarletteIntegration(),
                 FastApiIntegration(),
@@ -142,10 +145,19 @@ def create_api(
 
         await sync_owner_roles(session_pool)
 
+        # Process-wide clients (Bot, arq pool): one per worker, never one per request
+        await open_clients(app)
+
         # Run app-specific startup callbacks
         if on_startup:
             for callback in on_startup:
                 await callback(session_pool)
+
+        # Everything loaded so far (modules, ORM metadata, settings, clients) lives as long as the process: move
+        # it out of the cyclic GC's reach, so a full collection walks only what requests allocate instead of
+        # ~560k startup objects (measured: a full collection 118-145 ms, blocking the event loop, vs ~0 ms).
+        gc.collect()
+        gc.freeze()
 
         logger.info("✅ Webhook application ready")
         await announce_start("webhook", version)
@@ -169,7 +181,8 @@ def create_api(
                 f"  ⚠  Drain timeout after {drain_timeout}s, {request_tracker.active_count} requests still active"
             )
 
-        # 3. Close Redis connections
+        # 3. Close Redis connections and the process-wide clients
+        await close_clients(app)
         await RedisClient.close()
         logger.info("  ✓ Redis connections closed")
 
@@ -211,6 +224,9 @@ def create_api(
 
     # Middleware stack (last added = first executed)
     # Order: RootPath → RequestId → RequestTracker → Security → CORS
+
+    # One access-log line per request (innermost, so it runs inside the request context set below)
+    app.add_middleware(AccessLogMiddleware)
 
     # Request ID propagation (must be first to set context for all other middleware)
     app.add_middleware(RequestIdMiddleware)

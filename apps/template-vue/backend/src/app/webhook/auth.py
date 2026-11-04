@@ -430,7 +430,7 @@ async def _authenticate_telegram(request: Request, services: RequestsService) ->
         )
     )
 
-    logger.info(f"Telegram user {db_user.id} authenticated")
+    logger.debug("Telegram user %s authenticated", db_user.id)  # the access-log line carries the user
     i18n.set_user_locale(db_user)
     request.state.user = db_user
 
@@ -477,7 +477,7 @@ async def _authenticate_session(request: Request, services: RequestsService) -> 
             await destroy_session(session_id)
             return None
 
-        logger.info(f"Session user {user_db.id} authenticated")
+        logger.debug("Session user %s authenticated", user_db.id)
         i18n.set_user_locale(user_db)
         request.state.user = user_db
 

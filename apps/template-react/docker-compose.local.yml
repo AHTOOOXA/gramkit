@@ -30,7 +30,7 @@ services:
     depends_on:
       - db
       - redis
-    command: /workspace/.venv/bin/uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-react/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
+    command: /workspace/.venv/bin/uvicorn app.webhook.app:app --no-access-log --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-react/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
 
   bot:
     build:

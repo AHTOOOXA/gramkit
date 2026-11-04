@@ -71,7 +71,7 @@ services:
     command: >
       sh -c "
         alembic upgrade head &&
-        uvicorn app.webhook.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-vue/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
+        uvicorn app.webhook.app:app --no-access-log --host 0.0.0.0 --port 8000 --reload --reload-dir /workspace/apps/template-vue/backend/src --reload-dir /workspace/core/backend/src --timeout-graceful-shutdown 30
       "
     logging:
       driver: "json-file"

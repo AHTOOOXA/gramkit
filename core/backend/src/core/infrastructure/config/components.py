@@ -12,7 +12,7 @@ from pydantic import BaseModel
 class DatabaseSettings(BaseModel):
     """Database connection settings.
 
-    Env vars: DB__HOST, DB__PORT, DB__USER, DB__PASSWORD, DB__NAME
+    Env vars: DB__HOST, DB__PORT, DB__USER, DB__PASSWORD, DB__NAME, DB__POOL_SIZE, DB__MAX_OVERFLOW
     """
 
     host: str = "localhost"
@@ -20,6 +20,12 @@ class DatabaseSettings(BaseModel):
     user: str = "postgres"
     password: str = ""
     name: str = "app"
+    # Connections per process (webhook worker, bot, arq worker). Keep the sum over every process under
+    # Postgres' max_connections (100 by default): past the pool, a request waits for a connection
+    # (pool_timeout) instead of opening a new one. An unbounded overflow under load opens and closes a
+    # connection per waiting request, which ends in "too many clients" or failed DNS lookups.
+    pool_size: int = 10
+    max_overflow: int = 10
 
     @property
     def url(self) -> str:
@@ -138,10 +144,12 @@ class EmailSettings(BaseModel):
 class OpenAISettings(BaseModel):
     """OpenAI API settings.
 
-    Env vars: OPENAI__API_KEY
+    Env vars: OPENAI__API_KEY, OPENAI__BASE_URL
     """
 
     api_key: str = ""
+    # Any OpenAI-compatible endpoint (a proxy, or the load-test stub); the official API by default.
+    base_url: str = "https://api.openai.com/v1"
 
     @property
     def enabled(self) -> bool:
@@ -168,10 +176,15 @@ class ObservabilitySettings(BaseModel):
     """Observability services settings (Sentry, PostHog, Logfire).
 
     Env vars: OBSERVABILITY__SENTRY_DSN, OBSERVABILITY__POSTHOG_API_KEY, OBSERVABILITY__POSTHOG_HOST,
-              OBSERVABILITY__LOGFIRE_TOKEN, OBSERVABILITY__LOGFIRE_ENVIRONMENT
+              OBSERVABILITY__LOGFIRE_TOKEN, OBSERVABILITY__LOGFIRE_ENVIRONMENT,
+              OBSERVABILITY__SENTRY_TRACES_SAMPLE_RATE, OBSERVABILITY__SENTRY_PROFILES_SAMPLE_RATE
     """
 
     sentry_dsn: str = ""
+    # Share of webhook requests traced / profiled by Sentry. Every traced request costs CPU (~0.5 ms each at
+    # 100% tracing + 50% profiling), and errors are reported whatever the rate.
+    sentry_traces_sample_rate: float = 0.05
+    sentry_profiles_sample_rate: float = 0.0
     posthog_api_key: str = ""
     posthog_host: str = "https://app.posthog.com"
     logfire_token: str = ""

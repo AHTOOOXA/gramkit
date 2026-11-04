@@ -1,9 +1,12 @@
-"""Security headers middleware for FastAPI."""
+"""Security headers middleware for FastAPI.
+
+Pure ASGI, not BaseHTTPMiddleware (see request_id.py).
+"""
 
 from dataclasses import dataclass
 
-from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import MutableHeaders
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
 @dataclass
@@ -17,49 +20,32 @@ class SecurityConfig:
     """Enable Strict-Transport-Security header in production"""
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware to add security headers to all responses.
+class SecurityHeadersMiddleware:
+    """Adds CSP, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection and (in prod) HSTS to every response."""
 
-    Implements defense-in-depth security headers:
-    - Content Security Policy (CSP)
-    - X-Frame-Options (clickjacking protection)
-    - X-Content-Type-Options (MIME sniffing protection)
-    - X-XSS-Protection (XSS protection)
-    - Strict-Transport-Security (HTTPS enforcement in production)
-
-    Parameterized with SecurityConfig for app-specific CSP and HSTS settings.
-    """
-
-    def __init__(self, app, config: SecurityConfig):
-        """
-        Initialize security headers middleware.
-
-        Args:
-            app: FastAPI application
-            config: Security configuration with CSP and HSTS settings
-        """
-        super().__init__(app)
+    def __init__(self, app: ASGIApp, config: SecurityConfig):
+        self.app = app
         self.config = config
+        headers = {
+            "Content-Security-Policy": config.csp,
+            "X-Frame-Options": "DENY",
+            "X-Content-Type-Options": "nosniff",
+            "X-XSS-Protection": "1; mode=block",
+        }
+        if config.hsts_enabled:
+            headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        self._headers = list(headers.items())
 
-    async def dispatch(self, request: Request, call_next):
-        """Add security headers to response."""
-        response = await call_next(request)
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
 
-        # Content Security Policy - prevents XSS and injection attacks
-        response.headers["Content-Security-Policy"] = self.config.csp
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = MutableHeaders(scope=message)
+                for name, value in self._headers:
+                    headers[name] = value
+            await send(message)
 
-        # Prevent clickjacking attacks
-        response.headers["X-Frame-Options"] = "DENY"
-
-        # Prevent MIME sniffing
-        response.headers["X-Content-Type-Options"] = "nosniff"
-
-        # XSS protection (legacy but still useful)
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-
-        # HTTPS enforcement in production
-        if self.config.hsts_enabled:
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-
-        return response
+        await self.app(scope, receive, send_with_headers)
