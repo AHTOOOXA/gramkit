@@ -13,6 +13,7 @@ import { noop, useQueryClient } from '@tanstack/react-query';
 
 import { useTelegram } from '@tma-platform/core-react/platform';
 import { usePostHog } from '@tma-platform/core-react/analytics';
+import { isApiError } from '@tma-platform/core-react/errors';
 import { useRouter } from '@/i18n/navigation';
 import {
   getCurrentUserUsersMeGetQueryKey,
@@ -247,7 +248,12 @@ export function AppInitProvider({ children }: PropsWithChildren) {
           });
         } catch (err) {
           // 5. Handle errors (Kubb throws on error)
-          // Any error (including 401 unauthorized) - user not authenticated
+          // The server or the network failing (5xx incl. the auth 503, 429, no response) is not "logged out":
+          // rethrow, so the outer catch sets `error` and AppContent shows <ErrorScreen> with its retry.
+          // Only 503 (the backend could not reach its DB/Redis) and a network failure (status 0): a deterministic
+          // 500 from /process_start must not lock her out on the error screen; she keeps the app as before.
+          if (isApiError(err) && (err.status === 503 || err.status === 0)) throw err;
+          // Any other error (a 401 for an invalid initData) - user not authenticated
           // This is OK for web users before login - they'll see the login UI
           // After they authenticate and call reinitialize(), this will succeed
           console.error('[AppInitProvider] /process_start FAILED:', err);

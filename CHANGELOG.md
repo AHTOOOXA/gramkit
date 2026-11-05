@@ -5,12 +5,47 @@ sync and lists changes to `core/`, the two templates, `scripts/`, CI and the Cla
 grouped as **Added / Changed / Fixed / Breaking**; read **Breaking** before you pull a sync into an app
 you built from a template.
 
+## 2026-11 — no Bot per request in payments, log writes off the event loop, 503 instead of 401 on infrastructure errors
+
+### Breaking (behaviour)
+
+- Auth answers **503 with `Retry-After`** when the database, Redis or DNS fails during authentication (initData,
+  session cookie or the guest). It used to answer 401 for the initData path, which a client takes as "logged out",
+  and fell back to the shared guest for the session cookie. An invalid initData is still a 401. Other unexpected
+  errors are no longer disguised as 401: they reach the global handler as a 500.
+- The templates' app init (`useAppInit` in template-vue, `AppInitProvider` in template-react) shows the error screen
+  with its retry button when `/process_start` fails with a 503 or a network error, instead of the logged-out UI.
+  template-vue also mounts when init fails, so `App.vue` can render that screen. Copy these if your app is built
+  from an earlier template.
+
+### Added
+
+- `core.infrastructure.telegram.shared_bot`: `get_shared_bot()` returns one `Bot` (with retries) per process and
+  event loop, for code with no process bot at hand (admin alerts, scripts). `close_shared_bot()` closes it, and the
+  webhook, worker and bot processes call it on shutdown.
+- `core.infrastructure.logging.shutdown_logging()`: drains the log queue and stops the listener thread. The
+  FastAPI lifespan and an `atexit` hook call it.
+
+### Changed
+
+- The Telegram Stars payment provider uses the services' bot, or the shared one. `PaymentsService` builds its
+  providers lazily, on first use. Building `services.payments` used to construct an aiogram `Bot`, with an SSL
+  context, on every request that touched payments: `GET /payments/products` went from 12.8 to 2.8 ms of CPU, and
+  memory no longer grows under bursts.
+- Admin alerts and start announcements reuse one bot instead of building one per message.
+- Log lines are written to stdout from a listener thread (`QueueHandler` + `QueueListener`), so a blocking write
+  no longer stalls the event loop. The format and the request id / user fields don't change. With the other
+  changes in this entry, two workers in our load test went from 750 to 900 concurrent users.
+- An unknown or expired invite code in the start link no longer fails `/process_start`; the app opens and the
+  invite is skipped.
+
 ## 2026-11 — core's `get_user` / `get_services` are real dependencies (no production `dependency_overrides`)
 
 While `app.dependency_overrides` has any entry, FastAPI rebuilds the dependency tree of every dependency on
 every request. Core's `get_user` / `get_services` used to be stubs that every app overrode, so every endpoint
-paid it: about a third of an authenticated request's Python time. In our load test, CPU per request on the
-app-open endpoints dropped 36-48%, and two workers held 750 concurrent users instead of 600.
+paid it: about a third of an authenticated request's Python time. In our load test, CPU per authenticated request
+dropped 17-27% (an earlier figure of 36-48% here came from a broken probe that measured 401s), and two workers held
+750 concurrent users instead of 600.
 
 ### Breaking (optional migration)
 

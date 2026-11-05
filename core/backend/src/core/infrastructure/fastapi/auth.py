@@ -10,6 +10,11 @@ It used to live, copied almost line for line, in every app's ``webhook/auth.py``
 Order: the ``Mock-Platform`` header (debug only), then Telegram ``initData``, then the session cookie. With none of
 them the request gets the **shared mock guest user**: never a 401 for "not logged in", so gate endpoints with
 ``core.auth.rbac``.
+
+Errors: a present but invalid ``initData`` is a 401. The DB, Redis or the network failing while the user is looked
+up (``core.infrastructure.infra_errors``) is a **503 with ``Retry-After``**, in the initData, session-cookie and
+guest paths: never a 401 (a traffic spike must not log people out) and never the guest (a logged-in web user must
+not silently become the shared guest). Anything else unexpected reaches the global handler (500).
 """
 
 import json
@@ -19,11 +24,13 @@ from urllib.parse import parse_qsl, unquote
 from uuid import UUID
 
 from fastapi import HTTPException, Request
+from pydantic import ValidationError
 
 from core.infrastructure.auth.telegram import InvalidInitDataError, NoInitDataError
 from core.infrastructure.config import settings
 from core.infrastructure.database.models.enums import UserType
 from core.infrastructure.i18n import i18n, supported_locale
+from core.infrastructure.infra_errors import is_infrastructure_error
 from core.infrastructure.logging import get_logger
 from core.infrastructure.sentry_context import set_sentry_user
 from core.schemas.users import UserSchema
@@ -31,6 +38,24 @@ from core.schemas.users import UserSchema
 logger = get_logger(__name__)
 
 MOCK_GUEST_USER_ID = UUID("00000000-0000-0000-0000-000000000001")  # the one shared guest row
+
+# How long a client should wait before retrying after an infrastructure failure (seconds).
+RETRY_AFTER_SECONDS = 5
+
+# What verify_token raises for a malformed or forged initData. Besides its own two errors, a client-built string
+# can raise TypeError (hmac.compare_digest on a non-ASCII hash; a "user" that isn't an object with the expected
+# fields) or ValueError: still the client's fault, so a 401, not a 500. Pure parsing, no infrastructure in it.
+_INVALID_INIT_DATA_ERRORS = (InvalidInitDataError, NoInitDataError, TypeError, ValueError)
+
+
+def service_unavailable(exc: BaseException) -> HTTPException:
+    """The 503 for an infrastructure failure during auth (``Retry-After`` set; the cause goes to the log)."""
+    logger.error(f"Infrastructure error during authentication: {type(exc).__name__}: {exc}", exc_info=exc)
+    return HTTPException(
+        status_code=503,
+        detail="Service temporarily unavailable, please retry",
+        headers={"Retry-After": str(RETRY_AFTER_SECONDS)},
+    )
 
 
 def get_mock_guest_user() -> UserSchema:
@@ -120,8 +145,16 @@ async def _mock_user_from_init_data(init_data: str, services) -> UserSchema | No
 
 
 async def _authenticate_telegram(request: Request, services, init_data: str) -> UserSchema:
-    """The Telegram user signed into ``initData``, registered or refreshed in the DB."""
-    user = request.app.state.telegram_auth.verify_token(init_data)
+    """The Telegram user signed into ``initData``, registered or refreshed in the DB.
+
+    A 401 for an invalid ``initData``. DB errors propagate (``resolve_user`` maps them)."""
+    telegram_auth = request.app.state.telegram_auth  # not configured = our bug: AttributeError, a 500
+    try:
+        user = telegram_auth.verify_token(init_data)
+    except _INVALID_INIT_DATA_ERRORS as e:
+        # A present but invalid initData is a 401, never a silent fall-through to the cookie or the guest.
+        logger.warning(f"Telegram authentication failed: {type(e).__name__}: {e}")
+        raise HTTPException(status_code=401, detail="Authentication failed")
     display_name = f"{user.first_name or ''} {user.last_name or ''}".strip() or user.username or "User"
     db_user = await services.users.get_or_create_user(
         UserSchema(
@@ -152,7 +185,9 @@ async def _authenticate_telegram(request: Request, services, init_data: str) -> 
 
 
 async def _authenticate_session(request: Request, services) -> UserSchema | None:
-    """The user of the session cookie (web logins), or None."""
+    """The user of the session cookie (web logins), or None for no / an invalid / an expired session.
+
+    Redis and DB errors propagate: ``resolve_user`` turns them into a 503 instead of the guest."""
     session_id = request.cookies.get(settings.session.cookie_name)
     if not session_id:
         return None
@@ -163,13 +198,15 @@ async def _authenticate_session(request: Request, services) -> UserSchema | None
     if not user_id_str:
         return None
     try:
-        user_db = await services.users.get_user_by_id(UUID(user_id_str))
+        user_id = UUID(user_id_str)
     except ValueError as e:
         logger.warning(f"Invalid UUID in session {session_id}: {e}")
         return None
-    except Exception as e:
-        # UserService.get_user_by_id fails validating None when the row is gone
-        logger.error(f"Error authenticating session {session_id}: {e}")
+    try:
+        user_db = await services.users.get_user_by_id(user_id)
+    except ValidationError:
+        # UserService.get_user_by_id fails validating None when the row is gone: a stale session, not an error
+        logger.warning(f"Session {session_id} points to a missing user {user_id}")
         return None
 
     logger.debug("Session user %s authenticated", user_db.id)
@@ -210,22 +247,19 @@ async def resolve_user(request: Request, services) -> UserSchema:
                 return mock_user
         logger.info("No mock user data in initData, falling through to normal auth")
 
-    init_data = request.headers.get("initData")
-    if init_data:
-        try:
+    try:
+        init_data = request.headers.get("initData")
+        if init_data:
             return await _authenticate_telegram(request, services, init_data)
-        except (InvalidInitDataError, NoInitDataError) as e:
-            # A present but invalid initData is a 401, never a silent fall-through to the cookie or the guest.
-            # (The per-app copies meant to fall through, but caught their own exception classes, so core's
-            # authenticator's errors always ended up in the catch-all below: 401. Kept, now on purpose.)
-            logger.warning(f"Telegram authentication failed: {e}")
-            raise HTTPException(status_code=401, detail="Authentication failed")
-        except Exception as e:
-            logger.error(f"Unexpected error in Telegram auth: {e}")
-            raise HTTPException(status_code=401, detail="Authentication failed")
 
-    session_user = await _authenticate_session(request, services)
-    if session_user:
-        return session_user
+        session_user = await _authenticate_session(request, services)
+        if session_user:
+            return session_user
 
-    return await _mock_guest_user(request, services)
+        return await _mock_guest_user(request, services)
+    except HTTPException:
+        raise
+    except Exception as e:
+        if is_infrastructure_error(e):
+            raise service_unavailable(e) from e
+        raise  # a bug, not "not logged in": the global handler's 500

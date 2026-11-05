@@ -14,6 +14,7 @@ from core.infrastructure.dependencies import Dependencies
 from core.infrastructure.logging import get_logger
 from core.infrastructure.telegram.admin_messages import announce_start
 from core.infrastructure.telegram.retry import with_retries
+from core.infrastructure.telegram.shared_bot import close_shared_bot
 
 logger = get_logger(__name__)
 
@@ -272,6 +273,7 @@ def create_worker_settings(
 
         if "bot" in ctx:
             await ctx["bot"].session.close()
+        await close_shared_bot()
 
         # Close dependencies
         await dependencies.close()

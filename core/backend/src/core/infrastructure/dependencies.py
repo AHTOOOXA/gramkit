@@ -168,6 +168,10 @@ class Dependencies:
             await self._created["redis"].close()
         if "producer" in self._created and hasattr(self._created["producer"], "close"):
             await self._created["producer"].close()
+        # The bot process's fallback bot (admin alerts), if anything created one
+        from core.infrastructure.telegram.shared_bot import close_shared_bot
+
+        await close_shared_bot()
 
 
 # Removed: create_service_factory with signature inspection

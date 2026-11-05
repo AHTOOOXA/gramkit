@@ -17,6 +17,7 @@ from typing import Protocol
 from uuid import UUID
 
 from core.infrastructure.config import settings
+from core.infrastructure.infra_errors import is_infrastructure_error
 from core.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
@@ -118,6 +119,10 @@ class SessionService:
 
         Returns:
             Session data if valid, None if invalid/expired
+
+        Raises:
+            Redis/network errors (``core.infrastructure.infra_errors``): an unreachable Redis is not "no session",
+            so auth answers 503 instead of handing a logged-in user the guest.
         """
         if not session_id:
             return None
@@ -147,6 +152,8 @@ class SessionService:
             logger.warning(f"Invalid session data for {session_id}: {e}")
             return None
         except Exception as e:
+            if is_infrastructure_error(e):
+                raise
             logger.error(f"Error validating session {session_id}: {e}")
             return None
 

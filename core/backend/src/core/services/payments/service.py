@@ -1,3 +1,4 @@
+from collections.abc import Iterator, Mapping
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
@@ -17,9 +18,41 @@ from core.infrastructure.telegram.admin_messages import esc, fmt_money, tags, us
 from core.services.base import BaseService
 from core.services.payments.providers import get_provider
 from core.services.payments.providers.telegram_stars import is_native_stars_subscription
-from core.services.payments.types import ProviderRefundError, PurchaseLimitError
+from core.services.payments.types import PaymentProviderInterface, ProviderRefundError, PurchaseLimitError
 
 logger = get_logger(__name__)
+
+
+class _LazyProviders(Mapping[str, PaymentProviderInterface]):
+    """``provider_id -> provider``, each built on first lookup.
+
+    ``services.payments`` is built once per request, and most requests (listing products, status
+    checks) never reach a provider, so building them all up front was wasted work.
+    """
+
+    def __init__(self, provider_ids: list[PaymentProvider], repo, services, products: ProductCatalog):
+        self._ids = {provider_id.value: provider_id for provider_id in provider_ids}
+        self._repo = repo
+        self._services = services
+        self._products = products
+        self._built: dict[str, PaymentProviderInterface] = {}
+
+    def __getitem__(self, key: str) -> PaymentProviderInterface:
+        provider = self._built.get(key)
+        if provider is None:
+            provider_id = self._ids[key]  # KeyError for an unknown id, as a dict would
+            provider = get_provider(provider_id, self._repo, self._services, self._products)
+            self._built[key] = provider
+        return provider
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._ids  # Mapping's default would build the provider
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._ids)
+
+    def __len__(self) -> int:
+        return len(self._ids)
 
 
 class PaymentsService(BaseService):
@@ -41,13 +74,10 @@ class PaymentsService(BaseService):
         # Inject app-specific product catalog (type-safe via Protocol)
         self.products = products
 
-        self.providers = {
-            PaymentProvider.YOOKASSA.value: get_provider(PaymentProvider.YOOKASSA, repo, services, products),
-            PaymentProvider.TELEGRAM_STARS.value: get_provider(
-                PaymentProvider.TELEGRAM_STARS, repo, services, products
-            ),
-            # Add more providers here as needed
-        }
+        # Built on first use: see _LazyProviders. Add more providers here as needed.
+        self.providers: Mapping[str, PaymentProviderInterface] = _LazyProviders(
+            [PaymentProvider.YOOKASSA, PaymentProvider.TELEGRAM_STARS], repo, services, products
+        )
 
     async def _handle_success(self, payment: Any, recurring_details: Any, update_data: dict[str, Any]) -> None:
         """

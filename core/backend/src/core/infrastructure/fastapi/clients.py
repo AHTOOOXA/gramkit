@@ -19,6 +19,7 @@ from fastapi import FastAPI
 from core.infrastructure.config import settings
 from core.infrastructure.logging import get_logger
 from core.infrastructure.telegram.retry import with_retries
+from core.infrastructure.telegram.shared_bot import close_shared_bot
 
 logger = get_logger(__name__)
 
@@ -47,3 +48,5 @@ async def close_clients(app: FastAPI) -> None:
             await bot.session.close()
         except Exception as e:
             logger.warning(f"bot session close failed: {e}")
+    # The fallback bot (alert_owners, Stars refunds outside a request), if anything created one.
+    await close_shared_bot()

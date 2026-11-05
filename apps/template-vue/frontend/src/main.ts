@@ -180,7 +180,13 @@ configureApiClient();
 // Initialize app before mounting
 (async () => {
   try {
-    await initApp(queryClient);
+    try {
+      await initApp(queryClient);
+    } catch (error) {
+      // initApp already put the error into useAppInit().error: mount anyway, so App.vue shows
+      // <ErrorScreen> with its reload button instead of a blank page (e.g. the backend's 503).
+      console.error('Failed to initialize app:', error);
+    }
 
     // Only initialize router and mount app after stores are ready
     app.use(Router);

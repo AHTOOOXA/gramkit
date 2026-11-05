@@ -1,16 +1,16 @@
 from datetime import UTC, datetime
+from functools import cached_property
 from typing import Any
 
 from aiogram import Bot
 from aiogram.types import LabeledPrice
 
 from core.domain.products import ProductCatalog, product_invoice_text
-from core.infrastructure.config import settings
 from core.infrastructure.database.models.enums import PaymentEventType, PaymentProvider, PaymentStatus
 from core.infrastructure.database.models.payments import Payment
 from core.infrastructure.logging import get_logger
 from core.infrastructure.telegram.admin_messages import esc, tags
-from core.infrastructure.telegram.retry import with_retries
+from core.infrastructure.telegram.shared_bot import get_shared_bot
 from core.services.payments.types import PaymentProviderInterface
 
 logger = get_logger(__name__)
@@ -45,14 +45,25 @@ class TelegramStarsProvider(PaymentProviderInterface):
     supports_refund = True
 
     def __init__(self, repo, services, products: ProductCatalog):
-        """Initialize Telegram Stars provider.
-
-        Uses settings.bot for configuration.
-        """
+        """Initialize Telegram Stars provider. Cheap: the bot is resolved on first use (``bot``)."""
         self.repo = repo
         self.services = services
         self.products = products
-        self.bot = with_retries(Bot(token=settings.bot.token))
+
+    @cached_property
+    def bot(self) -> Bot:
+        """The process bot the services carry (webhook ``app.state.bot``, worker ``ctx["bot"]``, the
+        dispatcher's bot), else the process-wide fallback. Never a new ``Bot()`` per provider: that
+        built an aiohttp session + SSL context on every request that touched ``services.payments``.
+
+        Only a real aiogram ``Bot`` is reused (not a test double or an app's null bot, which would
+        turn a failed invoice into a silent ``None``). Its ``DefaultBotProperties`` can't change what
+        we send: createInvoiceLink, refundStarPayment and editUserStarSubscription have no
+        parse_mode / link-preview / protect-content fields for a default to fill in.
+        (A test may still assign ``provider.bot = mock``: an instance attribute wins.)
+        """
+        bot = getattr(self.services, "bot", None)
+        return bot if isinstance(bot, Bot) else get_shared_bot()
 
     async def create_payment(
         self, payment: Payment, return_url: str = None, locale: str | None = None

@@ -30,7 +30,7 @@ from core.infrastructure.fastapi.middleware import (
     SecurityConfig,
     SecurityHeadersMiddleware,
 )
-from core.infrastructure.logging import get_logger
+from core.infrastructure.logging import get_logger, shutdown_logging
 from core.infrastructure.redis import RedisClient
 from core.infrastructure.telegram.admin_messages import announce_start
 
@@ -166,7 +166,7 @@ def create_api(
         gc.freeze()
 
         logger.info("✅ Webhook application ready")
-        await announce_start("webhook", version)
+        await announce_start("webhook", version, getattr(app.state, "bot", None))
 
         yield  # Application runs here
 
@@ -197,6 +197,9 @@ def create_api(
         logger.info("  ✓ Database connections closed")
 
         logger.info("✅ Webhook application shutdown complete")
+
+        # 5. Write out the queued log lines and stop the logging thread (later lines are written directly)
+        shutdown_logging()
 
     # Create app — root_path is NOT set on FastAPI directly because Starlette's
     # Mount creates child scopes with root_path = app_root_path + mount_path,

@@ -71,7 +71,10 @@ class StartService(BaseService):
 
         inviter = None
         if start_params.invite_code:
-            inviter = await self.services.invites.process_invite(start_params.invite_code, user.id)
+            try:
+                inviter = await self.services.invites.process_invite(start_params.invite_code, user.id)
+            except ValueError as e:  # unknown or expired invite: the app still opens
+                logger.info(f"Invite {start_params.invite_code!r} not applied for {user.id}: {e}")
             if inviter:
                 posthog.capture(
                     distinct_id=str(user.id),

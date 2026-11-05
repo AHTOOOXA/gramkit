@@ -2,6 +2,7 @@ import { ref, computed, type ComputedRef } from 'vue';
 import { useQueryClient, type QueryClient } from '@tanstack/vue-query';
 import { usePlatform } from '@core/platform';
 import { usePostHog } from '@core/analytics';
+import { isApiError } from '@core/errors';
 import router from '@app/router/router';
 import { StartParamKey } from '@app/types/StartParamKey';
 import {
@@ -164,9 +165,14 @@ async function initializeApp(queryClient: QueryClient): Promise<void> {
         page: page,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
-    } catch {
+    } catch (err) {
       // 5. Handle errors
-      // Any error (including 401 unauthorized) - user not authenticated
+      // The server or the network failing (5xx incl. the auth 503, 429, no response) is not "logged out":
+      // rethrow, so the outer catch sets `error` and App.vue shows <ErrorScreen> with its reload button.
+      // Only 503 (the backend could not reach its DB/Redis) and a network failure (status 0): a deterministic
+      // 500 from /process_start must not lock her out on the error screen; she keeps the app as before.
+      if (isApiError(err) && (err.status === 503 || err.status === 0)) throw err;
+      // Any other error (a 401 for an invalid initData) - user not authenticated
       // This is OK for web users before login - they'll see the login UI
       // After they authenticate and call reinitialize(), this will succeed
       state.value = {

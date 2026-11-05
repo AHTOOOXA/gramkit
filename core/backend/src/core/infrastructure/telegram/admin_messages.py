@@ -22,7 +22,7 @@ from aiogram.exceptions import TelegramAPIError, TelegramBadRequest
 from aiogram.types import InputRichMessage
 
 from core.infrastructure.logging import get_logger
-from core.infrastructure.telegram.retry import with_retries
+from core.infrastructure.telegram.shared_bot import get_shared_bot
 
 logger = get_logger(__name__)
 
@@ -187,36 +187,25 @@ async def announce_start(service: str, version: str, bot: Bot | None = None) -> 
 
     if settings.debug:
         return
-    own_bot = bot is None
     try:
-        if own_bot:
-            bot = with_retries(Bot(token=settings.bot.token))
         text = (
             f"🚀 <b>{esc(getattr(settings, 'app_name', 'app'))} {esc(version)}</b> · {esc(service)} started"
             f" <i>({esc(settings.observability.logfire_environment)})</i>\n{tags('deploy')}"
         )
-        await send_admin_message(bot, text, silent=True)
+        await send_admin_message(bot if bot is not None else get_shared_bot(), text, silent=True)
     except Exception as e:
         logger.error(f"Failed to announce {service} start: {e}")
-    finally:
-        if own_bot and bot is not None:
-            await bot.session.close()
 
 
 async def alert_owners(text: str) -> None:
     """Send an alert to the owners, with sound, from code that has no bot at hand (e.g. a failed
-    payment webhook). Opens a short-lived bot client. Skipped in debug (local runs and tests would
-    message the real owners). Never raises."""
+    payment webhook). Uses the process-wide fallback bot (``get_shared_bot``), not a new client per
+    alert. Skipped in debug (local runs and tests would message the real owners). Never raises."""
     from core.infrastructure.config import settings
 
     if settings.debug:
         return
-    bot = None
     try:
-        bot = with_retries(Bot(token=settings.bot.token))
-        await send_admin_message(bot, text)
+        await send_admin_message(get_shared_bot(), text)
     except Exception as e:
         logger.error(f"Failed to alert owners: {e}")
-    finally:
-        if bot is not None:
-            await bot.session.close()

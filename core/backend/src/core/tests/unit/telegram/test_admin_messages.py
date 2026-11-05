@@ -186,35 +186,56 @@ class TestAnnounceStart:
             await announce_start("bot", "1.2.0", bot)  # must not raise
 
 
-class _ClosableFakeBot(FakeBot):
+class _SessionFakeBot(FakeBot):
+    """A FakeBot with a session, so ``with_retries`` can attach its middleware."""
+
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.session = MagicMock()
-        self.session.close = self._close
-        self.closed = False
 
-    async def _close(self):
-        self.closed = True
+
+@pytest.fixture
+def _fresh_shared_bot():
+    from core.infrastructure.telegram import shared_bot
+
+    shared_bot._bot, shared_bot._loop = None, None
+    yield
+    shared_bot._bot, shared_bot._loop = None, None
 
 
 @pytest.mark.business_logic
+@pytest.mark.usefixtures("_fresh_shared_bot")
 class TestAlertOwners:
-    async def test_prod_alert_reaches_every_owner_with_sound_and_closes_its_bot(self):
-        bot = _ClosableFakeBot()
+    async def test_prod_alert_reaches_every_owner_with_sound(self):
+        bot = _SessionFakeBot()
         with (
             patch("core.infrastructure.config.settings", new=_settings(debug=False)),
-            patch("core.infrastructure.telegram.admin_messages.Bot", return_value=bot),
+            patch("core.infrastructure.telegram.shared_bot.Bot", return_value=bot),
         ):
             await alert_owners("🚨 webhook failed")
 
         assert {m["chat_id"] for m in bot.sent} == {7, 8}
         assert all(m["disable_notification"] is False for m in bot.sent)
-        assert bot.closed
+
+    async def test_alerts_reuse_one_bot_per_process(self):
+        """Regression: every alert used to build (and close) its own aiogram Bot: an aiohttp
+        session + SSL context per message."""
+        bot = _SessionFakeBot()
+        with (
+            patch("core.infrastructure.config.settings", new=_settings(debug=False)),
+            patch("core.infrastructure.telegram.shared_bot.Bot", return_value=bot) as bot_cls,
+        ):
+            await alert_owners("🚨 one")
+            await alert_owners("🚨 two")
+            await announce_start("webhook", "1.2.0")
+
+        assert bot_cls.call_count == 1
+        assert len(bot.sent) == 6
 
     async def test_debug_sends_nothing(self):
         with (
             patch("core.infrastructure.config.settings", new=_settings(debug=True)),
-            patch("core.infrastructure.telegram.admin_messages.Bot") as bot_cls,
+            patch("core.infrastructure.telegram.shared_bot.Bot") as bot_cls,
         ):
             await alert_owners("🚨 webhook failed")
 
