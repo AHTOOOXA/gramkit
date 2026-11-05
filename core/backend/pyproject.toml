@@ -41,6 +41,7 @@ dependencies = [
     "resend",
     "uuid6",
     "python-socketio",
+    "sentry-sdk[fastapi]>=2.42.1",  # create_api, the script runner and the request user context use it
 ]
 
 [dependency-groups]
