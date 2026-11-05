@@ -5,6 +5,44 @@ sync and lists changes to `core/`, the two templates, `scripts/`, CI and the Cla
 grouped as **Added / Changed / Fixed / Breaking**; read **Breaking** before you pull a sync into an app
 you built from a template.
 
+## 2026-11 — core's `get_user` / `get_services` are real dependencies (no production `dependency_overrides`)
+
+While `app.dependency_overrides` has any entry, FastAPI rebuilds the dependency tree of every dependency on
+every request. Core's `get_user` / `get_services` used to be stubs that every app overrode, so every endpoint
+paid it: about a third of an authenticated request's Python time. In our load test, CPU per request on the
+app-open endpoints dropped 36-48%, and two workers held 750 concurrent users instead of 600.
+
+### Breaking (optional migration)
+
+Nothing breaks: an app that still overrides `get_user` / `get_services` keeps working, on the slow path. To
+migrate an app built from an earlier template:
+- `app.py`: pass `services_class=RequestsService` to `create_api(...)` and delete the two
+  `app.dependency_overrides[core_deps.…]` lines.
+- Replace `webhook/auth.py` and `webhook/dependencies/{arq,bot,database,rabbit,redis,service}.py` with the
+  template's re-exports, or import from `core.infrastructure.fastapi.dependencies` directly.
+- Test fixtures: drop the `app.webhook.auth.session_redis` swap. Session-cookie auth now reads Redis through
+  `services.sessions`, which the `get_redis_client` override already feeds.
+- If you changed your copy of `auth.py`, move the change into core's `core.infrastructure.fastapi.auth` or keep
+  overriding `get_user`.
+
+### Added
+
+- `core.infrastructure.fastapi.auth`: the request's user (Telegram initData, then the session cookie, then the
+  shared guest), the code every app had copied into `webhook/auth.py`. It uses core's `TelegramAuthenticator`
+  and `services.sessions`.
+- `create_api(services_class=..., guest_locale=...)`. `guest_locale` is the language of the shared guest when
+  the frontend sends no `X-App-Locale` (default: the guest row's own).
+- Real `get_user`, `get_user_streaming`, `get_services`, `get_services_streaming`, `get_bot`, `get_arq_pool`,
+  `get_redis_client` and `get_rabbit_producer` in `core.infrastructure.fastapi.dependencies`.
+
+### Changed
+
+- The setup contract (`BaseAppSetupTests`) checks that `services_class` is registered and that core's
+  dependencies aren't overridden, instead of checking that they are.
+- A present but invalid initData is a 401 on purpose. It already was: the per-app copies meant to fall through
+  to the cookie, but caught their own exception class while core's authenticator raised core's.
+- `CLAUDE.md` and `.claude/rules/backend.md` / `testing.md`: overrides are for tests only.
+
 ## 2026-11 — performance under load: per-process clients, one bounded DB pool, ASGI middleware, access log
 
 Together these let the same box serve about 6× more users in a Conduit benchmark.

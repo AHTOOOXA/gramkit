@@ -13,13 +13,11 @@ from fastapi.responses import JSONResponse
 from app.exceptions import BackendException
 from app.infrastructure.database.repo.requests import RequestsRepo
 from app.services import admin_tasks as _admin_tasks  # noqa: F401  registers this app's @admin_task functions
+from app.services.requests import RequestsService
 from app.webhook import routers
-from app.webhook.auth import get_user as app_get_user
-from app.webhook.dependencies.service import get_services as app_get_services
 from core.infrastructure.auth.telegram import TelegramAuthenticator
 from core.infrastructure.config import settings
 from core.infrastructure.fastapi import create_api
-from core.infrastructure.fastapi import dependencies as core_deps
 from core.infrastructure.fastapi.routers import (
     admin as core_admin,
 )
@@ -69,6 +67,7 @@ app = create_api(
     config=settings.web,
     db_config=settings.db,
     repo_class=RequestsRepo,
+    services_class=RequestsService,
     routers=[
         auth_telegram.router,
         auth_email.router,
@@ -109,9 +108,9 @@ app.mount("/socket.io", socket_app)
 app.state.telegram_auth = telegram_auth
 app.state.settings = settings
 
-# Set up dependency overrides for core routes
-app.dependency_overrides[core_deps.get_user] = app_get_user
-app.dependency_overrides[core_deps.get_services] = app_get_services
+# No dependency_overrides here: core's get_user / get_services are real dependencies, configured above
+# (services_class, telegram_auth). Overrides are for tests: with any entry, FastAPI rebuilds every
+# dependency's tree on every request.
 
 # Add custom exception handlers (if needed)
 # Example:

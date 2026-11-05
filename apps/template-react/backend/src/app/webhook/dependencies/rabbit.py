@@ -1,6 +1,5 @@
-from core.infrastructure.config import settings
-from core.infrastructure.rabbit.producer import RabbitMQProducer
+"""Re-export: the request dependencies live in core (``core.infrastructure.fastapi.dependencies``)."""
 
+from core.infrastructure.fastapi.dependencies import get_rabbit_producer
 
-async def get_rabbit_producer():
-    return RabbitMQProducer(settings.rabbit)
+__all__ = ["get_rabbit_producer"]

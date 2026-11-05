@@ -54,7 +54,7 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
     ├── domain/, schemas/
     ├── infrastructure/database/{models,repo}/   # repo/requests.py = RequestsRepo
     ├── services/                 # requests.py = RequestsService; balance.py, admin_metrics.py, notifications/
-    ├── webhook/                  # app.py, auth.py (get_user), dependencies/, routers/{base,admin,demo}.py
+    ├── webhook/                  # app.py, auth.py + dependencies/ (re-exports of core's), routers/{base,admin,demo}.py
     ├── tgbot/                    # bot.py, handlers/__init__.py (routers_list)
     ├── worker/                   # jobs.py, worker.py (job + cron registration)
     ├── scripts/
@@ -88,7 +88,7 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
 
 | Entry point | Unit of work | Commit |
 |---|---|---|
-| Webhook | `get_repo()` (`app/webhook/dependencies/database.py`): `session.begin()` per request | auto on exit, rollback on exception. **Before** the response is sent (function scope, below) |
+| Webhook | `get_repo()` (`core/.../fastapi/dependencies.py`, re-exported by the app's `webhook/dependencies/database.py`): `session.begin()` per request | auto on exit, rollback on exception. **Before** the response is sent (function scope, below) |
 | Bot | `DatabaseMiddleware` (`core/.../telegram/middlewares/database.py`): one transaction per update | auto |
 | Worker | `async with ctx.with_transaction() as services:` (`core/.../arq/factory.py`) | auto on block exit. `ctx.with_repo()` has **no** transaction |
 | Scripts (`core/scripts/base.py`) | `with_session()` / `with_repo()` / `with_services()` open a bare session | **you** `await session.commit()` |
@@ -103,9 +103,10 @@ apps/template-vue/backend/       # template-react and new apps follow the same s
 
 ## Interfaces
 
-- **Webhook:** `services: RequestsService = Depends(get_services)` and `user: UserSchema = Depends(get_user)`, both from `core.infrastructure.fastapi.dependencies`. Core's `get_services` / `get_user` raise `NotImplementedError` until the app overrides them. Don't write wrapper deps like `get_auth_service`. Use `services.auth` directly.
-- **Router registration:** every router goes in the `routers=[...]` list of `create_api(...)` in `app/webhook/app.py`, core routers and app routers alike. Then `app.dependency_overrides[core_deps.get_services] = app_get_services` (same for `get_user`). `create_api` adds the health router itself.
-- **Auth (`app/webhook/auth.py::get_user`):** checks the `Mock-Platform` header (debug only), then the Telegram `initData` header, then the session cookie. With none of them it falls back to a **shared mock guest user**. It never returns 401 for "not logged in", so gate with `core.auth.rbac`: `user: AdminUser` / `user: OwnerUser` or `Depends(require_role(...))`. Config `settings.rbac.owner_ids` always pass.
+- **Webhook:** `services: RequestsService = Depends(get_services)` and `user: UserSchema = Depends(get_user)`, both from `core.infrastructure.fastapi.dependencies` (the app's `webhook/dependencies/*` and `webhook/auth.py` only re-export them). They are real dependencies: core builds the app's `services_class` per request and authenticates with `core.infrastructure.fastapi.auth`. Don't write wrapper deps like `get_auth_service`. Use `services.auth` directly.
+- **Router registration:** every router goes in the `routers=[...]` list of `create_api(...)` in `app/webhook/app.py`, core routers and app routers alike, with `repo_class=RequestsRepo, services_class=RequestsService` (and `guest_locale=` if the guest's language isn't its row's). `create_api` adds the health router itself.
+- **`app.dependency_overrides` is for tests only.** While it has any entry, FastAPI rebuilds every dependency's tree on every request (about a third of an authenticated request's Python time in our load test).
+- **Auth (`core.infrastructure.fastapi.auth.resolve_user`, behind core's `get_user`):** checks the `Mock-Platform` header (debug only), then the Telegram `initData` header, then the session cookie. With none of them it falls back to a **shared mock guest user**. It never returns 401 for "not logged in", so gate with `core.auth.rbac`: `user: AdminUser` / `user: OwnerUser` or `Depends(require_role(...))`. Config `settings.rbac.owner_ids` always pass.
 - **Sessions:** `session_id = await services.sessions.create_session(user_id, user_type)`, then `set_session_cookie(response, session_id)` / `clear_session_cookie(response)` from `core.infrastructure.session`. Cookie options come from `settings.session`; there's no config argument.
 - **Bot handlers:** services are **injected as a handler argument** by `ServiceMiddleware` (`core/.../telegram/middlewares/service.py`). Write `async def cmd(message: Message, user: UserSchema, services: RequestsService)`. `repo`, `session` and `user` are injected the same way. There's no `router.services`. Register routers in `app/tgbot/handlers/__init__.py::routers_list`. Order matters: core auth/link routers must come before `start_router`, whose `CommandStart()` swallows every `/start`.
 - **Bots:** create every `Bot` as `with_retries(Bot(...))` (`core/infrastructure/telegram/retry.py`): aiogram retries nothing, so a connection reset or a Telegram 5xx would fail the call outright. It retries network errors and 5xx (3 tries, 1 s then 2 s) and flood limits up to 30 s; longer flood waits reach `MessageService`, which sleeps them out once.

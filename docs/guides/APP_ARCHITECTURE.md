@@ -60,13 +60,13 @@ from core.infrastructure.fastapi.routers import (
     auth_telegram, payments, subscriptions, users, webhooks
 )
 from app.infrastructure.database.repo.requests import RequestsRepo
-from app.webhook.auth import get_user as app_get_user
-from app.webhook.dependencies.service import get_services as app_get_services
+from app.services.requests import RequestsService
 
 app = create_api(
     config=settings.web,
     db_config=settings.db,
-    repo_class=RequestsRepo,      # App's composed repo
+    repo_class=RequestsRepo,          # App's composed repo
+    services_class=RequestsService,   # App's composed services, built per request by core's get_services
     routers=[
         # Core routers
         auth_telegram.router,
@@ -84,23 +84,15 @@ app = create_api(
     root_path=settings.web.api_root_path,
 )
 
-# REQUIRED: Override core dependencies with app-specific implementations
-app.dependency_overrides[core_deps.get_user] = app_get_user
-app.dependency_overrides[core_deps.get_services] = app_get_services
+# No app.dependency_overrides: core's get_user / get_services are real dependencies. Overrides are for
+# tests only; with any entry FastAPI rebuilds every dependency's tree on every request.
+app.state.telegram_auth = TelegramAuthenticator(secret=generate_secret_key(settings.bot.token))
 ```
 
-**Dependency Override - get_services:**
-```python
-# app/webhook/dependencies/service.py
-async def get_services(
-    repo: RequestsRepo = Depends(get_repo),
-    producer = Depends(get_rabbit_producer),
-    bot: Bot = Depends(get_bot),
-    redis = Depends(get_redis_client),
-    arq: ArqRedis = Depends(get_arq_pool),
-):
-    yield RequestsService(repo, producer, bot, redis, arq)
-```
+**get_services / get_user (core):** core's `get_services` builds `services_class(repo, producer, bot, redis, arq)`
+from the request session (`get_repo`) and the process-wide clients; `get_user` authenticates the request
+(`core.infrastructure.fastapi.auth`: Telegram initData, then the session cookie, then the shared guest). The
+app's `webhook/auth.py` and `webhook/dependencies/*` only re-export them, so routers import from either place.
 
 ---
 
@@ -362,25 +354,20 @@ settings = Settings()
 
 ## Dependency Injection
 
-### Core provides stubs (MUST override):
+### Core provides the request dependencies:
 ```python
-# These raise NotImplementedError if not overridden
-get_services(repo) -> RequestsService
-get_user(request) -> User | None
+get_repo(request) -> RequestsRepo                 # app.state.repo_class, one session per request
+get_services(request, repo, ...) -> RequestsService  # app.state.services_class (create_api(services_class=...))
+get_user(request, services) -> UserSchema         # initData / session cookie / shared guest
+get_services_streaming / get_user_streaming       # request-scoped session, legacy streaming only
+get_bot / get_arq_pool / get_redis_client / get_rabbit_producer  # process-wide clients
+get_telegram_auth(request) -> TelegramAuthenticator  # app.state.telegram_auth
 ```
 
-### Core provides working defaults:
+### Tests override them, apps don't:
 ```python
-# These work automatically
-get_repo(request) -> RequestsRepo  # Uses app.state.repo_class
-get_telegram_auth(request) -> TelegramAuthenticator  # Uses app.state.telegram_auth
-```
-
-### App overrides pattern:
-```python
-# In app.py
-app.dependency_overrides[core_deps.get_services] = app_get_services
-app.dependency_overrides[core_deps.get_user] = app_get_user
+# In a test fixture (restore the dict on teardown)
+app.dependency_overrides[get_repo] = override_get_repo
 ```
 
 ---

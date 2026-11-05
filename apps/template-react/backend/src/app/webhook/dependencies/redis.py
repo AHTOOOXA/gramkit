@@ -1,8 +1,5 @@
-from core.infrastructure.config import settings
-from core.infrastructure.redis import RedisClient
+"""Re-export: the request dependencies live in core (``core.infrastructure.fastapi.dependencies``)."""
 
-redis_client = RedisClient(settings.redis)
+from core.infrastructure.fastapi.dependencies import get_redis_client
 
-
-async def get_redis_client() -> RedisClient:
-    return redis_client
+__all__ = ["get_redis_client"]

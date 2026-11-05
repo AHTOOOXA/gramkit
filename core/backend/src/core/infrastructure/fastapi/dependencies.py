@@ -1,30 +1,36 @@
-"""Generic FastAPI dependency stubs for core routers.
+"""The request dependencies every app's endpoints use: the DB session, the services, the user.
 
-Apps override these with app-specific implementations using:
-  app.dependency_overrides[core_deps.get_user] = app_get_user
+Core routers and app routers use the same functions:
 
-This module provides base dependencies that core routes can use.
-Each app must override these dependencies to provide their specific implementations.
-
-Pattern:
-    # In core route
-    from core.infrastructure.fastapi.dependencies import get_user
+    from core.infrastructure.fastapi.dependencies import get_services, get_user
 
     @router.get("/me")
-    async def get_current_user(user=Depends(get_user)):
-        return user
+    async def me(user: UserSchema = Depends(get_user)): ...
 
-    # In app factory
-    from core.infrastructure.fastapi import dependencies as core_deps
-    app.dependency_overrides[core_deps.get_user] = app_get_user
+An app doesn't reimplement them; ``create_api`` registers what is app-specific on ``app.state``:
+``repo_class`` (the app's repo aggregator), ``services_class`` (its service aggregator),
+``telegram_auth`` and ``guest_locale`` (auth, see ``core.infrastructure.fastapi.auth``).
+
+They are real dependencies, not stubs to override. ``app.dependency_overrides`` is for tests: while it
+has any entry, FastAPI rebuilds the dependency tree of every dependency on every request (re-reading
+signatures), about a third of a simple request's Python time. An app that still overrides
+``get_user`` / ``get_services`` keeps working, it only pays that.
 """
 
 from collections.abc import AsyncGenerator
+from typing import Any
 from uuid import UUID
 
+from aiogram import Bot
+from arq.connections import ArqRedis
 from fastapi import Depends, Request
 
+from core.infrastructure.config import settings
 from core.infrastructure.database.repo.requests import CoreRequestsRepo
+from core.infrastructure.fastapi.auth import resolve_user
+from core.infrastructure.rabbit.producer import RabbitMQProducer
+from core.infrastructure.redis import RedisClient
+from core.schemas.users import UserSchema
 from core.services.requests import CoreRequestsService
 
 
@@ -62,64 +68,89 @@ async def get_repo(request: Request) -> AsyncGenerator[CoreRequestsRepo]:
             yield repo_class(session)
 
 
+# Process-wide clients. Never build these per request (see core.infrastructure.fastapi.clients).
+
+
+async def get_bot(request: Request) -> Bot | None:
+    """The worker's Bot, created once in create_api's lifespan. None when BOT__TOKEN is empty, or under an
+    ASGI test client (no lifespan; tests override this dependency)."""
+    return getattr(request.app.state, "bot", None)
+
+
+async def get_arq_pool(request: Request) -> ArqRedis | None:
+    """The worker's arq pool, created once in create_api's lifespan. None under an ASGI test client."""
+    return getattr(request.app.state, "arq", None)
+
+
+_redis_client: RedisClient | None = None
+
+
+async def get_redis_client() -> RedisClient:
+    """One RedisClient per process (it pools its own connections)."""
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = RedisClient(settings.redis)
+    return _redis_client
+
+
+async def get_rabbit_producer() -> RabbitMQProducer:
+    return RabbitMQProducer(settings.rabbit)  # a config holder; it connects only when used
+
+
+def _services(request: Request, repo, producer, bot, redis, arq) -> Any:
+    services_class = getattr(request.app.state, "services_class", None)
+    if services_class is None:
+        raise NotImplementedError(
+            "No services class registered: pass create_api(services_class=RequestsService) "
+            "(or override core's get_services, the old way)."
+        )
+    return services_class(repo, producer, bot, redis, arq)
+
+
 async def get_services(
+    request: Request,
     repo: CoreRequestsRepo = Depends(get_repo, scope="function"),
+    producer: RabbitMQProducer = Depends(get_rabbit_producer),
+    bot: Bot | None = Depends(get_bot),
+    redis: RedisClient = Depends(get_redis_client),
+    arq: ArqRedis | None = Depends(get_arq_pool),
 ) -> CoreRequestsService:
-    """Get services aggregator. Apps MUST override with app-specific service.
+    """The app's service aggregator (``app.state.services_class``) for this request. The transaction commits
+    before the response is sent.
 
-    Core provides CoreRequestsService, but apps typically need to override with
-    their own RequestsService that includes app-specific services.
-
-    Override example:
-        from app.services.requests import RequestsService
-
-        async def app_get_services(repo=Depends(get_repo, scope="function")):
-            return RequestsService(repo)  # return, not yield: see below
-
-    Keep the override a plain ``async def`` that returns. FastAPI refuses a ``yield``
-    dependency (request scope) that depends on a function-scoped one, and the function scope
-    is what commits before the response is sent (see ``get_repo``).
-
-        app.dependency_overrides[core_deps.get_services] = app_get_services
-
-    Raises:
-        NotImplementedError: Always raises - app must override this dependency
-
-    Args:
-        repo: Repository aggregator from get_repo
-
-    Returns:
-        Service aggregator (but raises NotImplementedError)
+    Returns, never yields: FastAPI refuses a ``yield`` dependency (request scope) that depends on a
+    function-scoped one, and the function scope is what commits before the response (see ``get_repo``).
+    Typed as core's aggregator; an app endpoint annotates its own (``services: RequestsService = ...``).
     """
-    raise NotImplementedError(
-        "App must override get_services dependency. "
-        "Core provides CoreRequestsService, but apps should provide their own "
-        "RequestsService with app-specific services."
-    )
+    return _services(request, repo, producer, bot, redis, arq)
 
 
-async def get_user(request: Request):
-    """Get authenticated user from request. Apps MUST override.
-
-    Authentication is app-specific (Telegram, JWT, sessions, etc).
-    Each app must provide its own implementation.
-
-    Override example:
-        from app.webhook.auth import get_user as app_get_user
-        app.dependency_overrides[core_deps.get_user] = app_get_user
-
-    Raises:
-        NotImplementedError: Always raises - app must override this dependency
-
-    Args:
-        request: FastAPI request object
-
-    Returns:
-        User object (but raises NotImplementedError)
+async def get_services_streaming(
+    request: Request,
+    repo: CoreRequestsRepo = Depends(get_repo, scope="request"),
+    producer: RabbitMQProducer = Depends(get_rabbit_producer),
+    bot: Bot | None = Depends(get_bot),
+    redis: RedisClient = Depends(get_redis_client),
+    arq: ArqRedis | None = Depends(get_arq_pool),
+) -> CoreRequestsService:
+    """``get_services`` whose session stays open while a ``StreamingResponse`` body streams, committing
+    after it. Legacy: don't hold a transaction during an LLM answer (``.claude/rules/backend.md``). Pair it
+    with ``get_user_streaming``: ``get_user`` goes through ``get_services`` and would open a second session.
     """
-    raise NotImplementedError(
-        "App must override get_user dependency. Authentication is app-specific (Telegram, JWT, sessions, etc)."
-    )
+    return _services(request, repo, producer, bot, redis, arq)
+
+
+async def get_user(request: Request, services: CoreRequestsService = Depends(get_services)) -> UserSchema:
+    """The request's user: Telegram initData, the session cookie, or the shared guest
+    (``core.infrastructure.fastapi.auth.resolve_user``)."""
+    return await resolve_user(request, services)
+
+
+async def get_user_streaming(
+    request: Request, services: CoreRequestsService = Depends(get_services_streaming)
+) -> UserSchema:
+    """``get_user`` on the streaming endpoint's session (``get_services_streaming``)."""
+    return await resolve_user(request, services)
 
 
 async def get_telegram_auth(request: Request):

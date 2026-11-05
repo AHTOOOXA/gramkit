@@ -15,7 +15,6 @@ from app.infrastructure.database.models.balance import Balance  # noqa: F401
 
 # Patch RedisClient.__init__ BEFORE any app imports to prevent connection attempts
 with patch("core.infrastructure.redis.RedisClient.__init__", lambda self, config: None):
-    import app.webhook.auth as auth_module
     from app.infrastructure.database.repo.requests import RequestsRepo
 
     # App-specific imports
@@ -68,7 +67,6 @@ __all__ = [
 async def test_app(db_session: AsyncSession, mock_redis: InMemoryRedis):
     """Template app with test dependencies injected."""
     original_overrides = app.dependency_overrides.copy()
-    original_session_redis = auth_module.session_redis
 
     # Override dependencies
     async def override_get_repo():
@@ -94,13 +92,11 @@ async def test_app(db_session: AsyncSession, mock_redis: InMemoryRedis):
     app.dependency_overrides[get_bot] = override_get_bot
     app.dependency_overrides[get_arq_pool] = override_get_arq
     app.dependency_overrides[get_rabbit_producer] = override_get_rabbit
-    auth_module.session_redis = mock_redis
 
     yield app
 
     # Cleanup
     app.dependency_overrides = original_overrides
-    auth_module.session_redis = original_session_redis
 
 
 @pytest_asyncio.fixture

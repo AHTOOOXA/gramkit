@@ -54,6 +54,8 @@ def create_api(
     security_csp: str | None = None,
     root_path: str = "",
     on_startup: list | None = None,
+    services_class: type | None = None,
+    guest_locale: str | None = None,
 ) -> FastAPI:
     """
     Create fully-configured FastAPI app with standard infrastructure.
@@ -77,6 +79,10 @@ def create_api(
         security_csp: Content Security Policy string (optional, defaults to strict)
         root_path: Root path for reverse proxy setups (optional)
         on_startup: List of async callbacks to run on startup (optional)
+        services_class: The app's service aggregator, built per request by core's ``get_services``
+            as ``services_class(repo, producer, bot, redis, arq)``
+        guest_locale: Language of the shared guest when the request sends no X-App-Locale
+            (None = the guest row's own); see ``core.infrastructure.fastapi.auth``
 
     Returns:
         FastAPI app ready to serve
@@ -302,6 +308,8 @@ def create_api(
     # Store for dependency injection
     app.state.session_pool = session_pool
     app.state.repo_class = repo_class
+    app.state.services_class = services_class
+    app.state.guest_locale = guest_locale
     app.state.engine = engine
 
     return app

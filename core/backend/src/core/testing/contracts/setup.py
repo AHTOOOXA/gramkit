@@ -66,18 +66,20 @@ class BaseAppSetupTests:
     # =========================================================================
 
     @pytest.mark.contract
-    def test_user_dependency_is_overridden(self, test_app):
-        """User dependency is overridden for app."""
-        from core.infrastructure.fastapi import dependencies as core_deps
-
-        assert core_deps.get_user in test_app.dependency_overrides, "App must override core get_user dependency"
+    def test_services_class_is_registered(self, test_app):
+        """Core's get_services builds the app's aggregator: create_api(services_class=...)."""
+        assert getattr(test_app.state, "services_class", None) is not None, (
+            "Pass create_api(services_class=RequestsService)"
+        )
 
     @pytest.mark.contract
-    def test_services_dependency_is_overridden(self, test_app):
-        """Services dependency is overridden for app."""
+    def test_core_dependencies_are_not_overridden(self, test_app):
+        """get_user / get_services are real core dependencies, not stubs to override: with any
+        dependency_overrides entry FastAPI rebuilds every dependency's tree on every request."""
         from core.infrastructure.fastapi import dependencies as core_deps
 
-        assert core_deps.get_services in test_app.dependency_overrides, "App must override core get_services dependency"
+        assert core_deps.get_user not in test_app.dependency_overrides
+        assert core_deps.get_services not in test_app.dependency_overrides
 
     # =========================================================================
     # App State Tests

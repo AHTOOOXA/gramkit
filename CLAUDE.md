@@ -117,7 +117,8 @@ Hooks in `.claude/hooks/` hard-block the ones marked 🔒 and explain the fix.
 - ❌ `commit()` in a repository → use `flush()`
 - ❌ `if TYPE_CHECKING:` imports in new code → import directly
 - ❌ `core/` importing from `app` → core is dependency-free of apps
-- ❌ Factory functions for routers / wrapper dependencies → use regular routers + dependency overrides; access `services.auth` directly
+- ❌ Factory functions for routers / wrapper dependencies → use regular routers + core's `get_user` / `get_services` (configured via `create_api`); access `services.auth` directly
+- ❌ `app.dependency_overrides` outside tests → FastAPI then rebuilds every dependency tree on every request
 - ❌ Mutating balance/payment/credit without pessimistic locking → race conditions
 
 **Frontend:**

@@ -81,7 +81,7 @@ postgres_container (session) ─ db_engine ─ db_session ──┐      mock_re
                                                            test_user          # GET /users/me → UserSchema
 ```
 
-- `test_app` overrides the **app's** deps: `get_repo`, which yields `RequestsRepo(db_session)`, plus `get_redis_client`, `get_bot`, `get_arq_pool` and `get_rabbit_producer`. It also swaps `app.webhook.auth.session_redis` for `mock_redis`. On teardown it restores `dependency_overrides` and `session_redis`. Do the same in any fixture you write.
+- `test_app` overrides the request deps (core's, imported through the app's `webhook/dependencies/*` re-exports): `get_repo`, which yields `RequestsRepo(db_session)`, plus `get_redis_client` (→ `mock_redis`, which session-cookie auth reads through `services.sessions`), `get_bot`, `get_arq_pool` and `get_rabbit_producer`. On teardown it restores `dependency_overrides`. Do the same in any fixture you write. Never override `get_user` / `get_services` in production code: overrides are for tests.
 - Domain conftests import the `Balance` model **first** (core `User` references it by name). They also wrap their app imports in `patch("core.infrastructure.redis.RedisClient.__init__", ...)` so importing the app doesn't open a Redis connection.
 - An `admin_client` / `owner_client` fixture should create a user through the auth flow, then change its DB role. `RBAC__OWNER_IDS` is empty in tests.
 - `worker_ctx` uses `db_engine` with a real session pool, so worker jobs **really commit**. Data outlives the test, which is why it passes `clean_tables=[...]`. Add any table your job writes to that list.
