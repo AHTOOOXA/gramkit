@@ -20,6 +20,7 @@ Vue.js or React. Telegram-native or web-only. Type-safe from database to UI.
 | **Bot Notifications** | Scheduled per-user-local-time sends with a delivery log and blocked-bot detection |
 | **Admin Alerts** | Purchase / renewal / cancel / failure alerts and deploy announcements in Telegram, with tappable hashtags |
 | **Background Jobs** | ARQ for async tasks, email sending, scheduled jobs, nightly backups |
+| **Load-tested** | Measured against the plain-FastAPI reference of Arjay McCandless's server challenge on the same box: [Performance](#performance) |
 
 > Telegram features are opt-in. Leave `BOT__TOKEN` empty and you have a standard web app.
 
@@ -169,6 +170,38 @@ make test-quick APP=myapp # Incremental — sub-second feedback
 
 Each test runs in an isolated transaction with automatic rollback. Core ships reusable contract suites
 (`core/testing/contracts/`) that apps subclass.
+
+## Performance
+
+gramkit is load-tested the way Arjay McCandless scores servers in his "how many users can this server hold"
+videos: his [multicore server challenge](https://github.com/arjaythedev/multicore-server-challenge) (a
+19-endpoint Medium clone, the RealWorld "Conduit" API, on Postgres behind nginx) built as a gramkit app, measured
+with the challenge's own load generator against the challenge's plain FastAPI example on the **same box, same day**.
+
+- **Box:** 2 dedicated vCPU / 4 GB VPS (Xeon Platinum 8260, the challenge's CPU), Postgres and nginx on the same box;
+  the load generator on a separate box in the same datacenter (0.2 ms RTT).
+- **Score:** the most users held for a 5-minute hold with p95 < 500 ms, p99 < 1 s and < 1 % errors (each user
+  reads and writes with think times, like a person).
+
+| Conduit, users held 5 min (2026-11-06) | Users | req/s | p95 / p99 |
+|---|---:|---:|---|
+| Reference: plain FastAPI + asyncpg, no ORM, no middleware, 2 workers (one per core) ([`examples/python`](https://github.com/arjaythedev/multicore-server-challenge/tree/main/examples/python)) | 3,000–3,100 | ~795 | 222 / 717–822 ms |
+| **gramkit, one worker per core** (2 workers, like the reference) | **1,300** | 336–341 | 133–310 / 232–652 ms |
+| gramkit, template default (1 uvicorn worker: one core busy, the other idle) | 710 | 182 | 421 / 657 ms |
+| gramkit a release earlier, as shipped (2026-11-01, 1 worker) | 220 | 56 | 314 / 610 ms |
+
+With the same worker count, gramkit holds about **42 % of the bare reference**, at ~4 ms of app CPU per request against ~1.3 ms. That gap is the
+price of what the reference leaves out: SQLAlchemy ORM and one transaction per request, the middleware stack
+(request id, security headers, CORS, access log), the service layer and Pydantic models. 0 errors in every hold.
+
+The 6× from 220 came from profiling under load: one Telegram `Bot` and one arq pool per process instead of per
+request, a DB pool bounded below Postgres' `max_connections`, pure-ASGI middleware, core's real dependencies instead of
+FastAPI `dependency_overrides` (which rebuild the dependency tree on every request), and log writes off the event
+loop. Details in [CHANGELOG.md](CHANGELOG.md). In production, run one uvicorn worker per core
+(`--workers N`) and size `DB__POOL_SIZE` so that every process together stays under `max_connections`.
+
+The method, scripts and pitfalls are packaged as a Claude Code skill:
+[`perf-lab`](https://github.com/AHTOOOXA/tony-skills/tree/main/perf-lab).
 
 ## Commands Reference
 
